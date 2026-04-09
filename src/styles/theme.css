@@ -1,0 +1,313 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 16px;
+  --header-height: 45px;
+  --background: #f7f5f0;
+  --foreground: oklch(0.145 0 0);
+  --card: #f7f5f0;
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: #030213;
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.95 0.0058 264.53);
+  --secondary-foreground: #030213;
+  --muted: #f0f0f0;
+  --muted-foreground: #717182;
+  --accent: #ebebeb;
+  --accent-foreground: #030213;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(0, 0, 0, 0.1);
+  --input: transparent;
+  --input-background: #f5f5f5;
+  --switch-background: #cbced4;
+  --font-weight-medium: 400;
+  --font-weight-normal: 400;
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: #030213;
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.439 0 0);
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
+}
+
+@theme inline {
+  --font-sans: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  --font-serif: "kepler-std-semicondensed-sub", "kepler-std", "Georgia", "Times New Roman", serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    box-shadow: none !important;
+  }
+
+  body {
+    @apply text-foreground;
+    background-color: #f7f5f0;
+    position: relative;
+    font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+    cursor: none; /* Hide default cursor globally on desktop */
+  }
+  
+  /* Show default cursor on touch devices */
+  @media (hover: none) and (pointer: coarse) {
+    body {
+      cursor: auto;
+    }
+  }
+  
+  /* Also hide cursor on all interactive elements */
+  a, button, input, textarea, select {
+    cursor: none;
+  }
+  
+  /* Show pointer on navigation arrows - ensure they're clickable */
+  [aria-label="Scroll to top"],
+  [aria-label="Scroll to top"] *,
+  [aria-label="Next random project"],
+  [aria-label="Next random project"] * {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+  }
+  
+  /* Show default cursor on touch devices for interactive elements */
+  @media (hover: none) and (pointer: coarse) {
+    a, button, input, textarea, select {
+      cursor: pointer;
+    }
+  }
+  
+  /* Remove pointer cursor from ALL arrow navigation - ArrowLeft and ArrowRight icons */
+  .lucide-arrow-left,
+  .lucide-arrow-right,
+  .arrow-nav-link,
+  .arrow-nav-link *,
+  a:has(.lucide-arrow-left),
+  button:has(.lucide-arrow-left),
+  a:has(.lucide-arrow-right),
+  button:has(.lucide-arrow-right) {
+    cursor: none !important;
+  }
+  
+  @media (hover: none) and (pointer: coarse) {
+    .lucide-arrow-left,
+    .lucide-arrow-right,
+    .arrow-nav-link,
+    .arrow-nav-link *,
+    a:has(.lucide-arrow-left),
+    button:has(.lucide-arrow-left),
+    a:has(.lucide-arrow-right),
+    button:has(.lucide-arrow-right) {
+      cursor: auto !important;
+    }
+  }
+
+  /* Light photo grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.04;
+    z-index: 10000;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 800 800' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  }
+
+  /* Prevent image downloading and selection */
+  img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+  }
+  
+  /* Only disable pointer events on content images inside main, EXCEPT popup images */
+  main img:not([data-popup-image] img) {
+    pointer-events: none;
+  }
+
+  /**
+  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
+  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
+  */
+
+  html {
+    font-size: var(--font-size);
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    font-family: "kepler-std-semicondensed-sub", "kepler-std", serif;
+  }
+
+  h2 {
+    font-size: var(--text-3xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    font-family: "kepler-std-semicondensed-sub", "kepler-std", serif;
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+    /*text-transform: uppercase;*/
+  }
+
+  h4 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  }
+
+  h5 {
+    font-size: var(--text-sm);
+    font-weight: 400;
+    line-height: 1.5;
+    font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+    font-style: normal;
+  }
+
+  p {
+    font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    letter-spacing: -0.02em;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  label {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  }
+
+  button {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  }
+
+  input {
+    font-size: var(--text-base);
+    font-weight: 500;
+    line-height: 1.5;
+    font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  }
+
+  /* Hide scrollbar utility class */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  /* Hide cursor on gallery on desktop */
+  @media (hover: hover) and (pointer: fine) {
+    .gallery-cursor-none,
+    .gallery-cursor-none * {
+      cursor: none !important;
+    }
+  }
+}

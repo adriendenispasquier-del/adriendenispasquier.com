@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npm install:*)",
+      "WebFetch(domain:res.cloudinary.com)",
+      "Read(//opt/homebrew/Cellar/node/18.8.0_1/bin/**)",
+      "Bash(/opt/homebrew/bin/node --version)",
+      "Read(//opt/homebrew/bin/**)",
+      "Read(//Users/adriendenis-pasquier/.nvm/versions/node/v22.22.1/bin/**)",
+      "WebFetch(domain:practicetheory.com.sg)"
+    ]
+  }
+}

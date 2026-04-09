@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Vite Dev Server",
+      "runtimeExecutable": "/Users/adriendenis-pasquier/.nvm/versions/node/v22.22.1/bin/node",
+      "runtimeArgs": ["node_modules/.bin/vite", "--port", "5175"],
+      "port": 5175
+    }
+  ]
+}
