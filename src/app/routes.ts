@@ -34,4 +34,6 @@ export const router = createBrowserRouter([
       { path: "download-assets", Component: DownloadAssets },
     ],
   },
-]);
+], {
+  basename: '/adriendenispasquier.com/',
+});
