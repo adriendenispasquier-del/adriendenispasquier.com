@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createHashRouter } from "react-router";
 import { lazy } from "react";
 import Root from "./pages/Root";
 import Home from "./pages/Home";
@@ -15,7 +15,7 @@ const Impressum = lazy(() => import("./pages/Impressum"));
 const AGBs = lazy(() => import("./pages/AGBs"));
 const DownloadAssets = lazy(() => import("./pages/DownloadAssets"));
 
-export const router = createBrowserRouter([
+export const router = createHashRouter([
   {
     path: "/",
     Component: Root,
@@ -34,6 +34,4 @@ export const router = createBrowserRouter([
       { path: "download-assets", Component: DownloadAssets },
     ],
   },
-], {
-  basename: '/adriendenispasquier.com/',
-});
+]);
