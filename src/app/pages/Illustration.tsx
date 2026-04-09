@@ -18,12 +18,6 @@ export default function Illustration() {
       description: "Illustration · Futuristic tech portraits",
       thumbnail: illustrationData["cyberleaders"].cover || illustrationData["cyberleaders"].illustrations[0]?.src,
     },
-    {
-      slug: "rocket-wine",
-      title: "Rocket Wine",
-      description: "Illustration · Wine label & packaging",
-      thumbnail: illustrationData["rocket-wine"].cover || illustrationData["rocket-wine"].illustrations[0]?.src,
-    },
   ], []);
 
   return (
