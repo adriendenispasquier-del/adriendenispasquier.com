@@ -150,6 +150,5 @@ export function getPublicId(title: string): string {
   }
 
   // Fallback : conversion automatique (pour les nouveaux projets)
-  console.warn(`⚠️ No Cloudinary mapping found for: "${title}". Using auto-conversion.`);
   return title.replace(/\s+/g, "_").replace(/&/g, "___");
 }
