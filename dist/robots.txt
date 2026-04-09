@@ -1,9 +1,0 @@
-# https://www.robotstxt.org/robotstxt.html
-User-agent: *
-Allow: /
-
-# Sitemap location
-Sitemap: https://www.adriendenispasquier.com/sitemap.xml
-
-# Disallow admin or private pages (if any in the future)
-# Disallow: /admin/
