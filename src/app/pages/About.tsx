@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { ArrowLeft } from "lucide-react";
 import { ScrollIndicator } from "../components/ScrollIndicator";
 import { SEO } from "../components/SEO";
-import portraitImage from "figma:asset/e2ba8a312a67517ad80ca9c56c5f2bec09bcc98c.png";
+const portraitImage = "https://via.placeholder.com/400x600?text=Portrait";
 
 export default function About() {
   const navigate = useNavigate();

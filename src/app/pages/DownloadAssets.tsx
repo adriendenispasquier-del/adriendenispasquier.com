@@ -7,7 +7,7 @@ import { photographyData } from "../data/photography-data";
 import { brandIdentityData } from "../data/brand-identity-data";
 
 // Import portrait for About page
-import portraitImage from "figma:asset/e2ba8a312a67517ad80ca9c56c5f2bec09bcc98c.png";
+const portraitImage = "https://via.placeholder.com/400x600?text=Portrait";
 
 const CORRECT_PASSWORD = "ALLMINE1989!";
 
