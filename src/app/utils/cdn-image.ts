@@ -101,6 +101,24 @@ export interface CDNImageProps extends React.ImgHTMLAttributes<HTMLImageElement>
 }
 
 /**
+ * Check if a URL is a Cloudinary upload URL with a w_ width transform we can vary
+ */
+function isCloudinaryUploadUrl(src: string): boolean {
+  return src.includes('res.cloudinary.com') && src.includes('/image/upload/') && /w_\d+/.test(src) && !src.endsWith('.gif');
+}
+
+function withCloudinaryWidth(src: string, width: number): string {
+  return src.replace(/w_\d+/, `w_${width}`);
+}
+
+/**
+ * Generate a native Cloudinary srcSet by swapping the width transform across breakpoints
+ */
+function generateCloudinarySrcSet(src: string, widths: number[] = [480, 800, 1200, 1600, 2400]): string {
+  return widths.map((w) => `${withCloudinaryWidth(src, w)} ${w}w`).join(', ');
+}
+
+/**
  * Get optimized image props with CDN support
  */
 export function getOptimizedImageProps(
@@ -114,25 +132,33 @@ export function getOptimizedImageProps(
     decoding,
     ...rest
   } = props;
-  
-  const useCDN = canUseCDN(src);
-  
+
+  const isCloudinaryUpload = !!src && isCloudinaryUploadUrl(src);
+  const useFetchCDN = !isCloudinaryUpload && canUseCDN(src);
+
+  let finalSrc = src;
+  let srcSet: string | undefined;
+
+  if (isCloudinaryUpload) {
+    finalSrc = withCloudinaryWidth(src!, 1200);
+    srcSet = generateCloudinarySrcSet(src!);
+  } else if (useFetchCDN) {
+    finalSrc = getCDNUrl(src);
+    srcSet = generateSrcSet(src);
+  }
+
   // Build optimized props
   const optimizedProps: React.ImgHTMLAttributes<HTMLImageElement> = {
     ...rest,
-    src: useCDN ? getCDNUrl(src) : src,
+    src: finalSrc,
     loading: eager ? 'eager' : (loading || 'lazy'),
     decoding: decoding || 'async',
   };
-  
-  // Add srcSet for responsive loading (only if CDN is available)
-  if (useCDN) {
-    const srcSet = generateSrcSet(src);
-    if (srcSet) {
-      optimizedProps.srcSet = srcSet;
-      optimizedProps.sizes = sizes;
-    }
+
+  if (srcSet) {
+    optimizedProps.srcSet = srcSet;
+    optimizedProps.sizes = sizes;
   }
-  
+
   return optimizedProps;
 }

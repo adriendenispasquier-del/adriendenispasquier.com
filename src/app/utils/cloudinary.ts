@@ -29,18 +29,25 @@ export function titleToPublicId(title: string): string {
  * Mobile-optimized: smaller size for faster loading
  * NO format conversion - preserve original format (including GIFs)
  */
-export function getCloudinaryUrl(publicId: string): string {
+export function getCloudinaryUrl(publicId: string, width: number = 1600): string {
   // GIFs require special handling - NO transformations at all
   // Safari on iPad needs the raw GIF without any transformations
   // Must include folder path for proper resolution
   if (publicId.endsWith('.gif')) {
     return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${publicId}`;
   }
-  
-  // For other formats: mobile optimization with transformations
-  // Reduce size to 1200px width max for 3-4x faster loading
-  // Auto quality for best compression without visible loss
-  return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/c_limit,w_3000,q_auto/${publicId}`;
+
+  // c_limit + w caps the resize, q_auto picks the smallest acceptable quality,
+  // f_auto serves AVIF/WebP to browsers that support it
+  return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/c_limit,w_${width},q_auto,f_auto/${publicId}`;
+}
+
+/**
+ * Generates a responsive srcSet for a Cloudinary upload URL by varying the width transform
+ */
+export function getCloudinarySrcSet(publicId: string, widths: number[] = [480, 800, 1200, 1600, 2400]): string {
+  if (publicId.endsWith('.gif')) return '';
+  return widths.map((w) => `${getCloudinaryUrl(publicId, w)} ${w}w`).join(', ');
 }
 
 /**
