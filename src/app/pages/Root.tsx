@@ -54,25 +54,35 @@ const bodyBgColor = isDarkPage ? "#1c1c1c" : isAbout ? "#d5d0bb" : "#f7f5f0";
     };
   }, []);
 
-  // ⚡ PRELOAD all images on Home page mount for instant display
+  // Hover previews are decorative thumbnails, not gallery full-bleed.
+  // 800px looks identical in practice and is ~4x cheaper than 1600px.
+  // GIFs are excluded: no resize possible and they're too large to bulk-preload.
+  const toPreviewSrc = (src: string) =>
+    src.includes('/image/upload/') && !src.endsWith('.gif')
+      ? src.replace(/w_\d+/, 'w_800')
+      : src;
+
+  // ⚡ PRELOAD images on Home page mount for instant hover response
   useEffect(() => {
-    if (isHomePage) {
-      const allVisualImages = [...allImages.photography, ...allImages.illustration];
-      
-      // Preload first 20 images immediately for instant tap response
-      allVisualImages.slice(0, 20).forEach((src) => {
+    if (!isHomePage) return;
+
+    const preloadImages = [...allImages.photography, ...allImages.illustration]
+      .filter(src => !src.endsWith('.gif'))
+      .map(toPreviewSrc);
+
+    preloadImages.slice(0, 20).forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+
+    const timer = setTimeout(() => {
+      preloadImages.slice(20).forEach((src) => {
         const img = new Image();
         img.src = src;
       });
-      
-      // Preload remaining images with slight delay
-      setTimeout(() => {
-        allVisualImages.slice(20).forEach((src) => {
-          const img = new Image();
-          img.src = src;
-        });
-      }, 1000);
-    }
+    }, 1000);
+
+    return () => clearTimeout(timer);
   }, [isHomePage, allImages.photography, allImages.illustration]);
 
   // Define sections data
@@ -119,7 +129,7 @@ const bodyBgColor = isDarkPage ? "#1c1c1c" : isAbout ? "#d5d0bb" : "#f7f5f0";
         // Find which project this image belongs to
         const project = allProjects.find(p => p.images.includes(randomImage));
         
-        setHoveredImage(randomImage);
+        setHoveredImage(toPreviewSrc(randomImage));
         setCurrentProjectPath(project?.path || null);
         setCurrentProjectName(project?.name || null);
         setCurrentProjectSlug(project?.slug || null);
@@ -143,7 +153,7 @@ const bodyBgColor = isDarkPage ? "#1c1c1c" : isAbout ? "#d5d0bb" : "#f7f5f0";
       // Find which project this image belongs to
       const project = allProjects.find(p => p.images.includes(randomImage));
       
-      setHoveredImage(randomImage);
+      setHoveredImage(toPreviewSrc(randomImage));
       setCurrentProjectPath(project?.path || null);
       setCurrentProjectName(project?.name || null);
       setCurrentProjectSlug(project?.slug || null);
@@ -167,16 +177,16 @@ const bodyBgColor = isDarkPage ? "#1c1c1c" : isAbout ? "#d5d0bb" : "#f7f5f0";
       
       // Try to get a different image (up to 5 attempts for better variety)
       let attempts = 0;
-      while (randomImage === hoveredImage && attempts < 5 && allVisualImages.length > 1) {
+      while (toPreviewSrc(randomImage) === hoveredImage && attempts < 5 && allVisualImages.length > 1) {
         randomImage = allVisualImages[Math.floor(Math.random() * allVisualImages.length)];
         attempts++;
       }
-      
+
       // Find which project this image belongs to
       const project = allProjects.find(p => p.images.includes(randomImage));
-      
+
       // Direct instant update - no null state, no animation delay
-      setHoveredImage(randomImage);
+      setHoveredImage(toPreviewSrc(randomImage));
       setCurrentProjectPath(project?.path || null);
       setCurrentProjectName(project?.name || null);
       setCurrentProjectSlug(project?.slug || null);
