@@ -1,4 +1,4 @@
-import{o as R,$ as n,S as o,c as S,s as d,a as C,b as u,D as j,r as P,d as B,e as J,f as U,g as W,h as Y,t as K,P as X,i as _}from"./index-DLw9I_sh.js";const Q=`
+import{o as R,$ as n,S as o,c as S,s as d,a as C,b as u,D as j,r as P,d as B,e as J,f as U,g as W,h as Y,t as K,P as X,i as _}from"./index-SgRDurSP.js";const Q=`
 <details id="panel">
   <summary title="Drag to move · click to fold">Settings</summary>
   <div class="pbody">
