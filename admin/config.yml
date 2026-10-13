@@ -1,0 +1,148 @@
+# yaml-language-server: $schema=https://unpkg.com/@sveltia/cms/schema/sveltia-cms.json
+# Admin for adriendenispasquier.com (Sveltia CMS). Open /admin/ and sign in with a GitHub token
+# (fine-grained, this repository only, Contents: read and write). Saving commits to main; the site rebuilds itself.
+
+backend:
+  name: github
+  repo: adriendenispasquier-del/adriendenispasquier.com
+  branch: main
+
+site_url: https://www.adriendenispasquier.com
+
+
+# Uploads go to the site itself (public/uploads, served at /uploads/…).
+media_folder: public/uploads
+public_folder: /uploads
+
+# Cloudinary: to upload to and pick from your Cloudinary library instead, add your API key below and remove the #s.
+# (Cloudinary → Settings → API Keys. The key is public; never put the API secret here.)
+# media_libraries:
+#   cloudinary:
+#     config:
+#       cloud_name: df2kod03a
+#       api_key: "YOUR_API_KEY"
+
+collections:
+  - name: projects
+    label: Projects
+    label_singular: Project
+    description: One entry per project. Its file name becomes its address, e.g. fat-cat → /work/fat-cat/.
+    folder: content/projects
+    format: json
+    create: true
+    delete: true
+    identifier_field: title
+    summary: "{{order}} · {{title}} — {{type}}"
+    sortable_fields: [order, title, type]
+    preview_path: /work/{{slug}}/
+    fields:
+      - { name: title, label: Title, widget: string }
+      - name: type
+        label: Type
+        widget: string
+        hint: Shown next to the name in the Work list, e.g. Brand Identity, Photography.
+      - name: order
+        label: Position in the list
+        widget: number
+        value_type: int
+        default: 99
+        hint: Smaller numbers come first.
+      - name: services
+        label: Services
+        widget: list
+        hint: One per line. Shown under the title.
+      - name: text
+        label: Text
+        widget: text
+        hint: Separate paragraphs with an empty line.
+      - name: credits
+        label: Credits
+        widget: list
+        required: false
+        collapsed: auto
+        summary: "{{label}}: {{value}}"
+        fields:
+          - { name: label, label: Label, widget: string, hint: "e.g. Featuring, Creative direction" }
+          - { name: value, label: Names, widget: string }
+      - name: media
+        label: Pictures and videos
+        widget: list
+        hint: In page order; drag to reorder. The first one is the cover unless one is set below.
+        field: { name: item, label: Picture or video, widget: file }
+      - { name: cover, label: Cover (optional), widget: file, required: false, hint: Picture for the Work page and link previews. }
+      - { name: draft, label: Hidden, widget: boolean, required: false, default: false, hint: Hidden projects are not on the site. }
+
+  - name: site
+    label: Site
+    files:
+      - name: about
+        label: About & site texts
+        file: content/site.json
+        fields:
+          - { name: name, label: Name, widget: string }
+          - { name: description, label: Description, widget: text, hint: For search engines and link previews. }
+          - name: about
+            label: About page
+            widget: object
+            fields:
+              - { name: text, label: Text, widget: text, hint: Separate paragraphs with an empty line. }
+              - { name: practice, label: Practice, widget: list, hint: One per line. }
+              - name: contact
+                label: Contact
+                widget: list
+                summary: "{{label}}"
+                fields:
+                  - { name: label, label: Label, widget: string, hint: "e.g. Email, Instagram" }
+                  - { name: url, label: Link, widget: string, required: false, hint: "mailto:you@example.com or https://…" }
+              - { name: portrait, label: Portrait, widget: image, required: false }
+
+      - name: look
+        label: Look (colours, layout, dots)
+        file: content/settings.json
+        fields:
+          - name: colors
+            label: Colours
+            widget: object
+            hint: Easier to adjust live on the site with ?tune, then copy the values here.
+            fields:
+              - name: default
+                label: Default
+                widget: object
+                fields:
+                  - { name: bg, label: Background, widget: color }
+                  - { name: ink, label: Text & dots, widget: color }
+              - name: pages
+                label: Pages with their own colours
+                widget: list
+                required: false
+                summary: "{{page}}"
+                fields:
+                  - { name: page, label: Page, widget: string, hint: "Address: / (Work), /about/, /work/fat-cat/ …" }
+                  - { name: bg, label: Background, widget: color }
+                  - { name: ink, label: Text & dots, widget: color }
+          - name: layout
+            label: Layout — desktop
+            widget: object
+            hint: "In % of the window width. Text + pictures + film = 100."
+            fields:
+              - { name: gap, label: Gaps, widget: number, value_type: float, step: 0.1 }
+              - { name: t, label: Text, widget: number, value_type: float, step: 0.1 }
+              - { name: p, label: Pictures, widget: number, value_type: float, step: 0.1 }
+              - { name: f, label: Film, widget: number, value_type: float, step: 0.1 }
+          - name: layoutPhone
+            label: Layout — phone
+            widget: object
+            hint: "In % of the screen width. Main + film = 100."
+            fields:
+              - { name: gap, label: Gaps, widget: number, value_type: float, step: 0.1 }
+              - { name: m, label: Main column, widget: number, value_type: float, step: 0.1 }
+              - { name: f, label: Film, widget: number, value_type: float, step: 0.1 }
+          - name: dots
+            label: Dots
+            widget: object
+            fields:
+              - { name: shape, label: Shape, widget: select, options: [round, square] }
+              - { name: dotSize, label: Dot size, widget: number, value_type: float, step: 0.05 }
+              - { name: fill, label: Fill, widget: number, value_type: float, step: 0.01 }
+              - { name: buzz, label: Buzz, widget: number, value_type: float, step: 0.05 }
+              - { name: real, label: Body text turns into real type, widget: boolean }
