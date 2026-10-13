@@ -14,7 +14,7 @@
     },
     {
       "label": "With",
-      "value": "Avizia Partners"
+      "value": "Aviza Partners"
     }
   ],
   "media": [
@@ -32,5 +32,7 @@
     "Image_12_xfhvwo",
     "Image_13_kcwzxk",
     "Image_14_gedhqe"
-  ]
+  ],
+  "cover": "",
+  "draft": false
 }
