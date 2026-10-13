@@ -4,13 +4,29 @@
       "bg": "#ffffff",
       "ink": "#111111"
     },
-    "pages": []
+    "pages": [
+      {
+        "page": "/work/cyberleaders/",
+        "bg": "#000000",
+        "ink": "#9bb734"
+      },
+      {
+        "page": "/work/archipel-berlin/",
+        "bg": "#f4eee4",
+        "ink": "#111111"
+      },
+      {
+        "page": "/about/",
+        "bg": "#a3c5c8",
+        "ink": "#731b11"
+      }
+    ]
   },
   "layout": {
-    "gap": 3.4,
-    "t": 38,
-    "p": 53.6,
-    "f": 8.4
+    "gap": 1.9,
+    "t": 34.5,
+    "p": 57.78,
+    "f": 7.72
   },
   "layoutPhone": {
     "gap": 4.3,
@@ -19,9 +35,9 @@
   },
   "dots": {
     "shape": "round",
-    "dotSize": 0.7,
-    "fill": 0.48,
-    "buzz": 1.2,
+    "dotSize": 0.3,
+    "fill": 0.63,
+    "buzz": 0.35,
     "real": true
   }
 }
