@@ -5,7 +5,7 @@ Portfolio. Plain TypeScript + Vite, no framework. Deployed to GitHub Pages on ev
 ```bash
 npm install
 npm run dev        # http://localhost:5175 (see .claude/launch.json) or the port Vite prints
-npm run build      # → dist/ (also writes 404.html and sitemap.xml)
+npm run build      # → dist/: one HTML page per address, 404.html and sitemap.xml
 npm run typecheck
 ```
 
@@ -13,11 +13,12 @@ npm run typecheck
 
 Everything editable lives in `content/`:
 
-- `content/projects/<slug>.json` — one file per project; the file name is its address (`/work/<slug>`).
+- `content/projects/<slug>.json` — one file per project; the file name is its address (`/work/<slug>/`).
   - `title`, `type` (shown in the Work list), `order` (position in the list), `services`, `text`
     (paragraphs separated by a blank line), `credits` (`label` / `value`), `media`, optional `cover`, `draft`.
   - `media`: Cloudinary public ids (`v1774535107/Name_abc.jpg`), full `res.cloudinary.com` URLs,
-    or `video:<id>` for videos. Order = order on the page. The first one is the cover unless `cover` is set.
+    `video:<id>` for videos, or files in the site (`/uploads/name.jpg`). Order = order on the page.
+    The first one is the cover (Work and link previews) unless `cover` is set.
 - `content/site.json` — name, description, About text, practice, contact links, portrait.
 - `content/settings.json` — the look: colours (default and per page), desktop and phone layout, dots.
 
@@ -30,7 +31,10 @@ only in that browser, and changes apply live. **Copy settings** puts the JSON on
 ## Code
 
 - `src/main.ts` — page changes, links, addresses (old `#/...` links are redirected).
-- `src/content.ts` — reads `content/`, builds each page's text column, picture URLs.
+- `src/pages.ts` — each address's text column, pictures, title, description and preview picture. Also used
+  at build time (`vite.config.ts`) to write a real HTML page per address for search engines and shared links.
+- `src/media.ts` — picture and video URLs (Cloudinary).
+- `src/content.ts` — reads `content/` in the browser.
 - `src/dots.ts` — the dots: sampling text into dots, pulling magnets off and setting new ones, drawing (WebGL).
 - `src/gallery.ts` — pictures, film, linked scrolling, the Work carousel, full-screen view.
 - `src/state.ts` — shared elements, settings, colours and layout.

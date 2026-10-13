@@ -1,5 +1,6 @@
 import "./styles.css";
-import { buildPage, legacyPath, type Page } from "./content";
+import { buildPage, legacyPath, canonical, type Page } from "./content";
+import { ORIGIN } from "./pages";
 import { dom, state, loadTuning, applyColors, applyLayout } from "./state";
 import * as dots from "./dots";
 import { renderMedia, resetScroll, layoutFilm, sync, main, closeLightbox, centreList } from "./gallery";
@@ -19,7 +20,8 @@ if (state.tuning) loadTuning();
 applyLayout();
 
 // Old addresses (#/photography/fat-cat …) → new ones.
-if (location.hash.startsWith("#/")) history.replaceState(null, "", legacyPath(location.hash) || "/");
+if (location.hash.startsWith("#/")) history.replaceState(null, "", legacyPath(location.hash));
+else if (canonical(location.pathname) !== location.pathname) history.replaceState(null, "", canonical(location.pathname) + location.search);
 
 let busy = 0;
 async function go(path: string) {
@@ -51,7 +53,7 @@ async function go(path: string) {
 function setMeta(page: Page) {
   document.title = page.title;
   document.querySelector('meta[name="description"]')?.setAttribute("content", page.description);
-  document.querySelector('link[rel="canonical"]')?.setAttribute("href", "https://www.adriendenispasquier.com" + page.path);
+  document.querySelector('link[rel="canonical"]')?.setAttribute("href", ORIGIN + page.path);
 }
 
 // Internal links change page without reloading.
@@ -61,7 +63,8 @@ document.addEventListener("click", e => {
   const url = new URL(a.href, location.href);
   if (url.origin !== location.origin) return;
   e.preventDefault();
-  if (url.pathname !== state.current) { history.pushState(null, "", url.pathname); go(url.pathname); }
+  const path = canonical(url.pathname);
+  if (path !== state.current) { history.pushState(null, "", path); go(path); }
 });
 addEventListener("popstate", () => go(location.pathname));
 export const replay = () => go(state.current ?? "/");

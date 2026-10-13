@@ -62,7 +62,7 @@ const HTML = `
 export function mount() {
   document.body.insertAdjacentHTML("beforeend", HTML);
   const inp = (id: string) => $<HTMLInputElement>(id);
-  const pageName = (r: string) => r === "/" ? "Work" : r === "/about" ? "About" : PROJECTS.find(p => "/work/" + p.slug === r)?.title || r;
+  const pageName = (r: string) => r === "/" ? "Work" : r === "/about/" ? "About" : PROJECTS.find(p => `/work/${p.slug}/` === r)?.title || r;
   setOnStat(n => { $("stat").textContent = `${n.toLocaleString()} dots`; });
 
   // Colors: every page (Work, About, each project) can have its own pair; pages without one use the default.
