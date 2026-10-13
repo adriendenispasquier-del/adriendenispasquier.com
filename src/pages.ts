@@ -19,7 +19,7 @@ export interface Site {
   description: string;
   about: { text: string; practice: string[]; contact: { label: string; url: string }[]; portrait: string };
 }
-export interface Item { m: Media | null; href?: string; cap?: string; ph?: string }
+export interface Item { m: Media | null; href?: string; cap?: string; ph?: string; alts?: Media[] }   // alts: pictures shown in turn on Work
 export interface Page {
   path: string;          // canonical address, with a trailing slash ("/", "/about/", "/work/fat-cat/")
   title: string;
@@ -100,7 +100,7 @@ export function makePages(PROJECTS: Project[], SITE: Site) {
         <ul class="plist" id="PL">${Array.from({ length: LIST_COPIES }, (_, c) => PROJECTS.map((p, i) =>
           `<li data-c="${c}"><a href="${projectPath(p)}" data-p data-i="${i}"><span>${esc(p.title)}</span><span>${esc(p.type)}</span></a></li>`).join("")).join("")}</ul>
       </div>`,
-      items: PROJECTS.map(p => ({ m: coverOf(p), href: projectPath(p), cap: p.title })),
+      items: PROJECTS.map(p => ({ m: coverOf(p), href: projectPath(p), cap: p.title, alts: [...new Set([coverOf(p), ...p.media])] })),
     };
   }
 

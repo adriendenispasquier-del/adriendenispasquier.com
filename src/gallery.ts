@@ -30,17 +30,40 @@ const mid = (e: HTMLElement) => e.offsetTop + e.offsetHeight / 2;
 const inout = (u: number) => u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
 const kids = () => GT.children as HTMLCollectionOf<HTMLElement>;
 
-// Carousel: the pictures are rendered five times and the position is kept in the middle copy, so there is no
-// start and no end, and the film is always filled from top to bottom.
+// Carousel (Work): one "round" is one picture of every project, in list order. Each round shows the next picture
+// of each project (cover first). The strip grows as you scroll and rounds far behind are removed, so there is no
+// start and no end, and the film (which mirrors it) is always filled from top to bottom.
 let loop = false, nItems = 0, untouched = true;
-const COPIES = 5;
-export const centreFirst = () => { const it = kids()[2 * nItems]; if (it) setG(mid(it) - viewH() / 2); };
-const cycleLen = () => loop && kids()[nItems] ? kids()[nItems].offsetTop - kids()[0].offsetTop : 0;
-function wrapG() {
-  const C = cycleLen(); if (C <= 0) return false;
-  if (gpos() < C * 1.5) { setG(gpos() + C); return true; }
-  if (gpos() >= C * 2.5) { setG(gpos() - C); return true; }
-  return false;
+let gFirst = 0, gLast = -1;          // positions of the first and last rendered pictures (0 = first project's cover)
+const MAX_ROUNDS = 7;
+const posOf = (e: Element) => +(e as HTMLElement).dataset.g!;
+export const centreFirst = () => { const it = kids()[-gFirst]; if (it) setG(mid(it) - viewH() / 2); };
+
+/** Keep the element `ref` where it is on screen while the strip changes above it. */
+function keep(ref: HTMLElement, change: () => void) {
+  const el = main(), rel = ref.offsetTop - el.scrollTop;
+  change();
+  el.scrollTop = ref.offsetTop - rel;
+}
+/** Add rounds ahead of the view, drop rounds far behind. Returns true if the strip changed above the view. */
+let extending = false;
+function extend() {
+  if (!loop || anim || extending || !kids().length) return false;
+  extending = true;
+  try { return grow(); } finally { extending = false; }
+}
+function grow() {
+  const view = viewH(), reach = Math.max(view * 1.5, framePad / fscale() + view);
+  const last = kids()[kids().length - 1];
+  let moved = false;
+  if (gpos() < reach) { keep(kids()[0], () => addRound(gFirst - nItems, true)); moved = true; }
+  if (last.offsetTop + last.offsetHeight - (gpos() + view) < reach) addRound(gLast + 1, false);
+  while (kids().length > MAX_ROUNDS * nItems) {
+    const top = gpos(), end = kids()[kids().length - 1];
+    const below = end.offsetTop + end.offsetHeight - (top + view);
+    if (top > below) { keep(kids()[nItems], () => dropRound(true)); moved = true; } else dropRound(false);
+  }
+  return moved;
 }
 
 let framePad = 0;   // distance from the film's top edge to the frame
@@ -49,8 +72,8 @@ export function sync(src: HTMLElement) {
     // The film mirrors the pictures exactly; the picture at the top of the view sits at the top of the frame.
     const s = fscale();
     if (src === F) setG((F.scrollTop + framePad) / s);
-    const wrapped = !anim && wrapG();
-    if (src !== F || wrapped) F.scrollTop = gpos() * s - framePad;
+    const moved = extend();
+    if (src !== F || moved) F.scrollTop = gpos() * s - framePad;
   } else if (state.phone) {
     if (src === F) setG(F.scrollTop / fscale());
     else F.scrollTop = gpos() * fscale();
@@ -164,43 +187,67 @@ export function centreList() {
 // Picture proportions are remembered, so a page seen before lays out at the right size straight away.
 const RATIO = new Map<string, string>();
 let pageItems: Item[] = [];
+
+/** The picture at position g: on Work, project g mod n, its (g div n)-th picture; elsewhere item g. */
+function itemAt(g: number): Item & { i: number } {
+  if (!loop) return { ...pageItems[g], i: g };
+  const n = nItems, p = ((g % n) + n) % n, r = Math.floor(g / n), it = pageItems[p];
+  const alts = it.alts?.length ? it.alts : [it.m!];
+  return { ...it, m: alts[((r % alts.length) + alts.length) % alts.length], i: p };
+}
+function stripHtml(g: number) {
+  const it = itemAt(g), rr = (it.m && RATIO.get(it.m)) || (it.ph ? "4 / 5" : ""), st = rr ? ` style="aspect-ratio:${rr}"` : "";
+  const data = ` data-i="${it.i}" data-g="${g}"${it.m ? ` data-m="${it.m.replace(/"/g, "&quot;")}"` : ""}`;
+  const inner = !it.m ? `<span class="ph">${it.ph || ""}</span>`
+    : isVideo(it.m) ? `<video src="${big(it.m)}" autoplay muted loop playsinline preload="metadata"></video>`
+    : `<img src="${big(it.m)}" alt="${it.cap || ""}" decoding="async"${fallback(it.m)}>`;
+  const cap = it.cap ? `<span class="cap">${it.cap}</span>` : "";
+  const gi = it.href ? `<a class="gi"${data} href="${it.href}"${st}>${inner}${cap}</a>` : `<div class="gi"${data}${st}>${inner}</div>`;
+  const fi = `<button class="fi"${data} type="button" aria-label="Go to picture"${st}>${it.m && thumb(it.m) ? `<img src="${thumb(it.m)}" alt="" decoding="async"${fallback(it.m)}>` : ""}</button>`;
+  return [gi, fi];
+}
+/** Insert pictures g0 … g0+count-1 at the start or end of both strips. */
+function insert(g0: number, count: number, atStart: boolean) {
+  const parts = Array.from({ length: count }, (_, k) => stripHtml(g0 + k));
+  const pos = atStart ? "afterbegin" : "beforeend";
+  GT.insertAdjacentHTML(pos, parts.map(p => p[0]).join(""));
+  FT.insertAdjacentHTML(pos, parts.map(p => p[1]).join(""));
+  const sel = (root: HTMLElement) => [...root.children].filter(e => { const g = posOf(e); return g >= g0 && g < g0 + count; });
+  for (const e of [...sel(GT), ...sel(FT)]) watch(e.querySelector("img, video"));
+  if (atStart) gFirst = g0; else gLast = g0 + count - 1;
+}
+const addRound = (g0: number, atStart: boolean) => insert(g0, nItems, atStart);
+function dropRound(atStart: boolean) {
+  for (const root of [GT, FT]) for (let k = 0; k < nItems; k++) (atStart ? root.firstElementChild : root.lastElementChild)?.remove();
+  if (atStart) gFirst += nItems; else gLast -= nItems;
+}
+
+// Both strips (and every copy) take a picture's real proportions as soon as any version knows them.
+function setRatio(m: string | undefined, w: number, h: number) {
+  if (!w || !h || !m || RATIO.get(m) === `${w} / ${h}`) return;
+  RATIO.set(m, `${w} / ${h}`);
+  for (const e of [...GT.children, ...FT.children] as HTMLElement[]) if (e.dataset.m === m) e.style.aspectRatio = `${w} / ${h}`;
+  layoutFilm();
+  if (loop && untouched) centreFirst();
+  sync(driver === F ? F : main());
+}
+function watch(m: HTMLImageElement | HTMLVideoElement | null) {
+  if (!m) return;
+  const done = () => {
+    m.classList.add("in"); m.parentElement!.classList.add("ld");
+    setRatio(m.parentElement!.dataset.m, (m as HTMLImageElement).naturalWidth || (m as HTMLVideoElement).videoWidth, (m as HTMLImageElement).naturalHeight || (m as HTMLVideoElement).videoHeight);
+  };
+  if (m.tagName === "VIDEO") m.addEventListener("loadeddata", done, { once: true });
+  else if ((m as HTMLImageElement).complete && (m as HTMLImageElement).naturalWidth) done(); else m.addEventListener("load", done, { once: true });
+}
+
 export function renderMedia(items: Item[], isLoop: boolean, zoom: boolean) {
   loop = isLoop; nItems = items.length; pageItems = items;
-  const ratio = (it: Item) => (it.m && RATIO.get(it.m)) || (it.ph ? "4 / 5" : "");
-  const gi = (it: Item, i: number) => {
-    const rr = ratio(it), st = rr ? ` style="aspect-ratio:${rr}"` : "";
-    const inner = !it.m ? `<span class="ph">${it.ph || ""}</span>`
-      : isVideo(it.m) ? `<video src="${big(it.m)}" autoplay muted loop playsinline preload="metadata"></video>`
-      : `<img src="${big(it.m)}" alt="${it.cap || ""}" decoding="async"${fallback(it.m)}>`;
-    const cap = it.cap ? `<span class="cap">${it.cap}</span>` : "";
-    return it.href ? `<a class="gi" data-i="${i}" href="${it.href}"${st}>${inner}${cap}</a>` : `<div class="gi" data-i="${i}"${st}>${inner}</div>`;
-  };
-  const fi = (it: Item, i: number) => `<button class="fi" data-i="${i}" type="button" aria-label="Go to picture ${i + 1}"${ratio(it) ? ` style="aspect-ratio:${ratio(it)}"` : ""}>${it.m ? `<img src="${thumb(it.m)}" alt="" decoding="async"${fallback(it.m)}>` : ""}</button>`;
-  let g = "", f = "";
-  for (let c = 0; c < (loop ? COPIES : 1); c++) { g += items.map(gi).join(""); f += items.map(fi).join(""); }
-  GT.innerHTML = g; FT.innerHTML = f;
+  GT.innerHTML = FT.innerHTML = "";
   G.classList.toggle("zoomable", zoom);
-  // Both strips (and every copy) take a picture's real proportions as soon as any version knows them.
-  const setRatio = (i: number, w: number, h: number) => {
-    const m = items[i]?.m;
-    if (!w || !h || !m || RATIO.get(m) === `${w} / ${h}`) return;
-    RATIO.set(m, `${w} / ${h}`);
-    document.querySelectorAll<HTMLElement>(`#GT [data-i="${i}"], #FT [data-i="${i}"]`).forEach(e => { e.style.aspectRatio = `${w} / ${h}`; });
-    layoutFilm();
-    if (loop && untouched) centreFirst();
-    sync(driver === F ? F : main());
-  };
-  const watch = (m: HTMLImageElement | HTMLVideoElement | null, i: number) => {
-    if (!m) return;
-    const done = () => {
-      m.classList.add("in"); m.parentElement!.classList.add("ld");
-      setRatio(i, (m as HTMLImageElement).naturalWidth || (m as HTMLVideoElement).videoWidth, (m as HTMLImageElement).naturalHeight || (m as HTMLVideoElement).videoHeight);
-    };
-    if (m.tagName === "VIDEO") m.addEventListener("loadeddata", done, { once: true });
-    else if ((m as HTMLImageElement).complete && (m as HTMLImageElement).naturalWidth) done(); else m.addEventListener("load", done, { once: true });
-  };
-  [...kids()].forEach(e => watch(e.querySelector("img, video"), +e.dataset.i!));
-  [...FT.children].forEach(e => watch(e.querySelector("img"), +(e as HTMLElement).dataset.i!));
+  // Work starts with two rounds before and two after the first round; other pages show their pictures once.
+  if (loop) { gFirst = 0; gLast = -1; insert(-2 * nItems, 5 * nItems, false); gFirst = -2 * nItems; }
+  else { gFirst = 0; gLast = -1; insert(0, items.length, false); }
 }
 
 /** After a new page's pictures are in: reset positions and link everything. */
