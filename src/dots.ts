@@ -100,6 +100,8 @@ function sampleElement(el: HTMLElement, key: string, sizeMul: number, buzz: bool
     if ("letterSpacing" in octx) (octx as any).letterSpacing = cs.letterSpacing === "normal" ? "0px" : cs.letterSpacing;
     octx.textBaseline = "alphabetic";
     const upper = cs.textTransform === "uppercase";
+    const stroke = parseFloat((cs as any).webkitTextStrokeWidth) || 0;   // the fine outline that thickens Degular Mono
+    octx.strokeStyle = "#000";
     const re = /\S+/g; let m: RegExpExecArray | null;
     while ((m = re.exec(n.data))) {
       range.setStart(n, m.index); range.setEnd(n, m.index + m[0].length);
@@ -109,16 +111,18 @@ function sampleElement(el: HTMLElement, key: string, sizeMul: number, buzz: bool
       const tm = octx.measureText(word);
       const asc = tm.fontBoundingBoxAscent ?? parseFloat(cs.fontSize) * .8;
       const desc = tm.fontBoundingBoxDescent ?? parseFloat(cs.fontSize) * .2;
-      octx.fillText(word, r.left - bx, r.top + (r.height - (asc + desc)) / 2 + asc - by);
+      const ty = r.top + (r.height - (asc + desc)) / 2 + asc - by;
+      octx.fillText(word, r.left - bx, ty);
+      if (stroke > 0) { octx.lineWidth = stroke; octx.strokeText(word, r.left - bx, ty); }
     }
   }
   // Rules: any border becomes a dotted line.
   for (const e of [el, ...el.querySelectorAll<HTMLElement>("*")]) {
     const cs = getComputedStyle(e), r = e.getBoundingClientRect();
     const t = parseFloat(cs.borderTopWidth), b = parseFloat(cs.borderBottomWidth), l = parseFloat(cs.borderLeftWidth);
-    if (t > 0) octx.fillRect(r.left - bx, r.top - by, r.width, Math.max(t, 1.4));
-    if (b > 0) octx.fillRect(r.left - bx, r.bottom - by - Math.max(b, 1.4), r.width, Math.max(b, 1.4));
-    if (l > 0) octx.fillRect(r.left - bx, r.top - by, Math.max(l, 1.4), r.height);
+    if (t > 0) octx.fillRect(r.left - bx, r.top - by, r.width, Math.max(t, 1));
+    if (b > 0) octx.fillRect(r.left - bx, r.bottom - by - Math.max(b, 1), r.width, Math.max(b, 1));
+    if (l > 0) octx.fillRect(r.left - bx, r.top - by, Math.max(l, 1), r.height);
   }
   // Grid-sample the raster. Bigger type gets a coarser grid; "dot size" scales it.
   const step = Math.max(Math.min(Math.max(fsMain * .072, 1.45), 4.6) * sizeMul, .7);
