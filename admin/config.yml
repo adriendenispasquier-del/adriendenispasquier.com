@@ -7,7 +7,7 @@ backend:
   repo: adriendenispasquier-del/adriendenispasquier.com
   branch: main
 
-site_url: https://www.adriendenispasquier.com
+site_url: https://adriendenispasquier.com
 
 
 # Uploads go to the site itself (public/uploads, served at /uploads/…).

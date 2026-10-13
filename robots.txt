@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 
-Sitemap: https://www.adriendenispasquier.com/sitemap.xml
+Sitemap: https://adriendenispasquier.com/sitemap.xml
