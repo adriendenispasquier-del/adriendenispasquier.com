@@ -1,9 +1,27 @@
 {
   "colors": {
-    "default": { "bg": "#ffffff", "ink": "#111111" },
-    "pages": {}
+    "default": {
+      "bg": "#ffffff",
+      "ink": "#111111"
+    },
+    "pages": []
   },
-  "layout": { "gap": 3.4, "t": 38, "p": 53.6, "f": 8.4 },
-  "layoutPhone": { "gap": 4.3, "m": 85, "f": 15 },
-  "dots": { "shape": "round", "dotSize": 0.7, "fill": 0.48, "buzz": 1.2, "real": true }
+  "layout": {
+    "gap": 3.4,
+    "t": 38,
+    "p": 53.6,
+    "f": 8.4
+  },
+  "layoutPhone": {
+    "gap": 4.3,
+    "m": 85,
+    "f": 15
+  },
+  "dots": {
+    "shape": "round",
+    "dotSize": 0.7,
+    "fill": 0.48,
+    "buzz": 1.2,
+    "real": true
+  }
 }

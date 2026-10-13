@@ -1,7 +1,7 @@
 // Tuning panel (only loaded with ?tune). Changes apply live and are kept in this browser.
 // "Copy settings" gives the JSON to paste into content/settings.json to publish them.
 import "./panel.css";
-import { $, state, S, DEFAULTS, save, forgetTuning, applyColors, colorsFor, onColors } from "./state";
+import { $, state, S, DEFAULTS, save, forgetTuning, applyColors, colorsFor, onColors, toFile } from "./state";
 import { PROJECTS } from "./content";
 import { setOnStat, showDots, realNow } from "./dots";
 import { replay, resample, relayout } from "./main";
@@ -53,7 +53,7 @@ const HTML = `
     <button class="btn" id="replay" type="button">Replay transition</button>
     <h4>Publish</h4>
     <button class="btn" id="copy" type="button">Copy settings</button>
-    <div class="stat" id="copynote">Paste into content/settings.json and commit to make them live.</div>
+    <div class="stat" id="copynote">Paste into Look in /admin (or content/settings.json) to make them live.</div>
     <button class="btn" id="discard" type="button">Discard my changes</button>
     <div class="stat" id="stat"></div>
   </div>
@@ -134,10 +134,10 @@ export function mount() {
   $("replay").addEventListener("click", replay);
 
   // Publish
+  const settingsJson = () => JSON.stringify(toFile(S), (_, v) => typeof v === "number" ? Math.round(v * 100) / 100 : v, 2) + "\n";
   $("copy").addEventListener("click", async () => {
-    const { panelPos, ...published } = S;
-    const json = JSON.stringify(published, (_, v) => typeof v === "number" ? Math.round(v * 100) / 100 : v, 2) + "\n";
-    try { await navigator.clipboard.writeText(json); $("copynote").textContent = "Copied. Paste into content/settings.json and commit to make it live."; }
+    const json = settingsJson();
+    try { await navigator.clipboard.writeText(json); $("copynote").textContent = "Copied. Paste into content/settings.json, or set the same values in /admin → Look."; }
     catch { console.log(json); $("copynote").textContent = "Couldn't copy: the settings are in the browser console."; }
   });
   $("discard").addEventListener("click", () => { if (confirm("Discard your tuning and go back to the published settings?")) { forgetTuning(); location.reload(); } });

@@ -1,6 +1,6 @@
 // Shared page elements, live state and settings.
 import defaults from "../content/settings.json";
-import type { Page } from "./content";
+import { canonical, type Page } from "./pages";
 
 export const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -23,9 +23,25 @@ export const state = {
 
 // ───────── Settings ─────────
 type Pair = { bg: string; ink: string };
-export type Settings = typeof defaults & { colors: { default: Pair; pages: Record<string, Pair> }; panelPos?: { l: number; t: number } };
+export interface Settings {
+  colors: { default: Pair; pages: Record<string, Pair> };   // pages: address → colours (a list in the file)
+  layout: { gap: number; t: number; p: number; f: number };
+  layoutPhone: { gap: number; m: number; f: number };
+  dots: { shape: string; dotSize: number; fill: number; buzz: number; real: boolean };
+  panelPos?: { l: number; t: number };
+}
+type PageColors = { page: string; bg: string; ink: string }[];
 const clone = <T>(o: T): T => JSON.parse(JSON.stringify(o));
-export const DEFAULTS = clone(defaults) as Settings;
+const fromFile = (f: typeof defaults): Settings => ({
+  ...clone(f),
+  colors: { default: { ...f.colors.default }, pages: Object.fromEntries((f.colors.pages as PageColors).map(c => [canonical(c.page), { bg: c.bg, ink: c.ink }])) },
+});
+/** The settings as stored in content/settings.json (per-page colours as a list, for the admin). */
+export const toFile = (s: Settings) => ({
+  colors: { default: s.colors.default, pages: Object.entries(s.colors.pages).map(([page, c]) => ({ page, ...c })) },
+  layout: s.layout, layoutPhone: s.layoutPhone, dots: s.dots,
+});
+export const DEFAULTS = fromFile(defaults);
 export const S: Settings = clone(DEFAULTS);
 
 const STORE = "adp-tuning";
