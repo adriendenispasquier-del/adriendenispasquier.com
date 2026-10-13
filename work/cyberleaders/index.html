@@ -11,7 +11,7 @@
   <!-- Fonts: Adobe Fonts kit (Redaction, Degular Mono) -->
   <link rel="preconnect" href="https://use.typekit.net" crossorigin>
   <link rel="stylesheet" href="https://use.typekit.net/nva7btn.css">
-  <script type="module" crossorigin src="/assets/index-B6CsaTvj.js"></script>
+  <script type="module" crossorigin src="/assets/index-DLw9I_sh.js"></script>
   <link rel="stylesheet" crossorigin href="/assets/index-DD1J5BGp.css">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Adrien Denis-Pasquier">
@@ -42,11 +42,12 @@
         </div></div></div>
     <div class="vrule" data-p data-k="vrule"></div>
     <div class="gal" id="G"><div class="gtrack" id="GT"></div></div>
-    <div class="fwrap">
-      <div class="film" id="F"><div class="ftrack" id="FT"></div></div>
-      <div class="frame" id="frame"></div>
-    </div>
   </main>
+  <!-- The film stays outside the scrolling main column: iOS Safari clips fixed elements to a scrolling parent. -->
+  <div class="fwrap">
+    <div class="film" id="F"><div class="ftrack" id="FT"></div></div>
+    <div class="frame" id="frame"></div>
+  </div>
 
   <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Picture">
     <button class="lbx" type="button" aria-label="Close"></button>
