@@ -1,8 +1,8 @@
 {
   "colors": {
     "default": {
-      "bg": "#ffffff",
-      "ink": "#111111"
+      "bg": "#fbfcf8",
+      "ink": "#000000"
     },
     "pages": [
       {
@@ -19,11 +19,6 @@
         "page": "/about/",
         "bg": "#e1cdb2",
         "ink": "#6f1641"
-      },
-      {
-        "page": "/work/archipel-doodles/",
-        "bg": "#fffef0",
-        "ink": "#111111"
       }
     ]
   },
