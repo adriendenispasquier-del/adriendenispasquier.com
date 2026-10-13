@@ -33,7 +33,7 @@ export interface Page {
 }
 
 export const LIST_COPIES = 5;
-export const ORIGIN = "https://www.adriendenispasquier.com";
+export const ORIGIN = "https://adriendenispasquier.com";
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const paras = (t: string, attrs = "") => t.split(/\n\s*\n/).map(s => s.trim()).filter(Boolean).map(s => `<p class="mono" data-p${attrs}>${esc(s)}</p>`).join("");
 const firstSentence = (t: string) => (t.split(/(?<=[.!?])\s/)[0] || "").slice(0, 160);
