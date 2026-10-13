@@ -37,6 +37,8 @@ export const ORIGIN = "https://www.adriendenispasquier.com";
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const paras = (t: string, attrs = "") => t.split(/\n\s*\n/).map(s => s.trim()).filter(Boolean).map(s => `<p class="mono" data-p${attrs}>${esc(s)}</p>`).join("");
 const firstSentence = (t: string) => (t.split(/(?<=[.!?])\s/)[0] || "").slice(0, 160);
+/** Contact links as typed in the admin: an email address becomes mailto:, "instagram.com/…" gets https://. */
+const linkOf = (u: string) => /^[^\s@/:]+@[^\s@/]+\.[^\s@/]+$/.test(u.trim()) ? `mailto:${u.trim()}` : /^(https?:|mailto:|tel:|\/)/.test(u.trim()) ? u.trim() : `https://${u.trim()}`;
 /** "/work/fat-cat" and "/work/fat-cat/" are the same page. */
 export const canonical = (path: string) => (path.replace(/\/+$/, "") || "") + "/";
 
@@ -72,7 +74,7 @@ export function makePages(PROJECTS: Project[], SITE: Site) {
     }
     if (path === "/about/") {
       const a = SITE.about, portrait = a.portrait ? norm(a.portrait) : null;
-      const contact = a.contact.map(c => c.url ? `<a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.label)}</a>` : `<span>${esc(c.label)}</span>`).join("");
+      const contact = a.contact.map(c => c.url ? `<a href="${esc(linkOf(c.url))}" target="_blank" rel="noopener">${esc(c.label)}</a>` : `<span>${esc(c.label)}</span>`).join("");
       return {
         path, title: `About — ${SITE.name}`, description: firstSentence(a.text) || SITE.description, workAbout: true,
         image: portrait ? share(portrait) : share(coverOf(PROJECTS[0])),

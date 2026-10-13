@@ -13,8 +13,10 @@
       "Creative direction"
     ],
     "contact": [
-      { "label": "Email", "url": "" },
-      { "label": "Instagram", "url": "" }
+      {
+        "label": "Email",
+        "url": "adriendenispasquier@gmail.com"
+      }
     ],
     "portrait": ""
   }
