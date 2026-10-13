@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { prepare, makePages, ORIGIN, type Site } from "./src/pages";
+import { prepare, makePages, ORIGIN, LEGACY, type Site } from "./src/pages";
 
 const root = (...p: string[]) => resolve(__dirname, ...p);
 const json = (f: string) => JSON.parse(readFileSync(f, "utf8"));
@@ -39,6 +39,17 @@ export default defineConfig({
           mkdirSync(out, { recursive: true });
           writeFileSync(resolve(out, "index.html"), html);
           if (page.path === "/") writeFileSync(root("dist/404.html"), html);   // unknown addresses show Work
+        }
+        // Redirect pages at the previous site's addresses (/photography/fat-cat → /work/fat-cat/ …).
+        for (const [old, to] of Object.entries(LEGACY)) {
+          if (old === "about") continue;   // a real page now
+          mkdirSync(root("dist", old), { recursive: true });
+          writeFileSync(root("dist", old, "index.html"), `<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Adrien Denis-Pasquier</title>
+<link rel="canonical" href="${ORIGIN}${to}"><meta name="robots" content="noindex">
+<meta http-equiv="refresh" content="0; url=${to}"><script>location.replace(${JSON.stringify(to)})</script>
+</head><body><a href="${to}">${ORIGIN}${to}</a></body></html>
+`);
         }
         writeFileSync(root("dist/sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

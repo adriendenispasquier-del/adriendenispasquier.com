@@ -106,17 +106,20 @@ export function makePages(PROJECTS: Project[], SITE: Site) {
   return { buildPage, paths };
 }
 
-/** Old addresses (#/brand-design/archipel …) → new ones. */
-export function legacyPath(hash: string): string {
-  const h = hash.replace(/^#\/?/, "");
-  const map: Record<string, string> = {
-    "brand-design/archipel": "/work/archipel-berlin/",
-    "photography/archipel-berlin": "/work/archipel-still-life/",
-    "photography/fat-cat": "/work/fat-cat/",
-    "illustration/archipel": "/work/archipel-doodles/",
-    "illustration/cyberleaders": "/work/cyberleaders/",
-    "illustration/rocket-wine": "/work/rocket-wine/",
-    "about": "/about/",
-  };
-  return map[h] || "/";
-}
+/** Addresses of the previous site → new ones. Used for old #/… links in the browser, and at build time to
+ *  write a redirect page at each old address (they were in the old sitemap, so search engines know them). */
+export const LEGACY: Record<string, string> = {
+  "brand-design": "/",
+  "brand-design/archipel": "/work/archipel-berlin/",
+  "brand-identity": "/",
+  "photography": "/",
+  "photography/archipel-berlin": "/work/archipel-still-life/",
+  "photography/fat-cat": "/work/fat-cat/",
+  "illustration": "/",
+  "illustration/archipel": "/work/archipel-doodles/",
+  "illustration/archipel-doodles": "/work/archipel-doodles/",
+  "illustration/cyberleaders": "/work/cyberleaders/",
+  "illustration/rocket-wine": "/work/rocket-wine/",
+  "about": "/about/",
+};
+export const legacyPath = (hash: string) => LEGACY[hash.replace(/^#\/?/, "").replace(/\/+$/, "")] || "/";
