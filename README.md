@@ -38,10 +38,12 @@ on GitHub and the site rebuilds itself (about a minute).
 
 ## Tuning the look
 
-Open the site with `?tune` (e.g. `http://localhost:5175/?tune` or the live site). A settings panel appears,
-only in that browser, and changes apply live. **Copy settings** puts the JSON on the clipboard: paste it into
-`content/settings.json` (or set the same values in /admin → Site → Look) to publish. `?tune=off` hides the
-panel again.
+Open the site with `?tune` (e.g. `https://adriendenispasquier.com/?tune`). A settings panel appears, only in
+that browser, and changes apply live (kept in that browser until published). **Publish for everyone** saves
+them to `content/settings.json` on GitHub and the site rebuilds itself (about a minute); the first time it asks
+for a GitHub fine-grained token for this repository with *Contents: read and write*, kept in that browser
+(**Forget my GitHub token** removes it). **Copy settings** gives the same JSON to paste by hand.
+`?tune=off` hides the panel again.
 
 ## Code
 

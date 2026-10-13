@@ -1,5 +1,6 @@
-// Tuning panel (only loaded with ?tune). Changes apply live and are kept in this browser.
-// "Copy settings" gives the JSON to paste into content/settings.json to publish them.
+// Tuning panel (only loaded with ?tune). Changes apply live and are kept in this browser until published.
+// "Publish" saves them to content/settings.json on GitHub (the site then rebuilds itself, about a minute);
+// "Copy settings" gives the same JSON to paste by hand.
 import "./panel.css";
 import { $, state, S, DEFAULTS, save, forgetTuning, applyColors, colorsFor, onColors, toFile } from "./state";
 import { PROJECTS } from "./content";
@@ -52,9 +53,13 @@ const HTML = `
     <label class="row2"><input id="reveal" type="checkbox"> Show real text underneath</label>
     <button class="btn" id="replay" type="button">Replay transition</button>
     <h4>Publish</h4>
-    <button class="btn" id="copy" type="button">Copy settings</button>
-    <div class="stat" id="copynote">Paste into Look in /admin (or content/settings.json) to make them live.</div>
-    <button class="btn" id="discard" type="button">Discard my changes</button>
+    <button class="btn" id="publish" type="button">Publish for everyone</button>
+    <div class="stat" id="copynote">Saves these settings to the site. Live about a minute later.</div>
+    <div class="seg">
+      <button class="btn" id="copy" type="button">Copy settings</button>
+      <button class="btn" id="discard" type="button">Discard changes</button>
+    </div>
+    <button class="btn" id="signout" type="button" hidden>Forget my GitHub token</button>
     <div class="stat" id="stat"></div>
   </div>
 </details>`;
@@ -135,6 +140,44 @@ export function mount() {
 
   // Publish
   const settingsJson = () => JSON.stringify(toFile(S), (_, v) => typeof v === "number" ? Math.round(v * 100) / 100 : v, 2) + "\n";
+  // Publishing writes content/settings.json through GitHub's API with your token (fine-grained, this repository
+  // only, Contents: read and write — the same kind the admin uses). The token is kept in this browser only.
+  const REPO = "adriendenispasquier-del/adriendenispasquier.com", BRANCH = "main", FILE = "content/settings.json";
+  const TOKEN_KEY = "adp-github-token";
+  const token = {
+    get: () => { try { return localStorage.getItem(TOKEN_KEY); } catch { return null; } },
+    set: (t: string | null) => { try { t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY); } catch { /* ignore */ } },
+  };
+  const showSignout = () => { $("signout").hidden = !token.get(); };
+  showSignout();
+  $("signout").addEventListener("click", () => { token.set(null); showSignout(); $("copynote").textContent = "Token forgotten in this browser."; });
+  $("publish").addEventListener("click", async () => {
+    const note = $("copynote");
+    let t = token.get();
+    if (!t) {
+      t = prompt("Paste your GitHub token (fine-grained, this repository only, Contents: read and write).\nIt is kept only in this browser.")?.trim() || null;
+      if (!t) return;
+    }
+    const api = `https://api.github.com/repos/${REPO}/contents/${FILE}`;
+    const headers = { Authorization: `Bearer ${t}`, Accept: "application/vnd.github+json" };
+    note.textContent = "Publishing…";
+    try {
+      const cur = await fetch(`${api}?ref=${BRANCH}`, { headers });
+      if (cur.status === 401 || cur.status === 403 || cur.status === 404) throw new Error("auth");
+      if (!cur.ok) throw new Error(String(cur.status));
+      const { sha } = await cur.json();
+      const bytes = new TextEncoder().encode(settingsJson());
+      const content = btoa(Array.from(bytes, b => String.fromCharCode(b)).join(""));
+      const res = await fetch(api, { method: "PUT", headers, body: JSON.stringify({ message: "Update the look from the tuning panel", content, sha, branch: BRANCH }) });
+      if (res.status === 401 || res.status === 403) throw new Error("auth");
+      if (!res.ok) throw new Error(String(res.status));
+      token.set(t); showSignout();
+      note.textContent = "Published. The site rebuilds itself: live in about a minute.";
+    } catch (e) {
+      if ((e as Error).message === "auth") { token.set(null); showSignout(); note.textContent = "GitHub refused the token. It needs access to this repository with Contents: read and write."; }
+      else note.textContent = "Couldn't publish (network or GitHub error). Nothing was changed.";
+    }
+  });
   $("copy").addEventListener("click", async () => {
     const json = settingsJson();
     try { await navigator.clipboard.writeText(json); $("copynote").textContent = "Copied. Paste into content/settings.json, or set the same values in /admin → Look."; }
