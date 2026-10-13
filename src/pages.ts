@@ -85,8 +85,7 @@ export function makePages(PROJECTS: Project[], SITE: Site) {
         path, title: `About — ${SITE.name}`, description: firstSentence(a.text) || SITE.description, workAbout: true,
         image: portrait ? share(portrait) : share(coverOf(PROJECTS[0])),
         left: `<div class="labout">
-          <a href="/" class="t-mid" data-p data-k="work">Work</a>
-          <a href="/about/" class="t-big" data-p data-k="about">About</a>
+          <div class="menu"><a href="/" class="t-mid" data-p data-k="work">Work</a><a href="/about/" class="t-big" data-p data-k="about">About</a></div>
           ${paras(a.text, ' style="margin-bottom:1.5em"')}
           <div class="mono credits" data-p><span>Practice</span>${a.practice.map(t => `<span>${inline(t)}</span>`).join("")}</div>
           <div class="mono credits" data-p><span>Contact</span>${contact}</div>
@@ -97,8 +96,7 @@ export function makePages(PROJECTS: Project[], SITE: Site) {
     return {
       path: "/", title: SITE.name, description: SITE.description, workAbout: true, loop: true, image: share(coverOf(PROJECTS[0])),
       left: `<div class="lhome">
-        <a href="/" class="t-big" data-p data-k="work">Work</a>
-        <a href="/about/" class="t-mid" data-p data-k="about">About</a>
+        <div class="menu"><a href="/" class="t-big" data-p data-k="work">Work</a><a href="/about/" class="t-mid" data-p data-k="about">About</a></div>
         <ul class="plist" id="PL">${Array.from({ length: LIST_COPIES }, (_, c) => PROJECTS.map((p, i) =>
           `<li data-c="${c}"><a href="${projectPath(p)}" data-p data-i="${i}"><span>${esc(p.title)}</span><span>${esc(p.type)}</span></a></li>`).join("")).join("")}</ul>
       </div>`,

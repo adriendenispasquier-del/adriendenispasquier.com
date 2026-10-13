@@ -73,6 +73,7 @@ export function resizeCanvas() {
   DPR = Math.min(window.devicePixelRatio || 1, 2);
   W = innerWidth; H = innerHeight;
   cv.width = W * DPR; cv.height = H * DPR;
+  cv.style.width = W + "px"; cv.style.height = H + "px";   // exactly the visible area (CSS 100vh is taller on iPhone)
   if (gl) gl.viewport(0, 0, cv.width, cv.height);
 }
 resizeCanvas();

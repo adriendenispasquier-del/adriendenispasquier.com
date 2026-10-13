@@ -15,8 +15,14 @@ const maxOf = (el: HTMLElement) => Math.max(0, el.scrollHeight - el.clientHeight
 const progressOf = (el: HTMLElement) => { const m = maxOf(el); return m ? el.scrollTop / m : 0; };
 export const main = () => state.phone ? M : G;                           // the element whose scrolling shows the pictures
 const goff = () => state.phone ? G.offsetTop : 0;                        // where the pictures start inside it
-const viewTop = () => state.phone && M.classList.contains("home") ? (document.querySelector(".lcol") as HTMLElement).offsetHeight : 0;   // pinned block, phone Work
-const viewH = () => main().clientHeight - viewTop();                    // height of the visible picture area
+// Phone Work: the menu is pinned at the top and the list at the bottom; the pictures are seen in between.
+const band = () => {
+  if (!state.phone || !M.classList.contains("home")) return null;
+  const mr = M.getBoundingClientRect(), menu = document.querySelector(".menu")!.getBoundingClientRect(), pl = state.PL?.getBoundingClientRect();
+  return { top: menu.bottom - mr.top, bottom: (pl ? pl.top : mr.bottom) - mr.top };
+};
+const viewTop = () => band()?.top ?? 0;                                  // where the visible picture area starts
+const viewH = () => { const b = band(); return b ? b.bottom - b.top : main().clientHeight; };   // its height
 const gpos = () => main().scrollTop - goff() + viewTop();               // picture-strip coordinate at the top of that area
 const setG = (v: number) => { main().scrollTop = v + goff() - viewTop(); };
 const fscale = () => F.clientWidth / G.clientWidth;

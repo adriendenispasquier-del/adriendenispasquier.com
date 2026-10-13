@@ -34,7 +34,7 @@ button { font: inherit; color: inherit; background: none; border: 0; }
 [data-p].real { border-color: var(--ink) !important; }
 body.reveal [data-p], body.reveal [data-p] * { color: rgba(220, 40, 40, .55) !important; }
 
-#c { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 20; }
+#c { position: fixed; left: 0; top: 0; pointer-events: none; z-index: 20; }   /* sized in pixels from the script (100vh is wrong on iPhone) */
 
 /* ── Header: the name spread across the full width, a rule under it, drawn over the pictures ── */
 .hd { position: fixed; top: 0; left: var(--gx); right: var(--gx); height: var(--hh); z-index: 10;
@@ -111,7 +111,7 @@ a.gi:hover .cap { opacity: 1; }
          border: var(--frame-line) solid var(--ink); pointer-events: none; z-index: 6; }
 .out { opacity: 0; }
 
-#M, .fwrap { display: contents; }
+#M, .fwrap, .menu { display: contents; }
 
 /* ── Grid. Open (default): lines between things. Closed: the lines close into cells. None: no lines. ── */
 body.grid-none { --line: 0px; }
@@ -132,17 +132,24 @@ body.grid-closed .vrule { top: var(--hh); bottom: 0; }   /* runs from the header
   #M::-webkit-scrollbar { display: none; }
   .lcol { position: relative; inset: auto; left: auto; width: 100%; }
   .lscroll { height: auto; overflow: visible; padding: 26px 0 30px; }
-  #M.home .lscroll { padding-top: 10px; padding-bottom: 14px; }
+
   .vrule { display: none; }
   .gal { position: relative; inset: auto; left: auto; width: 100%; height: auto; overflow: visible; }
-  .lhome { height: auto; flex-direction: row; flex-wrap: wrap; align-items: baseline; column-gap: 5cqw; }
-  .lhome .t-big, .lhome .t-mid { align-self: baseline; }
-  .t-big { font-size: calc(18cqw * var(--fs-titles)); }
-  .lhome .t-mid { margin-top: 0; font-size: calc(6.6cqw * var(--fs-titles)); }
-  .labout .t-mid { margin-bottom: 4cqw; }
-  .plist { flex: 1 0 100%; height: var(--plist-h, 21vh); overflow: hidden; margin-top: 3cqw; }   /* moves with the pictures, like on desktop */
-  .plist a { border-top: 0; border-bottom: var(--line) solid var(--ink); font-size: calc(clamp(10px, 2.5cqw, 15px) * var(--fs-lists)); }
+  /* Work / About side by side, small, at the top (Work and About pages) */
+  .menu { display: flex; align-items: baseline; column-gap: 5cqw; }
+  .menu .t-big { font-size: calc(12cqw * var(--fs-titles)); margin: 0; }
+  .menu .t-mid { font-size: calc(5.5cqw * var(--fs-titles)); margin: 0; }
+  .labout .menu { margin-bottom: 9cqw; }
+  /* Work: the menu is pinned at the top, the project list at the bottom; the pictures scroll in between */
+  #M.home .lcol { position: fixed; top: 46px; bottom: max(10px, env(safe-area-inset-bottom)); left: var(--gx); width: var(--mw);
+                  z-index: 3; pointer-events: none; }
+  #M.home .lscroll { height: 100%; padding: 0; }
+  .lhome { height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
+  #M.home .menu, #M.home .plist { pointer-events: auto; background: var(--bg); }
+  #M.home .menu { padding: 10px 0 12px; box-shadow: 0 -60px 0 var(--bg); }
+  .plist { flex: none; margin-top: 0; font-size: calc(clamp(13px, 4.9cqw, 19px) * var(--fs-lists));
+           height: calc(var(--rows, 5) * (2.1em + var(--line))); overflow: hidden; box-shadow: 0 60px 0 var(--bg); }   /* moves with the pictures, like on desktop */
+  .plist a { border-top: var(--line) solid var(--ink); border-bottom: 0; font-size: 1em; line-height: 1.2; padding: .45em .45em; }
   .mono { font-size: calc(clamp(9.5px, 2.6cqw, 13px) * var(--fs-text)); }
-  #M.home .lcol { position: sticky; top: 0; z-index: 3; background: var(--bg); }
   .frame { left: calc(var(--fl) - 1.6vw); width: calc(var(--fw) + 3.2vw); }
 }

@@ -11,7 +11,7 @@ const HTML = `
 <details id="panel">
   <summary title="Drag to move · click to fold">Settings</summary>
   <div class="pbody">
-    <h4 id="colfor">Colors</h4>
+    <details class="sec" name="adp-sec" open><summary id="colfor">Colors</summary><div class="sbody">
     <div class="colors">
       <label class="swatch"><input id="bgc" type="color"><span>Background</span></label>
       <label class="swatch"><input id="inkc" type="color"><span>Text &amp; dots</span></label>
@@ -21,7 +21,8 @@ const HTML = `
       <button class="btn" id="coluse" type="button">Use default</button>
     </div>
     <div class="stat" id="colnote"></div>
-    <h4>Layout <span style="font-weight:400">· % of width</span></h4>
+    </div></details>
+    <details class="sec" name="adp-sec"><summary>Layout <span class="sub">· % of width</span></summary><div class="sbody">
     <div class="seg" id="ltab">
       <button data-v="desk" type="button">Desktop</button>
       <button data-v="phone" type="button">Phone</button>
@@ -39,19 +40,22 @@ const HTML = `
       <div class="stat" id="pnote"></div>
     </div>
     <button class="btn" id="lreset" type="button">Reset layout</button>
-    <h4>Grid</h4>
+    </div></details>
+    <details class="sec" name="adp-sec"><summary>Grid &amp; font sizes</summary><div class="sbody">
+    <span class="lab">Grid</span>
     <div class="seg seg3" id="grid">
       <button data-v="closed" type="button">Closed</button>
       <button data-v="open" type="button">Open</button>
       <button data-v="none" type="button">None</button>
     </div>
-    <h4>Font sizes</h4>
+    <span class="lab">Font sizes</span>
     <div class="lrow"><span>Name</span><input id="fs-name" type="range" min="0.5" max="2" step="0.02"><output></output></div>
     <div class="lrow"><span>Titles</span><input id="fs-titles" type="range" min="0.5" max="1.6" step="0.02"><output></output></div>
     <div class="lrow"><span>Lists</span><input id="fs-lists" type="range" min="0.6" max="1.8" step="0.02"><output></output></div>
     <div class="lrow"><span>Text</span><input id="fs-text" type="range" min="0.7" max="1.6" step="0.02"><output></output></div>
     <button class="btn" id="fsreset" type="button">Reset sizes</button>
-    <h4>Dots</h4>
+    </div></details>
+    <details class="sec" name="adp-sec"><summary>Dots</summary><div class="sbody">
     <label>Dot shape
       <div class="seg" id="shape">
         <button data-v="round" type="button">Round</button>
@@ -64,7 +68,8 @@ const HTML = `
     <label class="row2"><input id="real" type="checkbox"> Body text turns into real type</label>
     <label class="row2"><input id="reveal" type="checkbox"> Show real text underneath</label>
     <button class="btn" id="replay" type="button">Replay transition</button>
-    <h4>Publish</h4>
+    </div></details>
+    <details class="sec" name="adp-sec"><summary>Publish</summary><div class="sbody">
     <button class="btn" id="publish" type="button">Publish for everyone</button>
     <div class="stat" id="copynote">Saves these settings to the site. Live about a minute later.</div>
     <div class="seg">
@@ -72,6 +77,7 @@ const HTML = `
       <button class="btn" id="discard" type="button">Discard changes</button>
     </div>
     <button class="btn" id="signout" type="button" hidden>Forget my GitHub token</button>
+    </div></details>
     <div class="stat" id="stat"></div>
   </div>
 </details>`;
@@ -209,6 +215,10 @@ export function mount() {
     catch { console.log(json); $("copynote").textContent = "Couldn't copy: the settings are in the browser console."; }
   });
   $("discard").addEventListener("click", () => { if (confirm("Discard your tuning and go back to the published settings?")) { forgetTuning(); location.reload(); } });
+
+  // Sections: one open at a time, so the panel never grows taller than the screen.
+  const secs = [...document.querySelectorAll<HTMLDetailsElement>("#panel details.sec")];
+  secs.forEach(d => d.addEventListener("toggle", () => { if (d.open) secs.forEach(o => { if (o !== d) o.open = false; }); }));
 
   // The panel floats: drag it by its title bar; its position is remembered.
   const panel = $("panel"), handle = panel.querySelector("summary")!;
