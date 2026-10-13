@@ -119,10 +119,11 @@ function sampleElement(el: HTMLElement, key: string, sizeMul: number, buzz: bool
   // Rules: any border becomes a dotted line.
   for (const e of [el, ...el.querySelectorAll<HTMLElement>("*")]) {
     const cs = getComputedStyle(e), r = e.getBoundingClientRect();
-    const t = parseFloat(cs.borderTopWidth), b = parseFloat(cs.borderBottomWidth), l = parseFloat(cs.borderLeftWidth);
+    const t = parseFloat(cs.borderTopWidth), b = parseFloat(cs.borderBottomWidth), l = parseFloat(cs.borderLeftWidth), rr = parseFloat(cs.borderRightWidth);
     if (t > 0) octx.fillRect(r.left - bx, r.top - by, r.width, Math.max(t, 1));
     if (b > 0) octx.fillRect(r.left - bx, r.bottom - by - Math.max(b, 1), r.width, Math.max(b, 1));
     if (l > 0) octx.fillRect(r.left - bx, r.top - by, Math.max(l, 1), r.height);
+    if (rr > 0) octx.fillRect(r.right - bx - Math.max(rr, 1), r.top - by, Math.max(rr, 1), r.height);
   }
   // Grid-sample the raster. Bigger type gets a coarser grid; "dot size" scales it.
   const step = Math.max(Math.min(Math.max(fsMain * .072, 1.45), 4.6) * sizeMul, .7);

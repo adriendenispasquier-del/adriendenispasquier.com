@@ -5,7 +5,10 @@
   --mono: "degular-mono", ui-monospace, Menlo, monospace;
   /* Degular Mono Regular, thickened a touch with a fine outline (the kit has no Medium). */
   --mono-stroke: .35px;
-  --line: 1px;           /* grid lines */
+  --line: 1px;           /* grid lines (0 with Grid: none) */
+  --frame-line: 1.5px;   /* the film's frame: navigation, kept with every grid option */
+  /* Font sizes, as multipliers (Settings → Font sizes) */
+  --fs-name: 1; --fs-titles: 1; --fs-lists: 1; --fs-text: 1;
   --hh: 66px;            /* header height */
   --gx: 2vw;             /* outer gutter */
   /* Column positions (set from the Layout sliders, in % of the window width) */
@@ -35,7 +38,7 @@ body.reveal [data-p], body.reveal [data-p] * { color: rgba(220, 40, 40, .55) !im
 
 /* ── Header: the name spread across the full width, a rule under it, drawn over the pictures ── */
 .hd { position: fixed; top: 0; left: var(--gx); right: var(--gx); height: var(--hh); z-index: 10;
-      display: flex; justify-content: space-between; align-items: center; font-size: 20px; pointer-events: none; }
+      display: flex; justify-content: space-between; align-items: center; font-size: calc(20px * var(--fs-name)); pointer-events: none; }
 .hd a { pointer-events: auto; padding: 6px 0; }
 .hline { position: absolute; left: 0; right: 0; bottom: 0; height: 0; border-bottom: var(--line) solid var(--ink); }
 
@@ -47,27 +50,28 @@ body.reveal [data-p], body.reveal [data-p] * { color: rgba(220, 40, 40, .55) !im
 
 /* Sizes are in cqw (% of the text column width), so narrowing the column shrinks the type instead of cropping it. */
 .lhome { display: flex; flex-direction: column; height: 100%; }
-.t-big { display: block; align-self: flex-start; font-size: clamp(30px, 25cqw, 210px); font-weight: 400; line-height: .9; letter-spacing: -.03em; margin-left: -.04em; }
-.t-mid { display: block; align-self: flex-start; font-size: clamp(16px, 6.4cqw, 46px); line-height: 1.1; margin-top: 7cqw; letter-spacing: -.01em; }
+.t-big { display: block; align-self: flex-start; font-size: calc(clamp(30px, 25cqw, 210px) * var(--fs-titles)); font-weight: 400; line-height: .9; letter-spacing: -.03em; margin-left: -.04em; }
+.t-mid { display: block; align-self: flex-start; font-size: calc(clamp(16px, 6.4cqw, 46px) * var(--fs-titles)); line-height: 1.1; margin-top: 7cqw; letter-spacing: -.01em; }
 .labout .t-mid { margin-top: 0; margin-bottom: 36px; }
 .labout .t-big { margin-bottom: 56px; }
 /* The project list is a vertical carousel: the project in view sits in its middle. */
 .plist { list-style: none; flex: 1; min-height: 0; overflow: hidden; margin-top: 10cqw; }
 .plist a { display: flex; justify-content: space-between; gap: 16px; padding: .5em .45em .4em; border-top: var(--line) solid var(--ink);
            font-family: var(--mono); -webkit-text-stroke: var(--mono-stroke) currentColor;
-           font-size: clamp(10px, 2.6cqw, 16px); text-transform: uppercase; letter-spacing: .03em; white-space: nowrap; }
+           font-size: calc(clamp(10px, 2.6cqw, 16px) * var(--fs-lists)); text-transform: uppercase; letter-spacing: .03em; white-space: nowrap; }
 .plist a.on.real { background: var(--ink); }
 .plist a.on.real, .plist a.on.real * { color: var(--bg) !important; }
 
-.t-title { font-size: clamp(22px, 9.6cqw, 66px); font-weight: 400; line-height: 1; letter-spacing: -.015em; margin-bottom: 28px; }
-.mono { font-family: var(--mono); -webkit-text-stroke: var(--mono-stroke) currentColor; font-size: clamp(9.5px, 2.35cqw, 13.5px); line-height: 1.5; text-transform: uppercase; letter-spacing: .03em; }
+.t-title { font-size: calc(clamp(22px, 9.6cqw, 66px) * var(--fs-titles)); font-weight: 400; line-height: 1; letter-spacing: -.015em; margin-bottom: 28px; }
+.mono { font-family: var(--mono); -webkit-text-stroke: var(--mono-stroke) currentColor; font-size: calc(clamp(9.5px, 2.35cqw, 13.5px) * var(--fs-text)); line-height: 1.5; text-transform: uppercase; letter-spacing: .03em; }
 .services { padding-bottom: 14px; border-bottom: var(--line) solid var(--ink); margin-bottom: 22px; }
 .lproj .mono + .mono { margin-top: 1.5em; }
 .credits { margin-top: 40px; padding-top: 18px; border-top: var(--line) solid var(--ink); display: grid; gap: 4px; }
+.lcol a.inl { text-decoration: underline; text-decoration-thickness: var(--line, 1px); text-underline-offset: .22em; }
 .credits b { font-weight: 400; opacity: .55; margin-right: 1.2em; }
 .next { display: flex; justify-content: space-between; margin-top: 56px; padding-top: 8px; border-top: var(--line) solid var(--ink);
         font-family: var(--mono); font-weight: 700; letter-spacing: .03em;
-        font-size: clamp(10px, 2.6cqw, 16px); text-transform: uppercase; }   /* Next project: Degular Mono Bold */
+        font-size: calc(clamp(10px, 2.6cqw, 16px) * var(--fs-lists)); text-transform: uppercase; }   /* Next project: Degular Mono Bold */
 
 /* ── Big pictures ── */
 .gal { position: fixed; top: 0; bottom: 0; left: var(--gl); width: var(--gw); overflow-y: auto; scrollbar-width: none; z-index: 1;
@@ -104,15 +108,25 @@ a.gi:hover .cap { opacity: 1; }
 .fi img.in { opacity: 1; }
 .fi:hover img { filter: brightness(.85); }
 .frame { position: fixed; top: 50%; left: calc(var(--fl) - 14px); width: calc(var(--fw) + 28px); transform: translateY(-50%);
-         border: calc(var(--line) * 1.5) solid var(--ink); pointer-events: none; z-index: 6; }
+         border: var(--frame-line) solid var(--ink); pointer-events: none; z-index: 6; }
 .out { opacity: 0; }
 
 #M, .fwrap { display: contents; }
 
+/* ── Grid. Open (default): lines between things. Closed: the lines close into cells. None: no lines. ── */
+body.grid-none { --line: 0px; }
+body.grid-closed .plist a, body.grid-closed .services, body.grid-closed .credits, body.grid-closed .next {
+  border: var(--line) solid var(--ink); }
+body.grid-closed .plist li + li a { border-top: 0; }
+body.grid-closed .services { padding: .7em .8em; }
+body.grid-closed .credits { padding: .9em .8em; }
+body.grid-closed .next { padding: .55em .8em .45em; }
+body.grid-closed .vrule { top: var(--hh); bottom: 0; }   /* runs from the header line to the bottom */
+
 /* ── Phone: one main column (text, then the pictures) and the film down the right side.
       Everything scrolls vertically; the film follows the pictures, the frame stays in the middle. ── */
 @media (max-width: 760px) and (orientation: portrait) {
-  .hd { height: 46px; font-size: 15px; }
+  .hd { height: 46px; font-size: calc(15px * var(--fs-name)); }
   #M { display: block; position: fixed; top: 46px; bottom: 0; left: var(--gx); width: var(--mw); z-index: 2;
        overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
   #M::-webkit-scrollbar { display: none; }
@@ -123,12 +137,12 @@ a.gi:hover .cap { opacity: 1; }
   .gal { position: relative; inset: auto; left: auto; width: 100%; height: auto; overflow: visible; }
   .lhome { height: auto; flex-direction: row; flex-wrap: wrap; align-items: baseline; column-gap: 5cqw; }
   .lhome .t-big, .lhome .t-mid { align-self: baseline; }
-  .t-big { font-size: 18cqw; }
-  .lhome .t-mid { margin-top: 0; font-size: 6.6cqw; }
+  .t-big { font-size: calc(18cqw * var(--fs-titles)); }
+  .lhome .t-mid { margin-top: 0; font-size: calc(6.6cqw * var(--fs-titles)); }
   .labout .t-mid { margin-bottom: 4cqw; }
   .plist { flex: 1 0 100%; height: var(--plist-h, 21vh); overflow: hidden; margin-top: 3cqw; }   /* moves with the pictures, like on desktop */
-  .plist a { border-top: 0; border-bottom: var(--line) solid var(--ink); font-size: clamp(10px, 2.5cqw, 15px); }
-  .mono { font-size: clamp(9.5px, 2.6cqw, 13px); }
+  .plist a { border-top: 0; border-bottom: var(--line) solid var(--ink); font-size: calc(clamp(10px, 2.5cqw, 15px) * var(--fs-lists)); }
+  .mono { font-size: calc(clamp(9.5px, 2.6cqw, 13px) * var(--fs-text)); }
   #M.home .lcol { position: sticky; top: 0; z-index: 3; background: var(--bg); }
   .frame { left: calc(var(--fl) - 1.6vw); width: calc(var(--fw) + 3.2vw); }
 }

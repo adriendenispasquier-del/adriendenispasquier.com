@@ -9,7 +9,7 @@ export interface Project {
   order?: number;
   services: string[];
   text: string;                       // paragraphs separated by a blank line
-  credits?: { label: string; value: string }[];
+  credits?: { label: string; value: string; url?: string }[];
   media: Media[];
   cover?: Media;                      // picture used on Work and in link previews; defaults to the first one
   draft?: boolean;                    // hidden from the site
@@ -35,7 +35,13 @@ export interface Page {
 export const LIST_COPIES = 5;
 export const ORIGIN = "https://adriendenispasquier.com";
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-const paras = (t: string, attrs = "") => t.split(/\n\s*\n/).map(s => s.trim()).filter(Boolean).map(s => `<p class="mono" data-p${attrs}>${esc(s)}</p>`).join("");
+/** Text with links written as [text](address). External addresses open in a new tab. */
+const link = (u: string, text: string) => {
+  const href = linkOf(u), ext = /^(https?:|mailto:)/.test(href);
+  return `<a class="inl" href="${esc(href)}"${ext ? ' target="_blank" rel="noopener"' : ""}>${text}</a>`;
+};
+const inline = (s: string) => esc(s).replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, t, u) => link(u.replace(/&amp;/g, "&"), t));
+const paras = (t: string, attrs = "") => t.split(/\n\s*\n/).map(s => s.trim()).filter(Boolean).map(s => `<p class="mono" data-p${attrs}>${inline(s)}</p>`).join("");
 const firstSentence = (t: string) => (t.split(/(?<=[.!?])\s/)[0] || "").slice(0, 160);
 /** Contact links as typed in the admin: an email address becomes mailto:, "instagram.com/…" gets https://. */
 const linkOf = (u: string) => /^[^\s@/:]+@[^\s@/]+\.[^\s@/]+$/.test(u.trim()) ? `mailto:${u.trim()}` : /^(https?:|mailto:|tel:|\/)/.test(u.trim()) ? u.trim() : `https://${u.trim()}`;
@@ -66,7 +72,7 @@ export function makePages(PROJECTS: Project[], SITE: Site) {
           <h1 class="t-title" data-p>${esc(p.title)}</h1>
           <p class="mono services" data-p>${p.services.map(esc).join(" - ")}</p>
           ${paras(p.text)}
-          ${p.credits?.length ? `<div class="mono credits" data-p><span>Credits</span>${p.credits.map(c => `<span><b>${esc(c.label)}</b>${esc(c.value)}</span>`).join("")}</div>` : ""}
+          ${p.credits?.length ? `<div class="mono credits" data-p><span>Credits</span>${p.credits.map(c => `<span><b>${inline(c.label)}</b>${c.url ? link(c.url, esc(c.value)) : inline(c.value)}</span>`).join("")}</div>` : ""}
           <a class="next" href="${projectPath(nx)}" data-p><span>Next — ${esc(nx.title)}</span><span>→</span></a>
         </div>`,
         items: p.media.map(m => ({ m, cap: p.title })), zoom: true,
@@ -82,7 +88,7 @@ export function makePages(PROJECTS: Project[], SITE: Site) {
           <a href="/" class="t-mid" data-p data-k="work">Work</a>
           <a href="/about/" class="t-big" data-p data-k="about">About</a>
           ${paras(a.text, ' style="margin-bottom:1.5em"')}
-          <div class="mono credits" data-p><span>Practice</span>${a.practice.map(t => `<span>${esc(t)}</span>`).join("")}</div>
+          <div class="mono credits" data-p><span>Practice</span>${a.practice.map(t => `<span>${inline(t)}</span>`).join("")}</div>
           <div class="mono credits" data-p><span>Contact</span>${contact}</div>
         </div>`,
         items: [{ m: portrait, ph: "Portrait", cap: SITE.name }],

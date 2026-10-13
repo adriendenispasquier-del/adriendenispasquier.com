@@ -29,18 +29,22 @@ export interface Settings {
   layout: { gap: number; t: number; p: number; f: number };
   layoutPhone: { gap: number; m: number; f: number };
   dots: { shape: string; dotSize: number; fill: number; buzz: number; real: boolean };
+  grid: string;                                              // "open" | "closed" | "none"
+  type: { name: number; titles: number; lists: number; text: number };   // font-size multipliers
   panelPos?: { l: number; t: number };
 }
 type PageColors = { page: string; bg: string; ink: string }[];
 const clone = <T>(o: T): T => JSON.parse(JSON.stringify(o));
 const fromFile = (f: typeof defaults): Settings => ({
   ...clone(f),
+  grid: (f as any).grid || "open",
+  type: { name: 1, titles: 1, lists: 1, text: 1, ...(f as any).type },
   colors: { default: { ...f.colors.default }, pages: Object.fromEntries((f.colors.pages as PageColors).map(c => [canonical(c.page), { bg: c.bg, ink: c.ink }])) },
 });
 /** The settings as stored in content/settings.json (per-page colours as a list, for the admin). */
 export const toFile = (s: Settings) => ({
   colors: { default: s.colors.default, pages: Object.entries(s.colors.pages).map(([page, c]) => ({ page, ...c })) },
-  layout: s.layout, layoutPhone: s.layoutPhone, dots: s.dots,
+  layout: s.layout, layoutPhone: s.layoutPhone, dots: s.dots, grid: s.grid, type: s.type,
 });
 export const DEFAULTS = fromFile(defaults);
 export const S: Settings = clone(DEFAULTS);
@@ -55,6 +59,8 @@ export function loadTuning() {
     S.layout = { ...S.layout, ...st.layout };
     S.layoutPhone = { ...S.layoutPhone, ...st.layoutPhone };
     S.dots = { ...S.dots, ...st.dots };
+    S.type = { ...S.type, ...st.type };
+    if (st.grid) S.grid = st.grid;
     S.panelPos = st.panelPos;
   } catch { /* storage unavailable */ }
 }
@@ -77,6 +83,10 @@ export const onColors: (() => void)[] = [];
 export const PIC_GAP = .45;   // space between big pictures, as a fraction of the gap
 export function applyLayout() {
   const rs = document.documentElement.style;
+  // Grid and font sizes
+  document.body.classList.remove("grid-open", "grid-closed", "grid-none");
+  document.body.classList.add("grid-" + S.grid);
+  for (const k of ["name", "titles", "lists", "text"] as const) rs.setProperty(`--fs-${k}`, String(S.type[k]));
   if (state.phone) {
     const l = S.layoutPhone, g = l.gap, avail = 100 - 3 * g, mw = l.m / 100 * avail, fw = l.f / 100 * avail;
     rs.setProperty("--gx", g + "vw"); rs.setProperty("--mw", mw + "vw");

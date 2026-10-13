@@ -11,6 +11,7 @@
 #panel label.row2 { grid-template-columns: auto 1fr; align-items: center; gap: 8px; }
 #panel .seg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
 #panel .seg button, #panel .btn { padding: 6px 4px; border: 1px solid rgba(0,0,0,.15); background: #fff; border-radius: 6px; cursor: pointer; color: #111; }
+#panel .seg3 { grid-template-columns: repeat(3, 1fr); }
 #panel .seg button.on { background: #111; color: #fff; border-color: #111; }
 #panel input[type=range] { width: 100%; accent-color: #111; }
 #panel .colors { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }

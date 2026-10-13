@@ -39,6 +39,18 @@ const HTML = `
       <div class="stat" id="pnote"></div>
     </div>
     <button class="btn" id="lreset" type="button">Reset layout</button>
+    <h4>Grid</h4>
+    <div class="seg seg3" id="grid">
+      <button data-v="closed" type="button">Closed</button>
+      <button data-v="open" type="button">Open</button>
+      <button data-v="none" type="button">None</button>
+    </div>
+    <h4>Font sizes</h4>
+    <div class="lrow"><span>Name</span><input id="fs-name" type="range" min="0.5" max="2" step="0.02"><output></output></div>
+    <div class="lrow"><span>Titles</span><input id="fs-titles" type="range" min="0.5" max="1.6" step="0.02"><output></output></div>
+    <div class="lrow"><span>Lists</span><input id="fs-lists" type="range" min="0.6" max="1.8" step="0.02"><output></output></div>
+    <div class="lrow"><span>Text</span><input id="fs-text" type="range" min="0.7" max="1.6" step="0.02"><output></output></div>
+    <button class="btn" id="fsreset" type="button">Reset sizes</button>
     <h4>Dots</h4>
     <label>Dot shape
       <div class="seg" id="shape">
@@ -116,6 +128,19 @@ export function mount() {
     if ($("lay-phone").hidden) S.layout = { ...DEFAULTS.layout }; else S.layoutPhone = { ...DEFAULTS.layoutPhone };
     changed();
   });
+
+  // Grid and font sizes
+  const showGrid = () => $("grid").querySelectorAll<HTMLElement>("button").forEach(b => b.classList.toggle("on", b.dataset.v === S.grid));
+  showGrid();
+  $("grid").addEventListener("click", e => {
+    const b = (e.target as Element).closest<HTMLElement>("button"); if (!b) return;
+    S.grid = b.dataset.v!; showGrid(); changed();
+  });
+  const sizes = ["name", "titles", "lists", "text"] as const;
+  const showSizes = () => sizes.forEach(k => { const i = inp("fs-" + k); i.value = String(S.type[k]); i.nextElementSibling!.textContent = Math.round(S.type[k] * 100) + "%"; });
+  showSizes();
+  for (const k of sizes) inp("fs-" + k).addEventListener("input", e => { S.type[k] = +(e.target as HTMLInputElement).value; showSizes(); changed(); });
+  $("fsreset").addEventListener("click", () => { S.type = { ...DEFAULTS.type }; showSizes(); changed(); });
 
   // Dots
   const D = S.dots;

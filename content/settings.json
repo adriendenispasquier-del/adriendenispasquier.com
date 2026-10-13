@@ -39,5 +39,12 @@
     "fill": 0.63,
     "buzz": 0.35,
     "real": true
+  },
+  "grid": "open",
+  "type": {
+    "name": 1,
+    "titles": 1,
+    "lists": 1,
+    "text": 1
   }
 }
