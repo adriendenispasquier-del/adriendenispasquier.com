@@ -23,7 +23,7 @@
     ]
   },
   "layout": {
-    "gap": 0.5,
+    "gap": 5,
     "t": 39.48,
     "p": 55.7,
     "f": 4.82
@@ -40,7 +40,7 @@
     "buzz": 0.8,
     "real": true
   },
-  "grid": "none",
+  "grid": "closed",
   "type": {
     "name": 0.7,
     "titles": 1.32,
