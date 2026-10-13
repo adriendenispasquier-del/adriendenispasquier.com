@@ -24,9 +24,9 @@
   },
   "layout": {
     "gap": 0.6,
-    "t": 41.04,
-    "p": 50.8,
-    "f": 8.16
+    "t": 34.3,
+    "p": 56.6,
+    "f": 9.1
   },
   "layoutPhone": {
     "gap": 2.4,
@@ -34,17 +34,17 @@
     "f": 15
   },
   "dots": {
-    "shape": "square",
+    "shape": "round",
     "dotSize": 0.3,
     "fill": 0.63,
-    "buzz": 0.35,
+    "buzz": 0.45,
     "real": true
   },
   "grid": "open",
   "type": {
-    "name": 1,
-    "titles": 1,
-    "lists": 1,
-    "text": 1
+    "name": 0.7,
+    "titles": 1.32,
+    "lists": 0.8,
+    "text": 0.8
   }
 }
