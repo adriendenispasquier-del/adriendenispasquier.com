@@ -57,7 +57,6 @@ panel again.
 
 ## Fonts
 
-The site uses AppleMyungjo and Akkurat Mono when they're installed on the viewer's machine
-(`src/styles.css`, `@font-face … local()`), and falls back to Georgia / a system monospace otherwise.
-For everyone to see them, add licensed web-font files (Akkurat Mono: Lineto web licence;
-AppleMyungjo is an Apple system font and generally can't be embedded — pick a licensable alternative).
+Redaction (titles, name, lists) and Degular Mono (body text) come from the Adobe Fonts kit `nva7btn`
+(linked in `index.html`, families set in `src/styles.css`). Fonts added to that kit on fonts.adobe.com
+become available here without code changes.

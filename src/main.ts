@@ -88,7 +88,7 @@ state.mq.addEventListener("change", () => { state.phone = state.mq.matches; appl
 // Start
 applyColors();
 dots.start();
-Promise.all(["400 20px Myungjo", "600 20px Myungjo", "400 12px AkkMono"].map(f => document.fonts.load(f).catch(() => {})))
+Promise.all(["400 20px redaction", "700 20px redaction", "italic 400 20px redaction", "400 12px degular-mono"].map(f => document.fonts.load(f).catch(() => {})))
   .then(() => go(location.pathname));
 document.fonts.addEventListener("loadingdone", resample);
 if (state.tuning) import("./panel").then(m => m.mount());

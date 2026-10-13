@@ -1,10 +1,8 @@
-/* Fonts installed on the viewer's machine. The live site needs licensed web-font files (see README). */
-@font-face { font-family: "Myungjo"; src: local("AppleMyungjo"), local("AppleMyungjo Regular"); }
-@font-face { font-family: "AkkMono"; src: local("Akkurat-Mono"), local("Akkurat Mono"), local("AkkuratMono-Regular"); }
+/* Fonts come from the Adobe Fonts kit linked in index.html. */
 :root {
   --bg: #ffffff; --ink: #111111;
-  --serif: "Myungjo", "AppleMyungjo", Georgia, serif;
-  --mono: "AkkMono", "Akkurat Mono", ui-monospace, Menlo, monospace;
+  --serif: "redaction", Georgia, serif;
+  --mono: "degular-mono", ui-monospace, Menlo, monospace;
   --hh: 66px;            /* header height */
   --gx: 2vw;             /* outer gutter */
   /* Column positions (set from the Layout sliders, in % of the window width) */
@@ -45,7 +43,7 @@ body.reveal [data-p], body.reveal [data-p] * { color: rgba(220, 40, 40, .55) !im
 
 /* Sizes are in cqw (% of the text column width), so narrowing the column shrinks the type instead of cropping it. */
 .lhome { display: flex; flex-direction: column; height: 100%; }
-.t-big { display: block; align-self: flex-start; font-size: clamp(30px, 25cqw, 210px); font-weight: 600; line-height: .9; letter-spacing: -.03em; margin-left: -.04em; }
+.t-big { display: block; align-self: flex-start; font-size: clamp(30px, 25cqw, 210px); font-weight: 700; line-height: .9; letter-spacing: -.03em; margin-left: -.04em; }
 .t-mid { display: block; align-self: flex-start; font-size: clamp(16px, 6.4cqw, 46px); line-height: 1.1; margin-top: 7cqw; letter-spacing: -.01em; }
 .labout .t-mid { margin-top: 0; margin-bottom: 36px; }
 .labout .t-big { margin-bottom: 56px; }
