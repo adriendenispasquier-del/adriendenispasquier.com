@@ -40,7 +40,7 @@
     "buzz": 0.8,
     "real": true
   },
-  "grid": "closed",
+  "grid": "none",
   "type": {
     "name": 0.7,
     "titles": 1.32,
