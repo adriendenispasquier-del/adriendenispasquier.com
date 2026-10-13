@@ -19,6 +19,11 @@
         "page": "/about/",
         "bg": "#a3c5c8",
         "ink": "#731b11"
+      },
+      {
+        "page": "/work/archipel-doodles/",
+        "bg": "#fffef0",
+        "ink": "#111111"
       }
     ]
   },
