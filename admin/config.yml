@@ -54,7 +54,7 @@ collections:
       - name: text
         label: Text
         widget: text
-        hint: Separate paragraphs with an empty line.
+        hint: "Separate paragraphs with an empty line. Links: [text](https://…)"
       - name: credits
         label: Credits
         widget: list
@@ -63,7 +63,8 @@ collections:
         summary: "{{label}}: {{value}}"
         fields:
           - { name: label, label: Label, widget: string, hint: "e.g. Featuring, Creative direction" }
-          - { name: value, label: Names, widget: string }
+          - { name: value, label: Names, widget: string, hint: "Links inside: [text](https://…)" }
+          - { name: url, label: Link, widget: string, required: false, hint: "Optional: links the names, e.g. https://instagram.com/…" }
       - name: media
         label: Pictures and videos
         widget: list
@@ -85,7 +86,7 @@ collections:
             label: About page
             widget: object
             fields:
-              - { name: text, label: Text, widget: text, hint: Separate paragraphs with an empty line. }
+              - { name: text, label: Text, widget: text, hint: "Separate paragraphs with an empty line. Links: [text](https://…)" }
               - { name: practice, label: Practice, widget: list, hint: One per line. }
               - name: contact
                 label: Contact
@@ -137,6 +138,24 @@ collections:
               - { name: gap, label: Gaps, widget: number, value_type: float, step: 0.1 }
               - { name: m, label: Main column, widget: number, value_type: float, step: 0.1 }
               - { name: f, label: Film, widget: number, value_type: float, step: 0.1 }
+          - name: grid
+            label: Grid
+            widget: select
+            default: open
+            hint: "Open: lines between things. Closed: the lines close into cells. None: no lines."
+            options:
+              - { label: Closed, value: closed }
+              - { label: Open, value: open }
+              - { label: None, value: none }
+          - name: type
+            label: Font sizes
+            widget: object
+            hint: "Multipliers: 1 = default, 1.2 = 20% bigger."
+            fields:
+              - { name: name, label: Name (header), widget: number, value_type: float, step: 0.02, default: 1 }
+              - { name: titles, label: Titles, widget: number, value_type: float, step: 0.02, default: 1 }
+              - { name: lists, label: Lists, widget: number, value_type: float, step: 0.02, default: 1 }
+              - { name: text, label: Text, widget: number, value_type: float, step: 0.02, default: 1 }
           - name: dots
             label: Dots
             widget: object
