@@ -11,7 +11,7 @@ site_url: https://www.adriendenispasquier.com
 
 
 # Uploads go to the site itself (public/uploads, served at /uploads/…).
-media_folder: /public/uploads
+media_folder: public/uploads
 public_folder: /uploads
 
 # Cloudinary: to upload to and pick from your Cloudinary library instead, add your API key below and remove the #s.
@@ -26,8 +26,8 @@ collections:
   - name: projects
     label: Projects
     label_singular: Project
-    description: One entry per project. The file name becomes the address (/work/<name>/).
-    folder: /content/projects
+    description: One entry per project. Its file name becomes its address, e.g. fat-cat → /work/fat-cat/.
+    folder: content/projects
     format: json
     create: true
     delete: true
@@ -77,7 +77,7 @@ collections:
     files:
       - name: about
         label: About & site texts
-        file: /content/site.json
+        file: content/site.json
         fields:
           - { name: name, label: Name, widget: string }
           - { name: description, label: Description, widget: text, hint: For search engines and link previews. }
@@ -98,7 +98,7 @@ collections:
 
       - name: look
         label: Look (colours, layout, dots)
-        file: /content/settings.json
+        file: content/settings.json
         fields:
           - name: colors
             label: Colours
