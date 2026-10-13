@@ -1,24 +1,14 @@
 {
   "colors": {
     "default": {
-      "bg": "#ffffff",
-      "ink": "#111111"
+      "bg": "#fbfcf8",
+      "ink": "#000000"
     },
     "pages": [
       {
-        "page": "/work/cyberleaders",
+        "page": "/work/cyberleaders/",
         "bg": "#000000",
-        "ink": "#e1ff00"
-      },
-      {
-        "page": "/work/archipel-berlin",
-        "bg": "#f4eee4",
-        "ink": "#111111"
-      },
-      {
-        "page": "/work/fat-cat",
-        "bg": "#000000",
-        "ink": "#ffffff"
+        "ink": "#9bb734"
       },
       {
         "page": "/work/archipel-berlin/",
@@ -26,33 +16,28 @@
         "ink": "#111111"
       },
       {
-        "page": "/work/cyberleaders/",
-        "bg": "#000000",
-        "ink": "#abc238"
-      },
-      {
-        "page": "/work/fat-cat/",
-        "bg": "#000000",
-        "ink": "#ab6f07"
+        "page": "/about/",
+        "bg": "#e1cdb2",
+        "ink": "#6f1641"
       }
     ]
   },
   "layout": {
-    "gap": 1.4,
-    "t": 36,
-    "p": 55.9,
-    "f": 8.1
+    "gap": 0.6,
+    "t": 41.04,
+    "p": 50.8,
+    "f": 8.16
   },
   "layoutPhone": {
-    "gap": 3.9,
+    "gap": 2.4,
     "m": 85,
     "f": 15
   },
   "dots": {
-    "shape": "round",
+    "shape": "square",
     "dotSize": 0.3,
-    "fill": 0.7,
-    "buzz": 0.3,
+    "fill": 0.63,
+    "buzz": 0.35,
     "real": true
   }
 }
