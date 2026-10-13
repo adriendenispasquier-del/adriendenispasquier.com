@@ -9,7 +9,8 @@ export const dom = {
   lb: $("lb"), lbm: $("lbm"), cv: $<HTMLCanvasElement>("c"),
 };
 
-const mq = matchMedia("(max-width: 760px)");
+// Phone layout: narrow screens held upright. A phone turned sideways gets the desktop layout.
+const mq = matchMedia("(max-width: 760px) and (orientation: portrait)");
 export const state = {
   phone: mq.matches,
   mq,

@@ -26,4 +26,4 @@
 #panel .lrow output { text-align: right; font-variant-numeric: tabular-nums; opacity: .7; }
 #panel[open] { max-height: calc(100vh - 24px); overflow-y: auto; }
 #panel:not([open]) .pbody { display: none; }   /* folded: take no space (and catch no clicks) */
-@media (max-width: 760px) { #panel { width: 220px; top: auto; bottom: 12px; right: 12px; } }
+@media (max-width: 760px) and (orientation: portrait) { #panel { width: 220px; top: auto; bottom: 12px; right: 12px; } }

@@ -127,23 +127,23 @@ export function layoutFilm() {
   state.colTop = state.phone ? document.querySelector(".hd")!.getBoundingClientRect().bottom : L.getBoundingClientRect().top;
 }
 
-// The picture under the centre is "current": on Work, its project row is marked (and the desktop list
-// glides so that row sits in its middle).
+// The picture under the centre is "current": on Work, its project row is marked and the list glides so that
+// row sits in its middle (desktop and phone).
 let onRow: Element | null = null;
 function onScrolled() {
   const c = gpos() + viewH() / 2, ks = kids(), PL = state.PL;
   if (!ks.length) return;
-  let idx = 0, k = 0;
-  for (let i = 0; i < ks.length; i++) { const it = ks[i]; if (it.offsetTop <= c) idx = +it.dataset.i!; if (mid(it) <= c) k = i; }
+  let k = 0;
+  for (let i = 0; i < ks.length; i++) if (mid(ks[i]) <= c) k = i;
   let mark: Element | null = null;
-  if (PL && !state.phone) {
+  if (PL) {
     const a = ks[k], b = ks[k + 1];
     const frac = b ? Math.min(1, Math.max(0, (c - mid(a)) / (mid(b) - mid(a)))) : 0;
     const rows = PL.children as HTMLCollectionOf<HTMLElement>, n = PROJECTS.length, j = 2 * n + (+a.dataset.i!);
     const r0 = rows[j], r1 = rows[j + 1] || r0;
     PL.scrollTop = mid(r0) + (mid(r1) - mid(r0)) * frac - PL.offsetTop - PL.clientHeight / 2;
     mark = (frac < .5 ? r0 : r1).querySelector("a");
-  } else if (PL) mark = PL.querySelector(`li[data-c="0"] a[data-i="${idx}"]`);
+  }
   if (mark !== onRow) { onRow?.classList.remove("on"); mark?.classList.add("on"); onRow = mark; }
 }
 

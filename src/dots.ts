@@ -32,7 +32,7 @@ export const setOnStat = (f: (n: number) => void) => { onStat = f; };
 // Dot spaces: 0 = fixed on screen (header, rules), 1 = text column (scrolls), 2 = Work project list (scrolls inside it).
 export const spaceOff = (sc: number) =>
   (sc >= 1 ? (state.phone ? (M.classList.contains("home") ? 0 : M.scrollTop) : L.scrollTop) : 0) +
-  (sc === 2 && state.PL && !state.phone ? state.PL.scrollTop : 0);
+  (sc === 2 && state.PL ? state.PL.scrollTop : 0);
 
 // ───────── Canvas (WebGL points, 2D fallback) ─────────
 const cv = dom.cv;
