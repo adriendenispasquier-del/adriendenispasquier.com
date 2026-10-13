@@ -1,0 +1,21 @@
+{
+  "name": "Adrien Denis-Pasquier",
+  "description": "Multidisciplinary creative based in Berlin, working across brand design, illustration, photography and visual direction.",
+  "about": {
+    "text": "I am a multidisciplinary creative working across illustration, photography, graphic design and visual direction based in Berlin.\n\nMy work moves between mediums, developing visual languages that can unfold across print and digital spaces. Whether designing identities, creating editorial illustrations or photographing products, I'm interested in revealing what defines a subject visually while shaping a coherent atmosphere around it.\n\nOver time, my approach has evolved toward reduction and clarity. I tend to trust simplicity — allowing fewer elements to carry more meaning — while balancing intuition with careful attention to composition and structure.",
+    "practice": [
+      "Visual identity & brand design",
+      "Art direction",
+      "Illustration",
+      "Photography",
+      "Set design & visual staging",
+      "Layout & typography",
+      "Creative direction"
+    ],
+    "contact": [
+      { "label": "Email", "url": "" },
+      { "label": "Instagram", "url": "" }
+    ],
+    "portrait": ""
+  }
+}

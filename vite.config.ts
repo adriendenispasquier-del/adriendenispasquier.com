@@ -1,43 +1,30 @@
-import { defineConfig } from 'vite'
-import path from 'path'
-import tailwindcss from '@tailwindcss/vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import { copyFileSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
+
+const SITE = "https://www.adriendenispasquier.com";
 
 export default defineConfig({
+  build: { target: "es2022" },
   plugins: [
-    // The React and Tailwind plugins are both required for Make, even if
-    // Tailwind is not being actively used – do not remove them
-    react(),
-    tailwindcss(),
-  ],
-  resolve: {
-    alias: {
-      // Alias @ to the src directory
-      '@': path.resolve(__dirname, './src'),
-    },
-  },
-
-  // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
-  assetsInclude: ['**/*.svg', '**/*.csv'],
-
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || id.includes('node_modules/react-router')) {
-            return 'react-vendor';
-          }
-          if (id.includes('node_modules/@mui') || id.includes('node_modules/@emotion')) {
-            return 'mui';
-          }
-          if (id.includes('node_modules/@radix-ui')) {
-            return 'radix';
-          }
-          if (id.includes('node_modules/motion')) {
-            return 'motion';
-          }
-        },
+    {
+      name: "site-files",
+      closeBundle() {
+        const dist = (f: string) => resolve(__dirname, "dist", f);
+        // GitHub Pages serves 404.html for unknown paths: a copy of the app makes /work/... addresses work.
+        copyFileSync(dist("index.html"), dist("404.html"));
+        // Sitemap from the project files.
+        const dir = resolve(__dirname, "content/projects");
+        const slugs = readdirSync(dir).filter(f => f.endsWith(".json"))
+          .filter(f => { const p = JSON.parse(readFileSync(resolve(dir, f), "utf8")); return !p.draft && p.media?.length; })
+          .map(f => f.replace(/\.json$/, ""));
+        const urls = ["/", "/about", ...slugs.map(s => `/work/${s}`)];
+        writeFileSync(dist("sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.map(u => `  <url><loc>${SITE}${u}</loc></url>`).join("\n")}
+</urlset>
+`);
       },
     },
-  },
-})
+  ],
+});

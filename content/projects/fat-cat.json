@@ -1,0 +1,31 @@
+{
+  "title": "Fat Cat",
+  "type": "Photography",
+  "order": 2,
+  "services": [
+    "Product photography",
+    "Set design"
+  ],
+  "text": "The Fat Cat is one of the first cocktail-focused bars in Toulouse. Founded in 2015 by Quentin Pierre-Antoine and Emmy Jeannin, it quickly became known for its precise mixology and intimate atmosphere.\n\nThe challenge was to constantly reinvent the visual approach: isolating a single ingredient, exploring new angles and perspectives, and working with minimal sets to emphasise shape, colour and materiality. Through careful composition, light and texture, each ingredient was transformed into a singular, striking visual — not just documenting the cocktail, but distilling its character into an expressive image.",
+  "credits": [
+    {
+      "label": "Featuring",
+      "value": "Quentin Pierre-Antoine, Emmy Jeannin"
+    }
+  ],
+  "media": [
+    "v1774781570/FatCat_by_Adrien_Denis-Pasquier_20_znpet7.jpg",
+    "FatCat_by_Adrien_Denis-Pasquier_1_dvdizt",
+    "FatCat_by_Adrien_Denis-Pasquier_2_rovfi6",
+    "FatCat_by_Adrien_Denis-Pasquier_3_mbkyja",
+    "FatCat_by_Adrien_Denis-Pasquier_4_wamxye",
+    "FatCat_by_Adrien_Denis-Pasquier_5_hbr4ih",
+    "FatCat_by_Adrien_Denis-Pasquier_6_dali5j",
+    "FatCat_by_Adrien_Denis-Pasquier_7_xpnpdm",
+    "FatCat_by_Adrien_Denis-Pasquier_8_p8yh9n",
+    "FatCat_by_Adrien_Denis-Pasquier_9_wyu0oe",
+    "FatCat_by_Adrien_Denis-Pasquier_10_inbrt9",
+    "FatCat_by_Adrien_Denis-Pasquier_11_jf6jtk",
+    "FatCat_by_Adrien_Denis-Pasquier_12_bdqqd4"
+  ]
+}

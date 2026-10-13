@@ -1,14 +1,40 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f7f5f0" />
-    <title>Adrien Denis-Pasquier</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Adrien Denis-Pasquier</title>
+  <meta name="description" content="Multidisciplinary creative based in Berlin, working across brand design, illustration, photography and visual direction.">
+  <link rel="canonical" href="https://www.adriendenispasquier.com/">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="manifest" href="/manifest.json">
+</head>
+<body>
+  <canvas id="c"></canvas>
+
+  <header class="hd">
+    <a href="/" data-p data-k="h1">Adrien</a>
+    <a href="/" data-p data-k="h2">Denis</a>
+    <a href="/" data-p data-k="h3">-</a>
+    <a href="/" data-p data-k="h4">Pasquier</a>
+    <div class="hline" data-p data-k="hline"></div>
+  </header>
+
+  <main id="M">
+    <div class="lcol"><div class="lscroll" id="L"></div></div>
+    <div class="vrule" data-p data-k="vrule"></div>
+    <div class="gal" id="G"><div class="gtrack" id="GT"></div></div>
+    <div class="fwrap">
+      <div class="film" id="F"><div class="ftrack" id="FT"></div></div>
+      <div class="frame" id="frame"></div>
+    </div>
+  </main>
+
+  <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Picture">
+    <button class="lbx" type="button" aria-label="Close"></button>
+    <div class="lbm" id="lbm"></div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
 </html>
