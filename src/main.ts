@@ -69,6 +69,16 @@ document.addEventListener("click", e => {
 addEventListener("popstate", () => go(location.pathname));
 export const replay = () => go(state.current ?? "/");
 
+// "Denis" in the header swaps background and text colours for this visitor (remembered in their browser).
+const invertBtn = document.getElementById("invert")!;
+const setInvert = (on: boolean) => {
+  state.invert = on; invertBtn.setAttribute("aria-pressed", String(on));
+  try { on ? localStorage.setItem("adp-invert", "1") : localStorage.removeItem("adp-invert"); } catch { /* ignore */ }
+  applyColors();
+};
+try { state.invert = localStorage.getItem("adp-invert") === "1"; invertBtn.setAttribute("aria-pressed", String(state.invert)); } catch { /* ignore */ }
+invertBtn.addEventListener("click", () => setInvert(!state.invert));
+
 // The pull-off wave starts where you click.
 document.addEventListener("pointerdown", e => dots.setReleaseOrigin(e.clientX, e.clientY));
 document.querySelectorAll<HTMLElement>(".hd [data-k]").forEach(a => {

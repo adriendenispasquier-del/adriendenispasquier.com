@@ -20,6 +20,7 @@ export const state = {
   colTop: 66,                           // text-column dots are clipped above this line
   inkTo: [17, 17, 17],                  // dot colour the canvas eases towards
   tuning: false,                        // the tuning panel is open: settings come from this browser
+  invert: false,                        // the visitor swapped background and text colours (click on "Denis")
 };
 
 // ───────── Settings ─────────
@@ -70,7 +71,7 @@ export const forgetTuning = () => { try { localStorage.removeItem(STORE); } catc
 const hex = (h: string) => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
 export const colorsFor = (path: string) => S.colors.pages[path] || S.colors.default;
 export function applyColors() {
-  const c = colorsFor(state.current ?? "/");
+  const c0 = colorsFor(state.current ?? "/"), c = state.invert ? { bg: c0.ink, ink: c0.bg } : c0;
   document.documentElement.style.setProperty("--bg", c.bg);
   document.documentElement.style.setProperty("--ink", c.ink);
   state.inkTo = hex(c.ink);

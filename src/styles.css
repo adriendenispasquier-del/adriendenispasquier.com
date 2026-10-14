@@ -39,7 +39,7 @@ body.reveal [data-p], body.reveal [data-p] * { color: rgba(220, 40, 40, .55) !im
 /* ── Header: the name spread across the full width, a rule under it, drawn over the pictures ── */
 .hd { position: fixed; top: 0; left: var(--gx); right: var(--gx); height: var(--hh); z-index: 10;
       display: flex; justify-content: space-between; align-items: center; font-size: calc(20px * var(--fs-name)); pointer-events: none; }
-.hd a { pointer-events: auto; padding: 6px 0; }
+.hd a, .hd button { pointer-events: auto; padding: 6px 0; cursor: pointer; }
 .hline { position: absolute; left: 0; right: 0; bottom: 0; height: 0; border-bottom: var(--line) solid var(--ink); }
 
 /* ── Left column ── */
