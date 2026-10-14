@@ -17,8 +17,8 @@
       },
       {
         "page": "/about/",
-        "bg": "#e1cdb2",
-        "ink": "#6f1641"
+        "bg": "#cccec5",
+        "ink": "#440d09"
       }
     ]
   },
@@ -36,7 +36,7 @@
   "dots": {
     "shape": "round",
     "dotSize": 0.3,
-    "fill": 0.42,
+    "fill": 0.59,
     "buzz": 0.55,
     "real": true
   },
