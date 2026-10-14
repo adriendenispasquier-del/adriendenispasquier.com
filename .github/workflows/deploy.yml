@@ -10,6 +10,12 @@ permissions:
   contents: write
   pages: write
 
+# One deployment at a time: a publish from the panel or the admin right after a push waits its turn
+# instead of racing it (two deployments at once made one fail).
+concurrency:
+  group: deploy-pages
+  cancel-in-progress: false
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
