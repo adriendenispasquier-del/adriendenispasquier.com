@@ -11,8 +11,8 @@
   <!-- Fonts: Adobe Fonts kit (Redaction, Degular Mono) -->
   <link rel="preconnect" href="https://use.typekit.net" crossorigin>
   <link rel="stylesheet" href="https://use.typekit.net/nva7btn.css">
-  <script type="module" crossorigin src="/assets/index--kY-elGY.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-DU2NOeNe.css">
+  <script type="module" crossorigin src="/assets/index-D-04cLSL.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-w3RsZcCu.css">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Adrien Denis-Pasquier">
   <meta property="og:title" content="Archipel Doodles — Adrien Denis-Pasquier">
@@ -27,10 +27,19 @@
   <header class="hd">
     <a href="/" data-p data-k="h1">Adrien</a>
     <button type="button" id="invert" data-p data-k="h2" aria-pressed="false" title="Switch colours">Denis</button>
-    <a href="/" data-p data-k="h3">-</a>
+    <button type="button" id="vbtn" data-p data-k="h3" aria-expanded="false" aria-controls="vmenu" title="Settings">-</button>
     <a href="/" data-p data-k="h4">Pasquier</a>
     <div class="hline" data-p data-k="hline"></div>
   </header>
+
+  <!-- Visitor settings, opened with the "-" in the header -->
+  <div class="vmenu" id="vmenu" role="dialog" aria-label="Settings">
+    <label class="vrow vdesk"><span>Text</span><input type="range" id="v-t" min="15" max="60" step="0.1"></label>
+    <label class="vrow"><span>Film</span><input type="range" id="v-f" min="3" max="20" step="0.1"></label>
+    <label class="vrow"><span>Dots</span><input type="range" id="v-dot" min="0.3" max="1.6" step="0.05"></label>
+    <label class="vrow"><span>Buzz</span><input type="range" id="v-buzz" min="0" max="3" step="0.05"></label>
+    <div class="vrow vbtns"><button type="button" id="v-reset">Reset</button></div>
+  </div>
 
   <main id="M">
     <div class="lcol"><div class="lscroll" id="L"><div class="lproj">
