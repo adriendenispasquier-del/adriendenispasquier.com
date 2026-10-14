@@ -3,7 +3,7 @@
 // Body text crossfades to the real font once its dots have landed.
 import { dom, state, S } from "./state";
 
-export const BUZZ_SEL = ".hd a, .t-big, .t-mid, .t-title";   // these stay as dots and gently buzz
+export const BUZZ_SEL = ".hd a, .hd button, .t-big, .t-mid, .t-title";   // these stay as dots and gently buzz
 const PHYS = { k: .03, damp: .82 };
 const MAX_TARGETS = 45000;
 const { L, M } = dom;
