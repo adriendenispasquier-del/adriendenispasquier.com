@@ -1,7 +1,7 @@
 import "./styles.css";
 import { buildPage, legacyPath, canonical, type Page } from "./content";
 import { ORIGIN } from "./pages";
-import { dom, state, loadTuning, applyColors, applyLayout } from "./state";
+import { dom, state, loadTuning, applyColors, applyLayout, V, saveVisitor, resetVisitor, layoutNow, layoutPhoneNow, dotSizeNow, buzzNow } from "./state";
 import * as dots from "./dots";
 import { renderMedia, resetScroll, layoutFilm, sync, main, closeLightbox, centreList } from "./gallery";
 
@@ -78,6 +78,47 @@ const setInvert = (on: boolean) => {
 };
 try { state.invert = localStorage.getItem("adp-invert") === "1"; invertBtn.setAttribute("aria-pressed", String(state.invert)); } catch { /* ignore */ }
 invertBtn.addEventListener("click", () => setInvert(!state.invert));
+
+// "-" in the header opens the visitor settings: column widths, dot size and buzz, for this visitor only.
+const vbtn = document.getElementById("vbtn")!, vmenu = document.getElementById("vmenu")!;
+const vin = (id: string) => document.getElementById(id) as HTMLInputElement;
+function showVisitor() {
+  const l = layoutNow(), lp = layoutPhoneNow();
+  vin("v-t").value = String(l.t);
+  const f = vin("v-f");
+  if (state.phone) { f.min = "6"; f.max = "40"; f.value = String(lp.f); } else { f.min = "3"; f.max = "20"; f.value = String(l.f); }
+  vin("v-dot").value = String(dotSizeNow()); vin("v-buzz").value = String(buzzNow());
+}
+const openMenu = (on: boolean) => {
+  vmenu.classList.toggle("open", on); vbtn.setAttribute("aria-expanded", String(on));
+  if (on) showVisitor();
+};
+vbtn.addEventListener("click", () => openMenu(!vmenu.classList.contains("open")));
+document.addEventListener("pointerdown", e => { if (vmenu.classList.contains("open") && !vmenu.contains(e.target as Node) && !vbtn.contains(e.target as Node)) openMenu(false); });
+addEventListener("keydown", e => { if (e.key === "Escape") openMenu(false); });
+let vt: number | undefined;
+const visitorChanged = (layout: boolean) => {
+  saveVisitor();
+  if (layout) relayout();
+  clearTimeout(vt); vt = window.setTimeout(resample, 150);
+};
+// Text and film widths: the pictures take the rest (the three always fill the width).
+const share = (k: "t" | "f", v: number) => {
+  const l = layoutNow(), others = (["t", "p", "f"] as const).filter(x => x !== k), rest = others.reduce((a, x) => a + l[x], 0) || 1;
+  const next = { t: l.t, p: l.p, f: l.f };
+  for (const x of others) next[x] = (100 - v) * l[x] / rest;
+  next[k] = v;
+  V.layout = next;
+};
+vin("v-t").addEventListener("input", e => { share("t", +(e.target as HTMLInputElement).value); visitorChanged(true); });
+vin("v-f").addEventListener("input", e => {
+  const v = +(e.target as HTMLInputElement).value;
+  if (state.phone) V.layoutPhone = { m: 100 - v, f: v }; else share("f", v);
+  visitorChanged(true);
+});
+vin("v-dot").addEventListener("input", e => { V.dotSize = +(e.target as HTMLInputElement).value; visitorChanged(false); });
+vin("v-buzz").addEventListener("input", e => { V.buzz = +(e.target as HTMLInputElement).value; saveVisitor(); });
+document.getElementById("v-reset")!.addEventListener("click", () => { resetVisitor(); relayout(); resample(); showVisitor(); });
 
 // The pull-off wave starts where you click.
 document.addEventListener("pointerdown", e => dots.setReleaseOrigin(e.clientX, e.clientY));

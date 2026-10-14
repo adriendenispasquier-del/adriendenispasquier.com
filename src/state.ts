@@ -68,6 +68,19 @@ export function loadTuning() {
 export const save = () => { if (state.tuning) try { localStorage.setItem(STORE, JSON.stringify(S)); } catch { /* ignore */ } };
 export const forgetTuning = () => { try { localStorage.removeItem(STORE); } catch { /* ignore */ } };
 
+// ───────── Visitor settings ("-" menu) ─────────
+// A visitor can change column widths, dot size and buzz for themselves. Kept in their browser, applied on top of
+// the published settings, never published.
+export interface Visitor { layout?: { t: number; p: number; f: number }; layoutPhone?: { m: number; f: number }; dotSize?: number; buzz?: number }
+export let V: Visitor = {};
+try { V = JSON.parse(localStorage.getItem("adp-visitor") || "{}"); } catch { /* storage unavailable */ }
+export const saveVisitor = () => { try { localStorage.setItem("adp-visitor", JSON.stringify(V)); } catch { /* ignore */ } };
+export const resetVisitor = () => { V = {}; try { localStorage.removeItem("adp-visitor"); } catch { /* ignore */ } };
+export const layoutNow = () => ({ ...S.layout, ...V.layout });
+export const layoutPhoneNow = () => ({ ...S.layoutPhone, ...V.layoutPhone });
+export const dotSizeNow = () => V.dotSize ?? S.dots.dotSize;
+export const buzzNow = () => V.buzz ?? S.dots.buzz;
+
 const hex = (h: string) => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
 export const colorsFor = (path: string) => S.colors.pages[path] || S.colors.default;
 export function applyColors() {
@@ -89,12 +102,12 @@ export function applyLayout() {
   document.body.classList.add("grid-" + S.grid);
   for (const k of ["name", "titles", "lists", "text"] as const) rs.setProperty(`--fs-${k}`, String(S.type[k]));
   if (state.phone) {
-    const l = S.layoutPhone, g = l.gap, avail = 100 - 3 * g, mw = l.m / 100 * avail, fw = l.f / 100 * avail;
+    const l = layoutPhoneNow(), g = l.gap, avail = 100 - 3 * g, mw = l.m / 100 * avail, fw = l.f / 100 * avail;
     rs.setProperty("--gx", g + "vw"); rs.setProperty("--mw", mw + "vw");
     rs.setProperty("--fl", (g + mw + g) + "vw"); rs.setProperty("--fw", fw + "vw");
     rs.setProperty("--gap", g * PIC_GAP + "vw");
   } else {
-    const l = S.layout, g = l.gap;
+    const l = layoutNow(), g = l.gap;
     const avail = 100 - 4 * g, T = l.t / 100 * avail, Pw = l.p / 100 * avail, Fw = l.f / 100 * avail;
     const lw = g + T, gl = lw + g, fl = gl + Pw + g;
     rs.setProperty("--gx", g + "vw"); rs.setProperty("--lw", lw + "vw"); rs.setProperty("--gl", gl + "vw");

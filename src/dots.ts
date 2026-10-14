@@ -1,7 +1,7 @@
 // Dots: the name, titles, text and rules are laid out by the browser, then drawn as dots on a canvas.
 // Changing page pulls the "magnets" off (dots loosen and drift) and sets new ones (dots are pulled in).
 // Body text crossfades to the real font once its dots have landed.
-import { dom, state, S } from "./state";
+import { dom, state, S, dotSizeNow, buzzNow } from "./state";
 
 export const BUZZ_SEL = ".hd a, .hd button, .t-big, .t-mid, .t-title";   // these stay as dots and gently buzz
 const PHYS = { k: .03, damp: .82 };
@@ -141,7 +141,7 @@ function sampleElement(el: HTMLElement, key: string, sizeMul: number, buzz: bool
 export function collectTargets(pageId: string): Target[] {
   const els = [...document.querySelectorAll<HTMLElement>("[data-p]")];
   const PL = state.PL, plr = PL && PL.getBoundingClientRect();
-  let dens = S.dots.dotSize, targets: Target[] = [];
+  let dens = dotSizeNow(), targets: Target[] = [];
   for (let pass = 0; pass < 3; pass++) {
     targets = []; keyEl = new Map();
     els.forEach((el, i) => {
@@ -379,7 +379,7 @@ function update(p: Dot, now: number, dt: number) {
 
 function draw(now: number) {
   if (buf.length < P.length * 4) buf = new Float32Array(P.length * 6);
-  const o1 = spaceOff(1), o2 = spaceOff(2), D = S.dots;
+  const o1 = spaceOff(1), o2 = spaceOff(2), D = S.dots, buzz = buzzNow();
   let plTop = 0, plBot = 0;
   if (state.PL) { const r = state.PL.getBoundingClientRect(); plTop = r.top; plBot = r.bottom; }
   let n = 0;
@@ -391,9 +391,9 @@ function draw(now: number) {
     else if (p.sc === 2) { y -= o2; if (y < plTop - 1 || y > plBot + 1) continue; }   // clipped to the list
     if (y < -10 || y > H + 10 || x < -10 || x > W + 10) continue;
     const r = Math.max(p.r, .3);
-    if (p.bz && !p.tw && D.buzz > 0) {
+    if (p.bz && !p.tw && buzz > 0) {
       // Calm buzz: each dot hums on its own slow, small orbit (~1 Hz, ≤1px).
-      const amp = Math.min(r * .55, 1.1) * D.buzz, f = .004 + (p.seed % 1) * .006;
+      const amp = Math.min(r * .55, 1.1) * buzz, f = .004 + (p.seed % 1) * .006;
       x += Math.sin(now * f + p.seed) * amp;
       y += Math.cos(now * f * .87 + p.seed * 1.7) * amp;
     }
