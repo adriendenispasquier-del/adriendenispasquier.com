@@ -44,7 +44,7 @@ body.reveal [data-p], body.reveal [data-p] * { color: rgba(220, 40, 40, .55) !im
 
 /* ── Left column ── */
 .lcol { position: fixed; top: var(--hh); bottom: 0; left: var(--gx); width: calc(var(--lw) - var(--gx)); z-index: 5; container-type: inline-size; }
-.lscroll { height: 100%; overflow-y: auto; scrollbar-width: none; padding: 64px 9cqw 64px 8.5cqw; }
+.lscroll { --pl: 8.5cqw; --pr: 9cqw; height: 100%; overflow-y: auto; scrollbar-width: none; padding: 64px var(--pr) 64px var(--pl); }
 .lscroll::-webkit-scrollbar, .gal::-webkit-scrollbar, .film::-webkit-scrollbar { display: none; }
 .vrule { position: fixed; left: var(--lw); top: calc(var(--hh) + 30px); bottom: 36px; width: 0; border-left: var(--line) solid var(--ink); z-index: 5; }
 
@@ -115,12 +115,12 @@ a.gi:hover .cap { opacity: 1; }
 
 /* ── Grid. Open (default): lines between things. Closed: the lines close into cells. None: no lines. ── */
 body.grid-none { --line: 0px; }
-body.grid-closed .plist a, body.grid-closed .services, body.grid-closed .credits, body.grid-closed .next {
-  border: var(--line) solid var(--ink); }
-body.grid-closed .plist li + li a { border-top: 0; }
-body.grid-closed .services { padding: .7em .8em; }
-body.grid-closed .credits { padding: .9em .8em; }
-body.grid-closed .next { padding: .55em .8em .45em; }
+/* Closed: nothing is boxed; each horizontal line runs the full width of the text column, so it meets the
+   vertical rule (and the lines form cells). The text stays where it was. */
+body.grid-closed .services, body.grid-closed .credits, body.grid-closed .next, body.grid-closed .plist {
+  margin-left: calc(-1 * var(--pl)); margin-right: calc(-1 * var(--pr)); padding-left: var(--pl); padding-right: var(--pr); }
+body.grid-closed .plist { padding-left: 0; padding-right: 0; }
+body.grid-closed .plist a { padding-left: calc(.45em + var(--pl)); padding-right: calc(.45em + var(--pr)); }
 body.grid-closed .vrule { top: var(--hh); bottom: 0; }   /* runs from the header line to the bottom */
 
 /* ── Phone: one main column (text, then the pictures) and the film down the right side.
@@ -131,7 +131,7 @@ body.grid-closed .vrule { top: var(--hh); bottom: 0; }   /* runs from the header
        overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
   #M::-webkit-scrollbar { display: none; }
   .lcol { position: relative; inset: auto; left: auto; width: 100%; }
-  .lscroll { height: auto; overflow: visible; padding: 26px 0 30px; }
+  .lscroll { --pl: 0px; --pr: 0px; height: auto; overflow: visible; padding: 26px 0 30px; }
 
   .vrule { display: none; }
   .gal { position: relative; inset: auto; left: auto; width: 100%; height: auto; overflow: visible; }
