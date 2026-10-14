@@ -23,10 +23,10 @@
     ]
   },
   "layout": {
-    "gap": 5,
-    "t": 39.48,
-    "p": 55.7,
-    "f": 4.82
+    "gap": 5.4,
+    "t": 37.23,
+    "p": 57.07,
+    "f": 5.7
   },
   "layoutPhone": {
     "gap": 3.7,
@@ -35,15 +35,15 @@
   },
   "dots": {
     "shape": "round",
-    "dotSize": 0.4,
-    "fill": 0.63,
-    "buzz": 0.8,
+    "dotSize": 0.3,
+    "fill": 0.42,
+    "buzz": 0.55,
     "real": true
   },
-  "grid": "none",
+  "grid": "closed",
   "type": {
-    "name": 0.7,
-    "titles": 1.32,
+    "name": 0.96,
+    "titles": 1.16,
     "lists": 1,
     "text": 1
   }
