@@ -199,7 +199,7 @@ function stripHtml(g: number) {
   const it = itemAt(g), rr = (it.m && RATIO.get(it.m)) || (it.ph ? "4 / 5" : ""), st = rr ? ` style="aspect-ratio:${rr}"` : "";
   const data = ` data-i="${it.i}" data-g="${g}"${it.m ? ` data-m="${it.m.replace(/"/g, "&quot;")}"` : ""}`;
   const inner = !it.m ? `<span class="ph">${it.ph || ""}</span>`
-    : isVideo(it.m) ? `<video src="${big(it.m)}" autoplay muted loop playsinline preload="metadata"></video>`
+    : isVideo(it.m) ? `<video src="${big(it.m)}" autoplay muted loop playsinline disablepictureinpicture controlslist="nodownload" preload="metadata"></video>`
     : `<img src="${big(it.m)}" alt="${it.cap || ""}" decoding="async"${fallback(it.m)}>`;
   const cap = it.cap ? `<span class="cap">${it.cap}</span>` : "";
   const gi = it.href ? `<a class="gi"${data} href="${it.href}"${st}>${inner}${cap}</a>` : `<div class="gi"${data}${st}>${inner}</div>`;
@@ -266,7 +266,7 @@ export function openLightbox(i: number) {
   lbIndex = (i + n) % n;
   const m = pageItems[lbIndex].m; if (!m) return;
   lbm.innerHTML = isVideo(m)
-    ? `<video src="${big(m)}" autoplay muted loop playsinline></video>`
+    ? `<video src="${big(m)}" autoplay muted loop playsinline disablepictureinpicture controlslist="nodownload"></video>`
     : `<img src="${big(m)}" alt=""${fallback(m)}>`;
   // Show the copy already loaded for the gallery at once, then swap in a sharper one when it arrives.
   const im = lbm.querySelector("img");

@@ -120,6 +120,11 @@ vin("v-dot").addEventListener("input", e => { V.dotSize = +(e.target as HTMLInpu
 vin("v-buzz").addEventListener("input", e => { V.buzz = +(e.target as HTMLInputElement).value; saveVisitor(); });
 document.getElementById("v-reset")!.addEventListener("click", () => { resetVisitor(); relayout(); resample(); showVisitor(); });
 
+// Pictures: no right-click menu ("Save image as…") and no dragging them out.
+const isPicture = (t: EventTarget | null) => !!(t as Element)?.closest?.(".gi, .fi, .lbm");
+document.addEventListener("contextmenu", e => { if (isPicture(e.target)) e.preventDefault(); });
+document.addEventListener("dragstart", e => { if (isPicture(e.target)) e.preventDefault(); });
+
 // The pull-off wave starts where you click.
 document.addEventListener("pointerdown", e => dots.setReleaseOrigin(e.clientX, e.clientY));
 document.querySelectorAll<HTMLElement>(".hd [data-k]").forEach(a => {
