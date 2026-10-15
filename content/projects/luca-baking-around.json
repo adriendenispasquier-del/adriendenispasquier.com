@@ -1,0 +1,21 @@
+{
+  "title": "Luca Baking Around",
+  "type": "Illustration - Visual content",
+  "order": 99,
+  "services": [
+    "Illustration"
+  ],
+  "text": "Luca is a young and talented baker from Napoli.\nWe met in Berlin, and I didn’t expect such genuine creative curiosity from a baker. I was very glad to discover that he, like more and more people, understands that creativity, being an artist, has to free itself from the general expectations of what it means. It is a way to think, a way to be, and it can connect unexpected worlds, like baking, photography, illustration...\n\nNo agenda here, just whatever comes out and always a pleasure.",
+  "credits": [
+    {
+      "label": "Featuring",
+      "value": "Luca Caputo Viglione",
+      "url": "https://instagram.com/caputoviglione"
+    }
+  ],
+  "media": [
+    "/uploads/Luca by Adrien Denis-Pasquier2.webp"
+  ],
+  "cover": "/uploads/Luca by Adrien Denis-Pasquier1.webp",
+  "draft": false
+}
