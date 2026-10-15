@@ -35,8 +35,8 @@
   },
   "dots": {
     "shape": "round",
-    "dotSize": 0.3,
-    "fill": 0.59,
+    "dotSize": 0.35,
+    "fill": 0.67,
     "buzz": 0.55,
     "real": true
   },
