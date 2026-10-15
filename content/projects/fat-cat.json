@@ -1,7 +1,7 @@
 {
   "title": "Fat Cat",
   "type": "Photography",
-  "order": 2,
+  "order": 3,
   "services": [
     "Product photography",
     "Set design"
@@ -10,7 +10,8 @@
   "credits": [
     {
       "label": "Featuring",
-      "value": "Quentin Pierre-Antoine, Emmy Jeannin"
+      "value": "Quentin Pierre-Antoine, Emmy Jeannin",
+      "url": ""
     }
   ],
   "media": [
@@ -27,5 +28,7 @@
     "FatCat_by_Adrien_Denis-Pasquier_10_inbrt9",
     "FatCat_by_Adrien_Denis-Pasquier_11_jf6jtk",
     "FatCat_by_Adrien_Denis-Pasquier_12_bdqqd4"
-  ]
+  ],
+  "cover": "",
+  "draft": false
 }
