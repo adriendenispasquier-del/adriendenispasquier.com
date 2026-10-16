@@ -19,14 +19,19 @@
         "page": "/about/",
         "bg": "#cccec5",
         "ink": "#440d09"
+      },
+      {
+        "page": "/work/luca-baking-around/",
+        "bg": "#fbfcf8",
+        "ink": "#1c1c1c"
       }
     ]
   },
   "layout": {
     "gap": 5.4,
-    "t": 37.23,
-    "p": 57.07,
-    "f": 5.7
+    "t": 24.37,
+    "p": 71.9,
+    "f": 3.73
   },
   "layoutPhone": {
     "gap": 3.7,
@@ -35,15 +40,15 @@
   },
   "dots": {
     "shape": "round",
-    "dotSize": 0.35,
-    "fill": 0.67,
-    "buzz": 0.55,
+    "dotSize": 0.3,
+    "fill": 0.7,
+    "buzz": 0,
     "real": true
   },
   "grid": "closed",
   "type": {
     "name": 0.72,
-    "titles": 1.16,
+    "titles": 1.28,
     "lists": 1,
     "text": 1
   }
