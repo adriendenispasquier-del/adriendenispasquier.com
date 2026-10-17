@@ -19,8 +19,10 @@ export function norm(m: Media): Media {
 }
 
 const isLocal = (m: Media) => m.startsWith("/") || /^https?:/.test(m);
-/** Files in the site may have spaces etc. in their names (uploads keep the original file name). */
-const local = (m: Media) => /%[0-9a-f]{2}/i.test(m) ? m : encodeURI(m);
+/** Files in the site keep their original names, which may contain spaces, "#", "?", accents…: each part of the
+ *  path is encoded ("#" would otherwise cut the address short). Full https:// addresses are left as they are. */
+const local = (m: Media) => !m.startsWith("/") ? m
+  : m.split("/").map(seg => /%[0-9a-f]{2}/i.test(seg) ? seg : encodeURIComponent(seg)).join("/");
 export const isVideo = (m: Media) => m.startsWith("video:") || /\.(mp4|webm|mov)$/i.test(m) && isLocal(m);
 const vid = (m: Media) => m.replace(/^video:/, "");
 

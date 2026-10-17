@@ -31,7 +31,7 @@ export default defineConfig({
               `<meta property="og:title" content="${attr(page.title)}">`,
               `<meta property="og:description" content="${attr(page.description)}">`,
               `<meta property="og:url" content="${url}">`,
-              `<meta property="og:image" content="${attr(page.image)}">`,
+              `<meta property="og:image" content="${attr(page.image.startsWith("/") ? ORIGIN + page.image : page.image)}">`,
               `<meta name="twitter:card" content="summary_large_image">`,
             ].map(t => "  " + t).join("\n") + "\n</head>")
             .replace(`<div class="lscroll" id="L"></div>`, `<div class="lscroll" id="L">${page.left}</div>`);
