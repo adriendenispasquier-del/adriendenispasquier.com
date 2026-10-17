@@ -14,13 +14,25 @@ site_url: https://adriendenispasquier.com
 media_folder: public/uploads
 public_folder: /uploads
 
-# Cloudinary: to upload to and pick from your Cloudinary library instead, add your API key below and remove the #s.
-# (Cloudinary → Settings → API Keys. The key is public; never put the API secret here.)
-# media_libraries:
-#   cloudinary:
-#     config:
-#       cloud_name: df2kod03a
-#       api_key: "YOUR_API_KEY"
+# Uploads are prepared in the browser before they are sent: photos (JPEG, PNG…) become WebP of at most
+# 2400 px, which keeps saves small and fast. Animated GIFs are kept as they are. Files over 10 MB are refused
+# with a message (big videos and GIFs belong on Cloudinary: paste their link instead).
+media_libraries:
+  default:
+    config:
+      max_file_size: 10000000
+      transformations:
+        raster_image:
+          format: webp
+          quality: 85
+          width: 2400
+          height: 2400
+  # Cloudinary: to upload to and pick from your Cloudinary library too, add your API key below and remove the #s.
+  # (Cloudinary → Settings → API Keys. The key is public; never put the API secret here.)
+  # cloudinary:
+  #   config:
+  #     cloud_name: df2kod03a
+  #     api_key: "YOUR_API_KEY"
 
 collections:
   - name: projects
