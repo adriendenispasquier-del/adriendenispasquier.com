@@ -29,7 +29,7 @@ async function go(path: string) {
   closeLightbox();
   if (!first) {
     const keep = new Set(KEEP_ALWAYS);
-    if (page.workAbout && prev?.workAbout) { keep.add("work"); keep.add("about"); }
+    for (const k of page.keys || []) if (prev?.keys?.includes(k)) keep.add(k);   // shared menu titles morph in place
     dots.release(keep);
     G.classList.add("out"); F.classList.add("out");
   }
@@ -127,6 +127,14 @@ document.addEventListener("dragstart", e => { if (isPicture(e.target)) e.prevent
 
 // The pull-off wave starts where you click.
 document.addEventListener("pointerdown", e => dots.setReleaseOrigin(e.clientX, e.clientY));
+// On hover, Denis / "-" / Pasquier say what they do (Color Shift / Secret Settings / Personal): the dots morph.
+let ht: number | undefined;
+const reshape = () => { clearTimeout(ht); ht = window.setTimeout(() => resample(), 40); };
+document.querySelectorAll<HTMLElement>(".hd [data-alt]").forEach(el => {
+  const base = el.textContent!;
+  el.addEventListener("pointerenter", e => { if (e.pointerType === "touch") return; el.textContent = el.dataset.alt!; reshape(); });
+  el.addEventListener("pointerleave", () => { if (el.textContent !== base) { el.textContent = base; reshape(); } });
+});
 document.querySelectorAll<HTMLElement>(".hd [data-k]").forEach(a => {
   a.addEventListener("pointerenter", () => dots.setHoverKey(a.dataset.k!));
   a.addEventListener("pointerleave", () => dots.setHoverKey(null));

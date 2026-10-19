@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { prepare, makePages, ORIGIN, LEGACY, type Site } from "./src/pages";
+import { dominantColours } from "./build/colours";
 
 const root = (...p: string[]) => resolve(__dirname, ...p);
 const json = (f: string) => JSON.parse(readFileSync(f, "utf8"));
@@ -10,6 +11,12 @@ const attr = (s: string) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").rep
 export default defineConfig({
   build: { target: "es2022" },
   plugins: [
+    {
+      // import COLOURS from "virtual:colours" → { picture: "#rrggbb" } (dominant colour of each picture)
+      name: "colours",
+      resolveId: id => id === "virtual:colours" ? "\0virtual:colours" : undefined,
+      async load(id) { if (id === "\0virtual:colours") return `export default ${JSON.stringify(await dominantColours(__dirname))};`; },
+    },
     {
       // After the build, write a real HTML page for every address (title, description, link previews and the
       // page text already in place, for search engines and shared links), a 404 page and the sitemap.

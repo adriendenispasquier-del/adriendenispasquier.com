@@ -3,7 +3,8 @@
 // Desktop: text, pictures and film, in proportion. Phone: the main column (text, then pictures) and the film,
 // which mirrors the pictures exactly. Work is a carousel with no start and no end.
 import { dom, state } from "./state";
-import { PROJECTS, LIST_COPIES, big, huge, thumb, fallback, isVideo, type Item } from "./content";
+import COLOURS from "virtual:colours";
+import { LIST_COPIES, big, huge, thumb, fallback, isVideo, type Item } from "./content";
 
 const { L, G, F, GT, FT, M, frame: frameEl, lb, lbm } = dom;
 const H = () => innerHeight;
@@ -168,7 +169,7 @@ function onScrolled() {
   if (PL) {
     const a = ks[k], b = ks[k + 1];
     const frac = b ? Math.min(1, Math.max(0, (c - mid(a)) / (mid(b) - mid(a)))) : 0;
-    const rows = PL.children as HTMLCollectionOf<HTMLElement>, n = PROJECTS.length, j = 2 * n + (+a.dataset.i!);
+    const rows = PL.children as HTMLCollectionOf<HTMLElement>, n = rows.length / LIST_COPIES, j = 2 * n + (+a.dataset.i!);
     const r0 = rows[j], r1 = rows[j + 1] || r0;
     PL.scrollTop = mid(r0) + (mid(r1) - mid(r0)) * frac - PL.offsetTop - PL.clientHeight / 2;
     mark = (frac < .5 ? r0 : r1).querySelector("a");
@@ -179,7 +180,7 @@ function onScrolled() {
 /** Put the Work list on its middle copy before its dots are sampled. */
 export function centreList() {
   const PL = state.PL; if (!PL) return;
-  const r = PL.children[2 * PROJECTS.length] as HTMLElement;
+  const r = PL.children[2 * PL.children.length / LIST_COPIES] as HTMLElement;
   if (r && LIST_COPIES >= 3) PL.scrollTop = r.offsetTop + r.offsetHeight / 2 - PL.offsetTop - PL.clientHeight / 2;
 }
 
@@ -196,7 +197,9 @@ function itemAt(g: number): Item & { i: number } {
   return { ...it, m: alts[((r % alts.length) + alts.length) % alts.length], i: p };
 }
 function stripHtml(g: number) {
-  const it = itemAt(g), rr = (it.m && RATIO.get(it.m)) || (it.ph ? "4 / 5" : ""), st = rr ? ` style="aspect-ratio:${rr}"` : "";
+  const it = itemAt(g), rr = (it.m && RATIO.get(it.m)) || (it.ph ? "4 / 5" : ""), col = it.m && COLOURS[it.m];
+  // While loading, the box shows the picture's dominant colour.
+  const st = rr || col ? ` style="${rr ? `aspect-ratio:${rr};` : ""}${col ? `--ph:${col}` : ""}"` : "";
   const data = ` data-i="${it.i}" data-g="${g}"${it.m ? ` data-m="${it.m.replace(/"/g, "&quot;")}"` : ""}`;
   const inner = !it.m ? `<span class="ph">${it.ph || ""}</span>`
     : isVideo(it.m) ? `<video src="${big(it.m)}" autoplay muted loop playsinline disablepictureinpicture controlslist="nodownload" preload="metadata"></video>`

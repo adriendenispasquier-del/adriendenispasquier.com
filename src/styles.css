@@ -78,7 +78,7 @@ body.reveal [data-p], body.reveal [data-p] * { color: rgba(220, 40, 40, .55) !im
 .gal { position: fixed; top: 0; bottom: 0; left: var(--gl); width: var(--gw); overflow-y: auto; scrollbar-width: none; z-index: 1;
        transition: opacity .25s ease; }
 .gtrack { display: flex; flex-direction: column; gap: var(--gap); }
-.gi { position: relative; display: block; width: 100%; aspect-ratio: 4 / 3; background: color-mix(in srgb, var(--ink) 5%, transparent); overflow: hidden; }
+.gi { position: relative; display: block; width: 100%; aspect-ratio: 4 / 3; background: var(--ph, color-mix(in srgb, var(--ink) 5%, transparent)); overflow: hidden; }
 .gi img, .gi video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0; transition: opacity .7s ease; }
 .gi .in { opacity: 1; }
 .gi.ld, .fi.ld { background: none; }
@@ -106,7 +106,7 @@ a.gi:hover .cap { opacity: 1; }
         transition: opacity .25s ease; }
 .ftrack { display: flex; flex-direction: column; gap: var(--fgap, 4px); }
 .fi { position: relative; display: block; width: 100%; aspect-ratio: 4 / 3; overflow: hidden; cursor: pointer;
-      background: color-mix(in srgb, var(--ink) 6%, transparent); }
+      background: var(--ph, color-mix(in srgb, var(--ink) 6%, transparent)); }
 .fi img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .6s ease; }
 .fi img.in { opacity: 1; }
 .fi:hover img { filter: brightness(.85); }

@@ -13,6 +13,7 @@ export interface Project {
   media: Media[];
   cover?: Media;                      // picture used on Work and in link previews; defaults to the first one
   draft?: boolean;                    // hidden from the site
+  personal?: boolean;                 // listed under Personal (Pasquier in the header) instead of Work
 }
 export interface Site {
   name: string;
@@ -29,7 +30,7 @@ export interface Page {
   items: Item[];         // pictures
   loop?: boolean;        // carousel without start or end (Work)
   zoom?: boolean;        // pictures open full screen when clicked
-  workAbout?: boolean;   // has the Work / About titles (they morph between these pages)
+  keys?: string[];       // menu titles on this page (Work, About, Personal): shared ones morph between pages
 }
 
 export const LIST_COPIES = 5;
@@ -59,13 +60,29 @@ export function prepare(files: [string, Omit<Project, "slug">][]): Project[] {
 export function makePages(PROJECTS: Project[], SITE: Site) {
   const projectPath = (p: Project) => `/work/${p.slug}/`;
   const coverOf = (p: Project) => p.cover || p.media[0];
+  const WORK = PROJECTS.filter(p => !p.personal), PERSONAL = PROJECTS.filter(p => p.personal);
+  const firstCover = () => share(coverOf(WORK[0] || PROJECTS[0]));
+
+  /** Work and Personal: a carousel of the projects' pictures with the project list. */
+  function listPage(path: string, group: Project[], menu: string, keys: string[], title: string, description: string): Page {
+    const list = group.length
+      ? `<ul class="plist" id="PL">${Array.from({ length: LIST_COPIES }, (_, c) => group.map((p, i) =>
+          `<li data-c="${c}"><a href="${projectPath(p)}" data-p data-i="${i}"><span>${esc(p.title)}</span><span>${esc(p.type)}</span></a></li>`).join("")).join("")}</ul>`
+      : `<p class="mono" data-p style="margin-top:auto">Soon.</p>`;
+    return {
+      path, title, description, keys, loop: group.length > 0, image: group.length ? share(coverOf(group[0])) : firstCover(),
+      left: `<div class="lhome"><div class="menu">${menu}</div>${list}</div>`,
+      items: group.length ? group.map(p => ({ m: coverOf(p), href: projectPath(p), cap: p.title, alts: [...new Set([coverOf(p), ...p.media])] }))
+        : [{ m: null, ph: "Soon" }],
+    };
+  }
 
   function buildPage(raw: string): Page {
     const path = canonical(raw);
     const m = path.match(/^\/work\/([^/]+)\/$/);
     const p = m && PROJECTS.find(p => p.slug === m[1]);
     if (p) {
-      const nx = PROJECTS[(PROJECTS.indexOf(p) + 1) % PROJECTS.length];
+      const group = p.personal ? PERSONAL : WORK, nx = group[(group.indexOf(p) + 1) % group.length];
       return {
         path, title: `${p.title} — ${SITE.name}`, description: firstSentence(p.text) || SITE.description, image: share(coverOf(p)),
         left: `<div class="lproj">
@@ -73,7 +90,7 @@ export function makePages(PROJECTS: Project[], SITE: Site) {
           <p class="mono services" data-p>${p.services.map(esc).join(" - ")}</p>
           ${paras(p.text)}
           ${p.credits?.length ? `<div class="mono credits" data-p><span>Credits</span>${p.credits.map(c => `<span><b>${inline(c.label)}</b>${c.url ? link(c.url, esc(c.value)) : inline(c.value)}</span>`).join("")}</div>` : ""}
-          <a class="next" href="${projectPath(nx)}" data-p><span>Next — ${esc(nx.title)}</span><span>→</span></a>
+          ${nx !== p ? `<a class="next" href="${projectPath(nx)}" data-p><span>Next — ${esc(nx.title)}</span><span>→</span></a>` : ""}
         </div>`,
         items: p.media.map(m => ({ m, cap: p.title })), zoom: true,
       };
@@ -82,8 +99,8 @@ export function makePages(PROJECTS: Project[], SITE: Site) {
       const a = SITE.about, portrait = a.portrait ? norm(a.portrait) : null;
       const contact = a.contact.map(c => c.url ? `<a href="${esc(linkOf(c.url))}" target="_blank" rel="noopener">${esc(c.label)}</a>` : `<span>${esc(c.label)}</span>`).join("");
       return {
-        path, title: `About — ${SITE.name}`, description: firstSentence(a.text) || SITE.description, workAbout: true,
-        image: portrait ? share(portrait) : share(coverOf(PROJECTS[0])),
+        path, title: `About — ${SITE.name}`, description: firstSentence(a.text) || SITE.description, keys: ["work", "about"],
+        image: portrait ? share(portrait) : firstCover(),
         left: `<div class="labout">
           <div class="menu"><a href="/" class="t-mid" data-p data-k="work">Work</a><a href="/about/" class="t-big" data-p data-k="about">About</a></div>
           ${paras(a.text, ' style="margin-bottom:1.5em"')}
@@ -93,19 +110,16 @@ export function makePages(PROJECTS: Project[], SITE: Site) {
         items: [{ m: portrait, ph: "Portrait", cap: SITE.name }],
       };
     }
-    return {
-      path: "/", title: SITE.name, description: SITE.description, workAbout: true, loop: true, image: share(coverOf(PROJECTS[0])),
-      left: `<div class="lhome">
-        <div class="menu"><a href="/" class="t-big" data-p data-k="work">Work</a><a href="/about/" class="t-mid" data-p data-k="about">About</a></div>
-        <ul class="plist" id="PL">${Array.from({ length: LIST_COPIES }, (_, c) => PROJECTS.map((p, i) =>
-          `<li data-c="${c}"><a href="${projectPath(p)}" data-p data-i="${i}"><span>${esc(p.title)}</span><span>${esc(p.type)}</span></a></li>`).join("")).join("")}</ul>
-      </div>`,
-      items: PROJECTS.map(p => ({ m: coverOf(p), href: projectPath(p), cap: p.title, alts: [...new Set([coverOf(p), ...p.media])] })),
-    };
+    if (path === "/personal/") return listPage(path, PERSONAL,
+      `<a href="/personal/" class="t-big" data-p data-k="personal">Personal</a><a href="/" class="t-mid" data-p data-k="work">Work</a>`,
+      ["personal", "work"], `Personal — ${SITE.name}`, SITE.description);
+    return listPage("/", WORK,
+      `<a href="/" class="t-big" data-p data-k="work">Work</a><a href="/about/" class="t-mid" data-p data-k="about">About</a>`,
+      ["work", "about"], SITE.name, SITE.description);
   }
 
   /** Every address of the site (for the sitemap and the pages written at build time). */
-  const paths = () => ["/", "/about/", ...PROJECTS.map(projectPath)];
+  const paths = () => ["/", "/about/", "/personal/", ...PROJECTS.map(projectPath)];
 
   return { buildPage, paths };
 }
