@@ -83,6 +83,7 @@ collections:
         hint: In page order; drag to reorder. The first one is the cover unless one is set below.
         field: { name: item, label: Picture or video, widget: file }
       - { name: cover, label: Cover (optional), widget: file, required: false, hint: Picture for the Work page and link previews. }
+      - { name: personal, label: Personal, widget: boolean, required: false, default: false, hint: "Shown under Personal (Pasquier in the header) instead of Work." }
       - { name: draft, label: Hidden, widget: boolean, required: false, default: false, hint: Hidden projects are not on the site. }
 
   - name: site

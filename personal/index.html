@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Personal — Adrien Denis-Pasquier</title>
+  <meta name="description" content="Multidisciplinary creative based in Berlin, working across brand design, illustration, photography and visual direction.">
+  <link rel="canonical" href="https://adriendenispasquier.com/personal/">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="manifest" href="/manifest.json">
+  <!-- Fonts: Adobe Fonts kit (Redaction, Degular Mono) -->
+  <link rel="preconnect" href="https://use.typekit.net" crossorigin>
+  <link rel="stylesheet" href="https://use.typekit.net/nva7btn.css">
+  <script type="module" crossorigin src="/assets/index-DzmNGBVF.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-DD5Bu8yj.css">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Adrien Denis-Pasquier">
+  <meta property="og:title" content="Personal — Adrien Denis-Pasquier">
+  <meta property="og:description" content="Multidisciplinary creative based in Berlin, working across brand design, illustration, photography and visual direction.">
+  <meta property="og:url" content="https://adriendenispasquier.com/personal/">
+  <meta property="og:image" content="https://adriendenispasquier.com/uploads/Luca%20by%20Adrien%20Denis-Pasquier1.webp">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+  <canvas id="c"></canvas>
+
+  <header class="hd">
+    <a href="/" data-p data-k="h1">Adrien</a>
+    <button type="button" id="invert" data-p data-k="h2" data-alt="Color Shift" aria-pressed="false" aria-label="Color shift">Denis</button>
+    <button type="button" id="vbtn" data-p data-k="h3" data-alt="Secret Settings" aria-expanded="false" aria-controls="vmenu" aria-label="Secret settings">-</button>
+    <a href="/personal/" data-p data-k="h4" data-alt="Personal">Pasquier</a>
+    <div class="hline" data-p data-k="hline"></div>
+  </header>
+
+  <!-- Visitor settings, opened with the "-" in the header -->
+  <div class="vmenu" id="vmenu" role="dialog" aria-label="Settings">
+    <label class="vrow vdesk"><span>Text</span><input type="range" id="v-t" min="15" max="60" step="0.1"></label>
+    <label class="vrow"><span>Film</span><input type="range" id="v-f" min="3" max="20" step="0.1"></label>
+    <label class="vrow"><span>Dots</span><input type="range" id="v-dot" min="0.3" max="1.6" step="0.05"></label>
+    <label class="vrow"><span>Buzz</span><input type="range" id="v-buzz" min="0" max="3" step="0.05"></label>
+    <div class="vrow vbtns"><button type="button" id="v-reset">Reset</button></div>
+  </div>
+
+  <main id="M">
+    <div class="lcol"><div class="lscroll" id="L"><div class="lhome"><div class="menu"><a href="/personal/" class="t-big" data-p data-k="personal">Personal</a><a href="/" class="t-mid" data-p data-k="work">Work</a></div><p class="mono" data-p style="margin-top:auto">Soon.</p></div></div></div>
+    <div class="vrule" data-p data-k="vrule"></div>
+    <div class="gal" id="G"><div class="gtrack" id="GT"></div></div>
+  </main>
+  <!-- The film stays outside the scrolling main column: iOS Safari clips fixed elements to a scrolling parent. -->
+  <div class="fwrap">
+    <div class="film" id="F"><div class="ftrack" id="FT"></div></div>
+    <div class="frame" id="frame"></div>
+  </div>
+
+  <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Picture">
+    <button class="lbx" type="button" aria-label="Close"></button>
+    <div class="lbm" id="lbm"></div>
+  </div>
+
+</body>
+</html>
