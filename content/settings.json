@@ -34,9 +34,9 @@
   },
   "layout": {
     "gap": 5.4,
-    "t": 24.37,
-    "p": 71.9,
-    "f": 3.73
+    "t": 38.15,
+    "p": 57.85,
+    "f": 4
   },
   "layoutPhone": {
     "gap": 3.7,
@@ -53,7 +53,7 @@
   "grid": "closed",
   "type": {
     "name": 0.72,
-    "titles": 1.28,
+    "titles": 1.1,
     "lists": 1,
     "text": 1
   }
