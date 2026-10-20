@@ -29,6 +29,11 @@
         "page": "/work/oddkin/",
         "bg": "#c2cd9d",
         "ink": "#212121"
+      },
+      {
+        "page": "/work/fat-cat/",
+        "bg": "#080808",
+        "ink": "#ffffff"
       }
     ]
   },
@@ -47,7 +52,7 @@
     "shape": "round",
     "dotSize": 0.3,
     "fill": 0.7,
-    "buzz": 0,
+    "buzz": 0.6,
     "real": true
   },
   "grid": "closed",
