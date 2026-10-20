@@ -16,12 +16,13 @@
     }
   ],
   "media": [
-    "/uploads/HOT COMPOST #1 Adrien Denis-Pasquier.webp",
     "/uploads/HOT COMPOST #2 Adrien Denis-Pasquier.webp",
-    "/uploads/Across Borders Burgenland post-1.jpg",
+    "/uploads/HOT COMPOST #1 Adrien Denis-Pasquier.webp",
     "/uploads/Sunday Brunch Oddkin Adrien Denis Pasquier.webp",
-    "/uploads/Sunday Brunch Oddkin Adrien Denis Pasquier2.webp"
+    "/uploads/Sunday Brunch Oddkin Adrien Denis Pasquier2.webp",
+    "/uploads/Across Borders Burgenland post-1.jpg",
+    "/uploads/Primitive mistakes.webp"
   ],
   "cover": "",
-  "draft": true
+  "draft": false
 }
