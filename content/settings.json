@@ -58,8 +58,8 @@
   "grid": "closed",
   "type": {
     "name": 0.72,
-    "titles": 1.1,
-    "lists": 1,
+    "titles": 0.96,
+    "lists": 0.72,
     "text": 1
   }
 }
