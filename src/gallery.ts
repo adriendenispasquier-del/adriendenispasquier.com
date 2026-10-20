@@ -277,6 +277,8 @@ export function openLightbox(i: number) {
     const hi = new Image(); hi.src = huge(m);
     hi.onload = () => { if (im.isConnected) im.src = hi.src; };
   }
+  // Load the following picture now, so clicking through feels instant.
+  const nx = pageItems[(lbIndex + 1) % n].m; if (nx && !isVideo(nx)) new Image().src = big(nx);
   lbOpen = true; lb.classList.add("open");
 }
 export function closeLightbox() {
@@ -288,4 +290,5 @@ GT.addEventListener("click", e => {
   if (!state.page?.zoom) return;
   const it = (e.target as Element).closest<HTMLElement>(".gi"); if (it) openLightbox(+it.dataset.i!);
 });
-lb.addEventListener("click", e => { if (!lbm.contains(e.target as Node)) closeLightbox(); });   // outside the picture, or the cross
+// On the picture: the next one. Outside it, or on the cross: close.
+lb.addEventListener("click", e => { if (lbm.contains(e.target as Node)) openLightbox(lbIndex + 1); else closeLightbox(); });
