@@ -10,11 +10,13 @@
   "credits": [
     {
       "label": "Featuring",
-      "value": "Finbar Laverty, Luca Caputo Viglione, Štěpán Batelka"
+      "value": "Finbar Laverty, Luca Caputo Viglione, Štěpán Batelka",
+      "url": ""
     },
     {
       "label": "Products",
-      "value": "Albatross Bakery, Coolattin Cheddar, Puro, Rocket Wine, Olatu, Pirate Cannery, Kolo Coffee, I Contadini, Honest Toil, Urstrom Käse, Bouche Kombucha, Companion Tea, ROY Kombucha, Caseificio Rosola"
+      "value": "Albatross Bakery, Coolattin Cheddar, Puro, Rocket Wine, Olatu, Pirate Cannery, Kolo Coffee, I Contadini, Honest Toil, Urstrom Käse, Bouche Kombucha, Companion Tea, ROY Kombucha, Caseificio Rosola",
+      "url": ""
     }
   ],
   "media": [
@@ -29,5 +31,7 @@
     "Archipel_by_Adrien_Denis-Pasquier_4_czzka4",
     "Archipel_by_Adrien_Denis-Pasquier_11_hd7wg7",
     "Archipel_by_Adrien_Denis-Pasquier_12_hyb7td"
-  ]
+  ],
+  "cover": "",
+  "draft": true
 }
