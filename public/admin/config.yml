@@ -181,6 +181,27 @@ collections:
               - { name: titles, label: Titles, widget: number, value_type: float, step: 0.02, default: 1 }
               - { name: lists, label: Lists, widget: number, value_type: float, step: 0.02, default: 1 }
               - { name: text, label: Text, widget: number, value_type: float, step: 0.02, default: 1 }
+          - name: fontPhone
+            label: Font (phone)
+            widget: select
+            default: pair
+            hint: "Redaction + Degular Mono, or one family for everything (the Work list is then not in capitals)."
+            options:
+              - { label: Redaction + Degular Mono, value: pair }
+              - { label: Redaction, value: redaction }
+              - { label: Degular, value: degular }
+              - { label: Acumin Pro, value: acumin-pro }
+              - { label: Garamond Premier Pro, value: garamond-premier-pro }
+              - { label: Castoro, value: castoro }
+          - name: typePhone
+            label: Font sizes (phone)
+            widget: object
+            hint: "Multipliers: 1 = default, 1.2 = 20% bigger."
+            fields:
+              - { name: name, label: Name (header), widget: number, value_type: float, step: 0.02, default: 1 }
+              - { name: titles, label: Titles, widget: number, value_type: float, step: 0.02, default: 1 }
+              - { name: lists, label: Lists, widget: number, value_type: float, step: 0.02, default: 1 }
+              - { name: text, label: Text, widget: number, value_type: float, step: 0.02, default: 1 }
           - name: dots
             label: Dots
             widget: object

@@ -33,6 +33,8 @@ export interface Settings {
   grid: string;                                              // "open" | "closed" | "none"
   font: string;                                              // "pair" (Redaction + Degular Mono) or one family for everything
   type: { name: number; titles: number; lists: number; text: number };   // font-size multipliers
+  fontPhone: string;                                         // the same two, for phones
+  typePhone: { name: number; titles: number; lists: number; text: number };
   panelPos?: { l: number; t: number };
 }
 type PageColors = { page: string; bg: string; ink: string }[];
@@ -42,12 +44,14 @@ const fromFile = (f: typeof defaults): Settings => ({
   grid: (f as any).grid || "open",
   font: (f as any).font || "pair",
   type: { name: 1, titles: 1, lists: 1, text: 1, ...(f as any).type },
+  fontPhone: (f as any).fontPhone || (f as any).font || "pair",
+  typePhone: { name: 1, titles: 1, lists: 1, text: 1, ...((f as any).typePhone || (f as any).type) },
   colors: { default: { ...f.colors.default }, pages: Object.fromEntries((f.colors.pages as PageColors).map(c => [canonical(c.page), { bg: c.bg, ink: c.ink }])) },
 });
 /** The settings as stored in content/settings.json (per-page colours as a list, for the admin). */
 export const toFile = (s: Settings) => ({
   colors: { default: s.colors.default, pages: Object.entries(s.colors.pages).map(([page, c]) => ({ page, ...c })) },
-  layout: s.layout, layoutPhone: s.layoutPhone, dots: s.dots, grid: s.grid, font: s.font, type: s.type,
+  layout: s.layout, layoutPhone: s.layoutPhone, dots: s.dots, grid: s.grid, font: s.font, type: s.type, fontPhone: s.fontPhone, typePhone: s.typePhone,
 });
 export const DEFAULTS = fromFile(defaults);
 export const S: Settings = clone(DEFAULTS);
@@ -63,6 +67,8 @@ export function loadTuning() {
     S.layoutPhone = { ...S.layoutPhone, ...st.layoutPhone };
     S.dots = { ...S.dots, ...st.dots };
     S.type = { ...S.type, ...st.type };
+    S.typePhone = { ...S.typePhone, ...st.typePhone };
+    if (st.fontPhone) S.fontPhone = st.fontPhone;
     if (st.grid) S.grid = st.grid;
     if (st.font) S.font = st.font;
     S.panelPos = st.panelPos;
@@ -106,7 +112,7 @@ export const FONTS: { v: string; label: string; css?: string; weight?: string; b
   { v: "castoro", label: "Castoro", css: '"castoro", Georgia, serif', bold: "400" },   // no bold: the Next link stays regular
 ];
 function applyFont() {
-  const rs = document.documentElement.style, f = FONTS.find(f => f.v === S.font && f.css);
+  const rs = document.documentElement.style, f = FONTS.find(f => f.v === (state.phone ? S.fontPhone : S.font) && f.css);
   if (f) { rs.setProperty("--serif", f.css!); rs.setProperty("--mono", f.css!); }
   else { rs.removeProperty("--serif"); rs.removeProperty("--mono"); }
   if (f?.weight) rs.setProperty("--weight", f.weight); else rs.removeProperty("--weight");
@@ -124,7 +130,8 @@ export function applyLayout() {
   // Grid and font sizes
   document.body.classList.remove("grid-open", "grid-closed", "grid-none");
   document.body.classList.add("grid-" + S.grid);
-  for (const k of ["name", "titles", "lists", "text"] as const) rs.setProperty(`--fs-${k}`, String(S.type[k]));
+  const type = state.phone ? S.typePhone : S.type;
+  for (const k of ["name", "titles", "lists", "text"] as const) rs.setProperty(`--fs-${k}`, String(type[k]));
   applyFont();
   if (state.phone) {
     const l = layoutPhoneNow(), g = l.gap, avail = 100 - 3 * g, mw = l.m / 100 * avail, fw = l.f / 100 * avail;

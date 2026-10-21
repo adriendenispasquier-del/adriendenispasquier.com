@@ -48,6 +48,10 @@ const HTML = `
       <button data-v="open" type="button">Open</button>
       <button data-v="none" type="button">None</button>
     </div>
+    <div class="seg" id="ftab">
+      <button data-v="desk" type="button">Desktop</button>
+      <button data-v="phone" type="button">Phone</button>
+    </div>
     <span class="lab">Font</span>
     <select id="font"></select>
     <span class="lab">Font sizes</span>
@@ -146,13 +150,22 @@ export function mount() {
   });
   const fsel = $("font") as HTMLSelectElement;
   fsel.innerHTML = FONTS.map(f => `<option value="${f.v}">${f.label}</option>`).join("");
-  fsel.value = S.font;
-  fsel.addEventListener("change", () => { S.font = fsel.value; changed(); });
+  // Font and sizes are set separately for desktop and phone (the tab shows which one you are editing).
+  let ftab = state.phone ? "phone" : "desk";
+  const isPh = () => ftab === "phone";
+  const type = () => isPh() ? S.typePhone : S.type;
   const sizes = ["name", "titles", "lists", "text"] as const;
-  const showSizes = () => sizes.forEach(k => { const i = inp("fs-" + k); i.value = String(S.type[k]); i.nextElementSibling!.textContent = Math.round(S.type[k] * 100) + "%"; });
-  showSizes();
-  for (const k of sizes) inp("fs-" + k).addEventListener("input", e => { S.type[k] = +(e.target as HTMLInputElement).value; showSizes(); changed(); });
-  $("fsreset").addEventListener("click", () => { S.type = { ...DEFAULTS.type }; showSizes(); changed(); });
+  const showSizes = () => sizes.forEach(k => { const i = inp("fs-" + k); i.value = String(type()[k]); i.nextElementSibling!.textContent = Math.round(type()[k] * 100) + "%"; });
+  const showFont = () => {
+    $("ftab").querySelectorAll<HTMLElement>("button").forEach(b => b.classList.toggle("on", b.dataset.v === ftab));
+    fsel.value = isPh() ? S.fontPhone : S.font; showSizes();
+  };
+  showFont();
+  $("ftab").addEventListener("click", e => { const b = (e.target as Element).closest<HTMLElement>("button"); if (b) { ftab = b.dataset.v!; showFont(); } });
+  state.mq.addEventListener("change", () => { ftab = state.phone ? "phone" : "desk"; showFont(); });
+  fsel.addEventListener("change", () => { if (isPh()) S.fontPhone = fsel.value; else S.font = fsel.value; changed(); });
+  for (const k of sizes) inp("fs-" + k).addEventListener("input", e => { type()[k] = +(e.target as HTMLInputElement).value; showSizes(); changed(); });
+  $("fsreset").addEventListener("click", () => { if (isPh()) S.typePhone = { ...DEFAULTS.typePhone }; else S.type = { ...DEFAULTS.type }; showSizes(); changed(); });
 
   // Dots
   const D = S.dots;

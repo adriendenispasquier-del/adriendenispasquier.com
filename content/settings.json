@@ -47,5 +47,12 @@
     "titles": 0.96,
     "lists": 0.8,
     "text": 0.94
+  },
+  "fontPhone": "castoro",
+  "typePhone": {
+    "name": 0.72,
+    "titles": 0.96,
+    "lists": 0.8,
+    "text": 0.94
   }
 }
