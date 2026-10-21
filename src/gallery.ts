@@ -290,5 +290,7 @@ GT.addEventListener("click", e => {
   if (!state.page?.zoom) return;
   const it = (e.target as Element).closest<HTMLElement>(".gi"); if (it) openLightbox(+it.dataset.i!);
 });
-// On the picture: the next one. Outside it, or on the cross: close.
-lb.addEventListener("click", e => { if (lbm.contains(e.target as Node)) openLightbox(lbIndex + 1); else closeLightbox(); });
+// On the picture: right half → the next one, left half → the previous one. Outside it, or on the cross: close.
+const rightHalf = (e: MouseEvent) => e.clientX > innerWidth / 2;
+lb.addEventListener("click", e => { if (lbm.contains(e.target as Node)) openLightbox(lbIndex + (rightHalf(e) ? 1 : -1)); else closeLightbox(); });
+lbm.addEventListener("mousemove", e => lbm.classList.toggle("back", !rightHalf(e)));

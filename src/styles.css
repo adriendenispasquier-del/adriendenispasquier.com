@@ -94,6 +94,7 @@ body.reveal [data-p], body.reveal [data-p] * { color: rgba(220, 40, 40, .55) !im
 .lb.open { opacity: 1; pointer-events: auto; }
 .lbm { display: flex; max-width: 100%; max-height: 100%; transform: scale(.985); transition: transform .35s cubic-bezier(.2,.7,.2,1); }
 .lb.open .lbm { transform: none; }
+.lbm.back img, .lbm.back video { cursor: w-resize; }
 .lbm img, .lbm video { cursor: e-resize; display: block; max-width: 86vw; max-height: 86vh; width: auto; height: auto; object-fit: contain; }
 .lbx { position: absolute; top: 20px; right: 24px; width: 32px; height: 32px; cursor: pointer; }
 .lbx::before, .lbx::after { content: ""; position: absolute; left: 4px; right: 4px; top: 50%; height: 1.5px; background: var(--ink); }
