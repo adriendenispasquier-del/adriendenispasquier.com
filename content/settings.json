@@ -38,10 +38,10 @@
     ]
   },
   "layout": {
-    "gap": 5.4,
-    "t": 45.1,
-    "p": 50.64,
-    "f": 4.26
+    "gap": 0.5,
+    "t": 42.89,
+    "p": 51.3,
+    "f": 5.81
   },
   "layoutPhone": {
     "gap": 3.7,
@@ -56,11 +56,11 @@
     "real": true
   },
   "grid": "closed",
-  "font": "pair",
+  "font": "garamond-premier-pro",
   "type": {
     "name": 0.72,
     "titles": 0.96,
-    "lists": 0.72,
+    "lists": 0.88,
     "text": 1
   }
 }
