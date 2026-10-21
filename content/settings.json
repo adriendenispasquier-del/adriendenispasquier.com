@@ -6,16 +6,6 @@
     },
     "pages": [
       {
-        "page": "/work/cyberleaders/",
-        "bg": "#000000",
-        "ink": "#b6d251"
-      },
-      {
-        "page": "/work/archipel-berlin/",
-        "bg": "#f4eee4",
-        "ink": "#1e1e1e"
-      },
-      {
         "page": "/about/",
         "bg": "#cccec5",
         "ink": "#440d09"
@@ -24,11 +14,6 @@
         "page": "/work/luca-baking-around/",
         "bg": "#fbfcf8",
         "ink": "#1c1c1c"
-      },
-      {
-        "page": "/work/oddkin/",
-        "bg": "#c2cd9d",
-        "ink": "#212121"
       },
       {
         "page": "/work/fat-cat/",
