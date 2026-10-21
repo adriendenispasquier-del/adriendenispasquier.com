@@ -8,6 +8,7 @@
 #panel:not([open]) summary::after { content: "+"; }
 #panel .pbody { padding: 0 12px 12px; display: grid; gap: 10px; }
 #panel label { display: grid; gap: 4px; }
+#panel select { padding: 6px 4px; border: 1px solid rgba(0,0,0,.15); background: #fff; border-radius: 6px; color: #111; font: inherit; }
 #panel label.row2 { grid-template-columns: auto 1fr; align-items: center; gap: 8px; }
 #panel .seg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
 #panel .seg button, #panel .btn { padding: 6px 4px; border: 1px solid rgba(0,0,0,.15); background: #fff; border-radius: 6px; cursor: pointer; color: #111; }

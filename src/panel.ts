@@ -2,7 +2,7 @@
 // "Publish" saves them to content/settings.json on GitHub (the site then rebuilds itself, about a minute);
 // "Copy settings" gives the same JSON to paste by hand.
 import "./panel.css";
-import { $, state, S, DEFAULTS, save, forgetTuning, applyColors, colorsFor, onColors, toFile } from "./state";
+import { $, state, S, DEFAULTS, FONTS, save, forgetTuning, applyColors, colorsFor, onColors, toFile } from "./state";
 import { PROJECTS } from "./content";
 import { setOnStat, showDots, realNow } from "./dots";
 import { replay, resample, relayout } from "./main";
@@ -48,6 +48,8 @@ const HTML = `
       <button data-v="open" type="button">Open</button>
       <button data-v="none" type="button">None</button>
     </div>
+    <span class="lab">Font</span>
+    <select id="font"></select>
     <span class="lab">Font sizes</span>
     <div class="lrow"><span>Name</span><input id="fs-name" type="range" min="0.5" max="2" step="0.02"><output></output></div>
     <div class="lrow"><span>Titles</span><input id="fs-titles" type="range" min="0.5" max="1.6" step="0.02"><output></output></div>
@@ -142,6 +144,10 @@ export function mount() {
     const b = (e.target as Element).closest<HTMLElement>("button"); if (!b) return;
     S.grid = b.dataset.v!; showGrid(); changed();
   });
+  const fsel = $("font") as HTMLSelectElement;
+  fsel.innerHTML = FONTS.map(f => `<option value="${f.v}">${f.label}</option>`).join("");
+  fsel.value = S.font;
+  fsel.addEventListener("change", () => { S.font = fsel.value; changed(); });
   const sizes = ["name", "titles", "lists", "text"] as const;
   const showSizes = () => sizes.forEach(k => { const i = inp("fs-" + k); i.value = String(S.type[k]); i.nextElementSibling!.textContent = Math.round(S.type[k] * 100) + "%"; });
   showSizes();

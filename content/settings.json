@@ -56,6 +56,7 @@
     "real": true
   },
   "grid": "closed",
+  "font": "pair",
   "type": {
     "name": 0.72,
     "titles": 0.96,

@@ -160,6 +160,17 @@ collections:
               - { label: Closed, value: closed }
               - { label: Open, value: open }
               - { label: None, value: none }
+          - name: font
+            label: Font
+            widget: select
+            default: pair
+            hint: "Redaction + Degular Mono, or one family for everything (the Work list is then not in capitals)."
+            options:
+              - { label: Redaction + Degular Mono, value: pair }
+              - { label: Redaction, value: redaction }
+              - { label: Degular, value: degular }
+              - { label: Acumin Pro, value: acumin-pro }
+              - { label: Garamond Premier Pro, value: garamond-premier-pro }
           - name: type
             label: Font sizes
             widget: object

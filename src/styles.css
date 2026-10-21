@@ -60,6 +60,9 @@ body.reveal [data-p], body.reveal [data-p] * { color: rgba(220, 40, 40, .55) !im
 .plist a { display: flex; justify-content: space-between; gap: 16px; padding: .5em .45em .4em; border-top: var(--line) solid var(--ink);
            font-family: var(--mono); -webkit-text-stroke: var(--mono-stroke) currentColor;
            font-size: calc(clamp(10px, 2.6cqw, 16px) * var(--fs-lists)); text-transform: uppercase; letter-spacing: .03em; white-space: nowrap; }
+/* One font for everything: no outline thickening, and the Work list in normal case. */
+body.one-font { --mono-stroke: 0px; }
+body.one-font .plist a { text-transform: none; letter-spacing: 0; }
 .plist a.on.real { background: var(--ink); }
 .plist a.on.real, .plist a.on.real * { color: var(--bg) !important; }
 

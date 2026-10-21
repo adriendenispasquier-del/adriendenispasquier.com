@@ -31,6 +31,7 @@ export interface Settings {
   layoutPhone: { gap: number; m: number; f: number };
   dots: { shape: string; dotSize: number; fill: number; buzz: number; real: boolean };
   grid: string;                                              // "open" | "closed" | "none"
+  font: string;                                              // "pair" (Redaction + Degular Mono) or one family for everything
   type: { name: number; titles: number; lists: number; text: number };   // font-size multipliers
   panelPos?: { l: number; t: number };
 }
@@ -39,13 +40,14 @@ const clone = <T>(o: T): T => JSON.parse(JSON.stringify(o));
 const fromFile = (f: typeof defaults): Settings => ({
   ...clone(f),
   grid: (f as any).grid || "open",
+  font: (f as any).font || "pair",
   type: { name: 1, titles: 1, lists: 1, text: 1, ...(f as any).type },
   colors: { default: { ...f.colors.default }, pages: Object.fromEntries((f.colors.pages as PageColors).map(c => [canonical(c.page), { bg: c.bg, ink: c.ink }])) },
 });
 /** The settings as stored in content/settings.json (per-page colours as a list, for the admin). */
 export const toFile = (s: Settings) => ({
   colors: { default: s.colors.default, pages: Object.entries(s.colors.pages).map(([page, c]) => ({ page, ...c })) },
-  layout: s.layout, layoutPhone: s.layoutPhone, dots: s.dots, grid: s.grid, type: s.type,
+  layout: s.layout, layoutPhone: s.layoutPhone, dots: s.dots, grid: s.grid, font: s.font, type: s.type,
 });
 export const DEFAULTS = fromFile(defaults);
 export const S: Settings = clone(DEFAULTS);
@@ -62,6 +64,7 @@ export function loadTuning() {
     S.dots = { ...S.dots, ...st.dots };
     S.type = { ...S.type, ...st.type };
     if (st.grid) S.grid = st.grid;
+    if (st.font) S.font = st.font;
     S.panelPos = st.panelPos;
   } catch { /* storage unavailable */ }
 }
@@ -92,6 +95,24 @@ export function applyColors() {
 }
 export const onColors: (() => void)[] = [];
 
+// Fonts (Adobe kit nva7btn). "pair" is Redaction for names and titles with Degular Mono for text and lists;
+// any other choice sets every text in that one family, and the Work list is no longer in capitals.
+export const FONTS: { v: string; label: string; css?: string }[] = [
+  { v: "pair", label: "Redaction + Degular Mono" },
+  { v: "redaction", label: "Redaction", css: '"redaction", Georgia, serif' },
+  { v: "degular", label: "Degular", css: '"degular", Helvetica, sans-serif' },
+  { v: "acumin-pro", label: "Acumin Pro", css: '"acumin-pro", Helvetica, sans-serif' },
+  { v: "garamond-premier-pro", label: "Garamond Premier Pro", css: '"garamond-premier-pro", Garamond, serif' },
+];
+function applyFont() {
+  const rs = document.documentElement.style, f = FONTS.find(f => f.v === S.font && f.css);
+  if (f) { rs.setProperty("--serif", f.css!); rs.setProperty("--mono", f.css!); }
+  else { rs.removeProperty("--serif"); rs.removeProperty("--mono"); }
+  document.body.classList.toggle("one-font", !!f);
+  // Load the family's regular and bold now (the dots are redrawn when they arrive).
+  if (f) for (const w of ["400", "700"]) document.fonts.load(`${w} 20px ${f.css}`).catch(() => {});
+}
+
 // Layout. Desktop: margins and column gaps share one value; text, pictures and film split the rest and always
 // fill it. Phone: margins and the one gap share a value; main column and film split the rest.
 export const PIC_GAP = .45;   // space between big pictures, as a fraction of the gap
@@ -101,6 +122,7 @@ export function applyLayout() {
   document.body.classList.remove("grid-open", "grid-closed", "grid-none");
   document.body.classList.add("grid-" + S.grid);
   for (const k of ["name", "titles", "lists", "text"] as const) rs.setProperty(`--fs-${k}`, String(S.type[k]));
+  applyFont();
   if (state.phone) {
     const l = layoutPhoneNow(), g = l.gap, avail = 100 - 3 * g, mw = l.m / 100 * avail, fw = l.f / 100 * avail;
     rs.setProperty("--gx", g + "vw"); rs.setProperty("--mw", mw + "vw");
