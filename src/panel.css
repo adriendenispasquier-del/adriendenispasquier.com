@@ -62,3 +62,4 @@
 #panel[open] { max-height: calc(100vh - 24px); overflow-y: auto; scrollbar-width: none; }
 #panel:not([open]) .pbody { display: none; }   /* folded: take no space (and catch no clicks) */
 @media (max-width: 760px) and (orientation: portrait) { #panel { width: 230px; top: auto; bottom: 12px; right: 12px; } }
+body.one-font #panel, body.one-font #panel .sec > summary { text-transform: none; letter-spacing: 0; }   /* one font: no capitals, as on the site */
