@@ -97,21 +97,23 @@ export const onColors: (() => void)[] = [];
 
 // Fonts (Adobe kit nva7btn). "pair" is Redaction for names and titles with Degular Mono for text and lists;
 // any other choice sets every text in that one family, and the Work list is no longer in capitals.
-export const FONTS: { v: string; label: string; css?: string; weight?: string }[] = [
+export const FONTS: { v: string; label: string; css?: string; weight?: string; bold?: string }[] = [
   { v: "pair", label: "Redaction + Degular Mono" },
   { v: "redaction", label: "Redaction", css: '"redaction", Georgia, serif' },
   { v: "degular", label: "Degular", css: '"degular", Helvetica, sans-serif' },
   { v: "acumin-pro", label: "Acumin Pro", css: '"acumin-pro", Helvetica, sans-serif' },
   { v: "garamond-premier-pro", label: "Garamond Premier Pro", css: '"garamond-premier-pro", Garamond, serif', weight: "500" },   // Medium
+  { v: "castoro", label: "Castoro", css: '"castoro", Georgia, serif', bold: "400" },   // no bold: the Next link stays regular
 ];
 function applyFont() {
   const rs = document.documentElement.style, f = FONTS.find(f => f.v === S.font && f.css);
   if (f) { rs.setProperty("--serif", f.css!); rs.setProperty("--mono", f.css!); }
   else { rs.removeProperty("--serif"); rs.removeProperty("--mono"); }
   if (f?.weight) rs.setProperty("--weight", f.weight); else rs.removeProperty("--weight");
+  if (f?.bold) rs.setProperty("--bold", f.bold); else rs.removeProperty("--bold");
   document.body.classList.toggle("one-font", !!f);
   // Load the family's regular and bold now (the dots are redrawn when they arrive).
-  if (f) for (const w of [f.weight || "400", "700"]) document.fonts.load(`${w} 20px ${f.css}`).catch(() => {});
+  if (f) for (const w of [f.weight || "400", f.bold || "700"]) document.fonts.load(`${w} 20px ${f.css}`).catch(() => {});
 }
 
 // Layout. Desktop: margins and column gaps share one value; text, pictures and film split the rest and always

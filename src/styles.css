@@ -74,7 +74,7 @@ body.one-font :is(.plist a, .mono, .next, .ph, .gi .cap, .vmenu, #panel) { text-
 .lcol a.inl { text-decoration: underline; text-decoration-thickness: var(--line, 1px); text-underline-offset: .22em; }
 .credits b { font-weight: var(--weight, 400); opacity: .55; margin-right: 1.2em; }
 .next { display: flex; justify-content: space-between; margin-top: 56px; padding-top: 8px; border-top: var(--line) solid var(--ink);
-        font-family: var(--mono); font-weight: 700; letter-spacing: .03em;
+        font-family: var(--mono); font-weight: var(--bold, 700); letter-spacing: .03em;
         font-size: calc(clamp(10px, 2.6cqw, 16px) * var(--fs-lists)); text-transform: uppercase; }   /* Next project: Degular Mono Bold */
 
 /* ── Big pictures ── */

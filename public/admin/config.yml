@@ -171,6 +171,7 @@ collections:
               - { label: Degular, value: degular }
               - { label: Acumin Pro, value: acumin-pro }
               - { label: Garamond Premier Pro, value: garamond-premier-pro }
+              - { label: Castoro, value: castoro }
           - name: type
             label: Font sizes
             widget: object
