@@ -83,7 +83,7 @@ body.reveal [data-p], body.reveal [data-p] * { color: rgba(220, 40, 40, .55) !im
 .gi .in { opacity: 1; }
 .gi.ld, .fi.ld { background: none; }
 /* Pictures can't be dragged out or saved with a long press (iPhone); the right-click menu is blocked in main.ts. */
-.gi img, .gi video, .fi img, .lbm img, .lbm video { -webkit-user-drag: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }   /* loaded: transparent parts of PNG/GIF show the page itself */
+.gi img, .gi video, .fi img, .fi video, .lbm img, .lbm video { -webkit-user-drag: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }   /* loaded: transparent parts of PNG/GIF show the page itself */
 .gal.zoomable .gi { cursor: zoom-in; }
 .ph { position: absolute; inset: 0; display: grid; place-items: center; font: 12px/1 var(--mono); text-transform: uppercase; letter-spacing: .05em; opacity: .45; }
 
@@ -109,8 +109,8 @@ a.gi:hover .cap { opacity: 1; }
 .ftrack { display: flex; flex-direction: column; gap: var(--fgap, 4px); }
 .fi { position: relative; display: block; width: 100%; aspect-ratio: 4 / 3; overflow: hidden; cursor: pointer;
       background: var(--ph, color-mix(in srgb, var(--ink) 6%, transparent)); }
-.fi img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .6s ease; }
-.fi img.in { opacity: 1; }
+.fi img, .fi video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .6s ease; }
+.fi img.in, .fi video.in { opacity: 1; }
 .fi:hover img { filter: brightness(.85); }
 .frame { position: fixed; top: 50%; left: calc(var(--fl) - 14px); width: calc(var(--fw) + 28px); transform: translateY(-50%);
          border: var(--frame-line) solid var(--ink); pointer-events: none; z-index: 6; }

@@ -206,7 +206,10 @@ function stripHtml(g: number) {
     : `<img src="${big(it.m)}" alt="${it.cap || ""}" decoding="async"${fallback(it.m)}>`;
   const cap = it.cap ? `<span class="cap">${it.cap}</span>` : "";
   const gi = it.href ? `<a class="gi"${data} href="${it.href}"${st}>${inner}${cap}</a>` : `<div class="gi"${data}${st}>${inner}</div>`;
-  const fi = `<button class="fi"${data} type="button" aria-label="Go to picture"${st}>${it.m && thumb(it.m) ? `<img src="${thumb(it.m)}" alt="" decoding="async"${fallback(it.m)}>` : ""}</button>`;
+  // Videos uploaded to the site itself have no ready-made still: the film shows their first frame.
+  const still = !it.m ? "" : thumb(it.m) ? `<img src="${thumb(it.m)}" alt="" decoding="async"${fallback(it.m)}>`
+    : isVideo(it.m) ? `<video src="${big(it.m)}#t=0.1" muted playsinline disablepictureinpicture preload="metadata"></video>` : "";
+  const fi = `<button class="fi"${data} type="button" aria-label="Go to picture"${st}>${still}</button>`;
   return [gi, fi];
 }
 /** Insert pictures g0 … g0+count-1 at the start or end of both strips. */
