@@ -27,12 +27,12 @@ media_libraries:
           quality: 85
           width: 2400
           height: 2400
-  # Cloudinary: to upload to and pick from your Cloudinary library too, add your API key below and remove the #s.
-  # (Cloudinary → Settings → API Keys. The key is public; never put the API secret here.)
-  # cloudinary:
-  #   config:
-  #     cloud_name: df2kod03a
-  #     api_key: "YOUR_API_KEY"
+  # Cloudinary: upload to and pick from the Cloudinary library (videos and big GIFs belong there).
+  # Signs in with your Cloudinary account. The API key is public; never put the API secret here.
+  cloudinary:
+    config:
+      cloud_name: df2kod03a
+      api_key: "625272219788834"
 
 collections:
   - name: projects
