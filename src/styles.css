@@ -22,7 +22,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }   /* no automatic text enlarging (dots must match) */
 html, body { height: 100%; overflow: hidden; background: var(--bg); transition: background-color .6s ease; }
-body { font-family: var(--serif); color: var(--ink); -webkit-font-smoothing: antialiased; }
+body { font-family: var(--serif); font-weight: var(--weight, 400); color: var(--ink); -webkit-font-smoothing: antialiased; }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; color: inherit; background: none; border: 0; }
 
@@ -51,7 +51,7 @@ body.reveal [data-p], body.reveal [data-p] * { color: rgba(220, 40, 40, .55) !im
 
 /* Sizes are in cqw (% of the text column width), so narrowing the column shrinks the type instead of cropping it. */
 .lhome { display: flex; flex-direction: column; height: 100%; }
-.t-big { display: block; align-self: flex-start; font-size: calc(clamp(30px, 25cqw, 210px) * var(--fs-titles)); font-weight: 400; line-height: .9; letter-spacing: -.03em; margin-left: -.04em; }
+.t-big { display: block; align-self: flex-start; font-size: calc(clamp(30px, 25cqw, 210px) * var(--fs-titles)); font-weight: var(--weight, 400); line-height: .9; letter-spacing: -.03em; margin-left: -.04em; }
 .t-mid { display: block; align-self: flex-start; font-size: calc(clamp(16px, 6.4cqw, 46px) * var(--fs-titles)); line-height: 1.1; margin-top: 7cqw; letter-spacing: -.01em; }
 .labout .t-mid { margin-top: 0; margin-bottom: 36px; }
 .labout .t-big { margin-bottom: 56px; }
@@ -66,13 +66,13 @@ body.one-font :is(.plist a, .mono, .next, .ph, .gi .cap, .vmenu, #panel) { text-
 .plist a.on.real { background: var(--ink); }
 .plist a.on.real, .plist a.on.real * { color: var(--bg) !important; }
 
-.t-title { font-size: calc(clamp(22px, 9.6cqw, 66px) * var(--fs-titles)); font-weight: 400; line-height: 1; letter-spacing: -.015em; margin-bottom: 28px; }
+.t-title { font-size: calc(clamp(22px, 9.6cqw, 66px) * var(--fs-titles)); font-weight: var(--weight, 400); line-height: 1; letter-spacing: -.015em; margin-bottom: 28px; }
 .mono { font-family: var(--mono); -webkit-text-stroke: var(--mono-stroke) currentColor; font-size: calc(clamp(9.5px, 2.35cqw, 13.5px) * var(--fs-text)); line-height: 1.5; text-transform: uppercase; letter-spacing: .03em; }
 .services { padding-bottom: 14px; border-bottom: var(--line) solid var(--ink); margin-bottom: 22px; }
 .lproj .mono + .mono { margin-top: 1.5em; }
 .credits { margin-top: 40px; padding-top: 18px; border-top: var(--line) solid var(--ink); display: grid; gap: 4px; }
 .lcol a.inl { text-decoration: underline; text-decoration-thickness: var(--line, 1px); text-underline-offset: .22em; }
-.credits b { font-weight: 400; opacity: .55; margin-right: 1.2em; }
+.credits b { font-weight: var(--weight, 400); opacity: .55; margin-right: 1.2em; }
 .next { display: flex; justify-content: space-between; margin-top: 56px; padding-top: 8px; border-top: var(--line) solid var(--ink);
         font-family: var(--mono); font-weight: 700; letter-spacing: .03em;
         font-size: calc(clamp(10px, 2.6cqw, 16px) * var(--fs-lists)); text-transform: uppercase; }   /* Next project: Degular Mono Bold */
