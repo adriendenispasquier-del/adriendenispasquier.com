@@ -56,11 +56,11 @@
     "real": true
   },
   "grid": "closed",
-  "font": "garamond-premier-pro",
+  "font": "redaction",
   "type": {
     "name": 0.72,
     "titles": 0.96,
-    "lists": 0.88,
-    "text": 1.22
+    "lists": 0.8,
+    "text": 1.16
   }
 }
