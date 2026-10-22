@@ -143,6 +143,7 @@ collections:
               - { name: t, label: Text, widget: number, value_type: float, step: 0.1 }
               - { name: p, label: Pictures, widget: number, value_type: float, step: 0.1 }
               - { name: f, label: Film, widget: number, value_type: float, step: 0.1 }
+              - { name: hh, label: Header height (px), widget: number, value_type: int, default: 66 }
           - name: layoutPhone
             label: Layout — phone
             widget: object
@@ -151,6 +152,7 @@ collections:
               - { name: gap, label: Gaps, widget: number, value_type: float, step: 0.1 }
               - { name: m, label: Main column, widget: number, value_type: float, step: 0.1 }
               - { name: f, label: Film, widget: number, value_type: float, step: 0.1 }
+              - { name: hh, label: Header height (px), widget: number, value_type: int, default: 46 }
           - name: grid
             label: Grid
             widget: select
