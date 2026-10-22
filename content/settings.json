@@ -24,16 +24,16 @@
   },
   "layout": {
     "gap": 0.5,
-    "t": 42.89,
-    "p": 51.3,
-    "f": 5.81,
-    "hh": 66
+    "t": 49.2,
+    "p": 45.63,
+    "f": 5.17,
+    "hh": 36
   },
   "layoutPhone": {
     "gap": 2.7,
     "m": 89.1,
     "f": 10.9,
-    "hh": 46
+    "hh": 30
   },
   "dots": {
     "shape": "round",
@@ -47,8 +47,8 @@
   "type": {
     "name": 0.72,
     "titles": 0.96,
-    "lists": 0.8,
-    "text": 0.94
+    "lists": 0.76,
+    "text": 0.92
   },
   "fontPhone": "castoro",
   "typePhone": {
