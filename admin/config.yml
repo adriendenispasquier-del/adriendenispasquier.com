@@ -85,6 +85,15 @@ collections:
       - { name: cover, label: Cover (optional), widget: file, required: false, hint: Picture for the Work page and link previews. }
       - { name: personal, label: Personal, widget: boolean, required: false, default: false, hint: "Shown under Personal (Pasquier in the header) instead of Work." }
       - { name: draft, label: Hidden, widget: boolean, required: false, default: false, hint: Hidden projects are not on the site. }
+      - name: seo
+        label: Search engines (optional)
+        widget: object
+        collapsed: true
+        hint: Leave empty to use the defaults written from the title, type and text.
+        fields:
+          - { name: title, label: Search title, widget: string, required: false, hint: "Title shown in Google. Default: Title — Type — Adrien Denis-Pasquier. Keep it under 60 characters." }
+          - { name: description, label: Search description, widget: text, required: false, hint: "Text under the title in Google. Default: the first sentences of the text. Aim for 120–160 characters." }
+          - { name: alt, label: Picture description, widget: string, required: false, hint: "What the pictures show, for Google Images and screen readers, e.g. Cocktail photography for Fat Cat bar, Toulouse. Default: Title — Type by Adrien Denis-Pasquier." }
 
   - name: site
     label: Site
@@ -94,7 +103,15 @@ collections:
         file: content/site.json
         fields:
           - { name: name, label: Name, widget: string }
-          - { name: description, label: Description, widget: text, hint: For search engines and link previews. }
+          - { name: description, label: Description, widget: text, hint: "For search engines and link previews (Work and Personal). Aim for 120–160 characters." }
+          - name: seo
+            label: Search engines
+            widget: object
+            hint: "Your profiles (Instagram, Behance, LinkedIn…) are taken from the Contact links on the About page."
+            fields:
+              - { name: title, label: Home page title, widget: string, required: false, hint: "Shown in Google for the home page. Default: Adrien Denis-Pasquier — Job title in City." }
+              - { name: jobTitle, label: Job title, widget: string, required: false, default: "Designer, illustrator & photographer" }
+              - { name: location, label: City, widget: string, required: false, default: Berlin }
           - name: about
             label: About page
             widget: object
