@@ -39,7 +39,7 @@
     "shape": "round",
     "dotSize": 0.3,
     "fill": 0.7,
-    "buzz": 0.6,
+    "buzz": 0.95,
     "real": true
   },
   "grid": "closed",
