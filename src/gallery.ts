@@ -203,7 +203,7 @@ function stripHtml(g: number) {
   const data = ` data-i="${it.i}" data-g="${g}"${it.m ? ` data-m="${it.m.replace(/"/g, "&quot;")}"` : ""}`;
   const inner = !it.m ? `<span class="ph">${it.ph || ""}</span>`
     : isVideo(it.m) ? `<video src="${big(it.m)}" autoplay muted loop playsinline disablepictureinpicture controlslist="nodownload" preload="metadata"></video>`
-    : `<img src="${big(it.m)}" alt="${it.cap || ""}" decoding="async"${fallback(it.m)}>`;
+    : `<img src="${big(it.m)}" alt="${(it.alt || it.cap || "").replace(/"/g, "&quot;")}" decoding="async"${fallback(it.m)}>`;
   const cap = it.cap ? `<span class="cap">${it.cap}</span>` : "";
   const gi = it.href ? `<a class="gi"${data} href="${it.href}"${st}>${inner}${cap}</a>` : `<div class="gi"${data}${st}>${inner}</div>`;
   // Videos uploaded to the site itself have no ready-made still: the film shows their first frame.

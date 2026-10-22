@@ -40,6 +40,8 @@ export default defineConfig({
               `<meta property="og:url" content="${url}">`,
               `<meta property="og:image" content="${attr(page.image.startsWith("/") ? ORIGIN + page.image : page.image)}">`,
               `<meta name="twitter:card" content="summary_large_image">`,
+              ...(page.noindex ? [`<meta name="robots" content="noindex">`] : []),
+              ...(page.jsonld ? [`<script type="application/ld+json">${JSON.stringify(page.jsonld).replace(/</g, "\\u003c")}</script>`] : []),
             ].map(t => "  " + t).join("\n") + "\n</head>")
             .replace(`<div class="lscroll" id="L"></div>`, `<div class="lscroll" id="L">${page.left}</div>`);
           const out = root("dist", page.path.slice(1));
@@ -58,9 +60,12 @@ export default defineConfig({
 </head><body><a href="${to}">${ORIGIN}${to}</a></body></html>
 `);
         }
+        // Sitemap with each page's pictures (for image search). Pages kept out of search engines are left out.
+        const xml = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+        const listed = paths().map(buildPage).filter(p => !p.noindex);
         writeFileSync(root("dist/sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${paths().map(p => `  <url><loc>${ORIGIN}${p}</loc></url>`).join("\n")}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+${listed.map(p => `  <url><loc>${ORIGIN}${p.path}</loc>${(p.pictures || []).map(u => `<image:image><image:loc>${xml(u)}</image:loc></image:image>`).join("")}</url>`).join("\n")}
 </urlset>
 `);
       },
