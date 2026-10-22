@@ -27,8 +27,8 @@ export const state = {
 type Pair = { bg: string; ink: string };
 export interface Settings {
   colors: { default: Pair; pages: Record<string, Pair> };   // pages: address → colours (a list in the file)
-  layout: { gap: number; t: number; p: number; f: number };
-  layoutPhone: { gap: number; m: number; f: number };
+  layout: { gap: number; t: number; p: number; f: number; hh: number };   // hh: header height in px
+  layoutPhone: { gap: number; m: number; f: number; hh: number };
   dots: { shape: string; dotSize: number; fill: number; buzz: number; real: boolean };
   grid: string;                                              // "open" | "closed" | "none"
   font: string;                                              // "pair" (Redaction + Degular Mono) or one family for everything
@@ -41,6 +41,8 @@ type PageColors = { page: string; bg: string; ink: string }[];
 const clone = <T>(o: T): T => JSON.parse(JSON.stringify(o));
 const fromFile = (f: typeof defaults): Settings => ({
   ...clone(f),
+  layout: { ...clone(f.layout), hh: (f.layout as any).hh ?? 66 },
+  layoutPhone: { ...clone(f.layoutPhone), hh: (f.layoutPhone as any).hh ?? 46 },
   grid: (f as any).grid || "open",
   font: (f as any).font || "pair",
   type: { name: 1, titles: 1, lists: 1, text: 1, ...(f as any).type },
@@ -133,6 +135,7 @@ export function applyLayout() {
   const type = state.phone ? S.typePhone : S.type;
   for (const k of ["name", "titles", "lists", "text"] as const) rs.setProperty(`--fs-${k}`, String(type[k]));
   applyFont();
+  rs.setProperty("--hh", (state.phone ? S.layoutPhone.hh : S.layout.hh) + "px");
   if (state.phone) {
     const l = layoutPhoneNow(), g = l.gap, avail = 100 - 3 * g, mw = l.m / 100 * avail, fw = l.f / 100 * avail;
     rs.setProperty("--gx", g + "vw"); rs.setProperty("--mw", mw + "vw");

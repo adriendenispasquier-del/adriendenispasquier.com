@@ -32,11 +32,13 @@ const HTML = `
       <div class="lrow"><span>Text</span><input id="l-t" type="range" min="15" max="60" step="0.1"><output></output></div>
       <div class="lrow"><span>Pictures</span><input id="l-p" type="range" min="25" max="75" step="0.1"><output></output></div>
       <div class="lrow"><span>Film</span><input id="l-f" type="range" min="3" max="20" step="0.1"><output></output></div>
+      <div class="lrow"><span>Header</span><input id="l-hh" type="range" min="36" max="140" step="1"><output></output></div>
     </div>
     <div id="lay-phone" class="lay" hidden>
       <div class="lrow"><span>Gaps</span><input id="p-gap" type="range" min="1" max="10" step="0.1"><output></output></div>
       <div class="lrow"><span>Main</span><input id="p-m" type="range" min="60" max="94" step="0.1"><output></output></div>
       <div class="lrow"><span>Film</span><input id="p-f" type="range" min="6" max="40" step="0.1"><output></output></div>
+      <div class="lrow"><span>Header</span><input id="p-hh" type="range" min="30" max="100" step="1"><output></output></div>
       <div class="stat" id="pnote"></div>
     </div>
     <button class="btn" id="lreset" type="button">Reset layout</button>
@@ -110,14 +112,16 @@ export function mount() {
 
   // Layout: changing one share rescales the others (keeping their proportion) so they always fill the width.
   const showLayout = () => {
-    for (const k in S.layout) { const i = inp("l-" + k); i.value = String((S.layout as any)[k]); i.nextElementSibling!.textContent = (+(S.layout as any)[k]).toFixed(1); }
-    for (const k in S.layoutPhone) { const i = inp("p-" + k); i.value = String((S.layoutPhone as any)[k]); i.nextElementSibling!.textContent = (+(S.layoutPhone as any)[k]).toFixed(1); }
+    for (const k in S.layout) { const i = inp("l-" + k); i.value = String((S.layout as any)[k]); i.nextElementSibling!.textContent = k === "hh" ? (S.layout as any)[k] + "px" : (+(S.layout as any)[k]).toFixed(1); }
+    for (const k in S.layoutPhone) { const i = inp("p-" + k); i.value = String((S.layoutPhone as any)[k]); i.nextElementSibling!.textContent = k === "hh" ? (S.layoutPhone as any)[k] + "px" : (+(S.layoutPhone as any)[k]).toFixed(1); }
     $("pnote").textContent = state.phone ? "" : "Applies below 760 px wide: narrow the window to see it.";
   };
   let lt: number | undefined;
   const changed = () => { save(); showLayout(); relayout(); clearTimeout(lt); lt = window.setTimeout(resample, 150); };
   inp("l-gap").addEventListener("input", e => { S.layout.gap = +(e.target as HTMLInputElement).value; changed(); });
   inp("p-gap").addEventListener("input", e => { S.layoutPhone.gap = +(e.target as HTMLInputElement).value; changed(); });
+  inp("l-hh").addEventListener("input", e => { S.layout.hh = +(e.target as HTMLInputElement).value; changed(); });
+  inp("p-hh").addEventListener("input", e => { S.layoutPhone.hh = +(e.target as HTMLInputElement).value; changed(); });
   const shares = (obj: () => Record<string, number>, keys: string[], prefix: string) => {
     for (const k of keys) inp(prefix + k).addEventListener("input", e => {
       const v = +(e.target as HTMLInputElement).value, others = keys.filter(x => x !== k), l = obj();

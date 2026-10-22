@@ -153,8 +153,8 @@ body.grid-closed .vrule { top: var(--hh); bottom: 0; }   /* runs from the header
 /* ── Phone: one main column (text, then the pictures) and the film down the right side.
       Everything scrolls vertically; the film follows the pictures, the frame stays in the middle. ── */
 @media (max-width: 760px) and (orientation: portrait) {
-  .hd { height: 46px; font-size: calc(15px * var(--fs-name)); }
-  #M { display: block; position: fixed; top: 46px; bottom: 0; left: var(--gx); width: var(--mw); z-index: 2;
+  .hd { font-size: calc(15px * var(--fs-name)); }
+  #M { display: block; position: fixed; top: var(--hh); bottom: 0; left: var(--gx); width: var(--mw); z-index: 2;
        overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
   #M::-webkit-scrollbar { display: none; }
   .lcol { position: relative; inset: auto; left: auto; width: 100%; }
@@ -168,7 +168,7 @@ body.grid-closed .vrule { top: var(--hh); bottom: 0; }   /* runs from the header
   .menu .t-mid { font-size: calc(5.5cqw * var(--fs-titles)); margin: 0; }
   .labout .menu { margin-bottom: 9cqw; }
   /* Work: the menu is pinned at the top, the project list at the bottom; the pictures scroll in between */
-  #M.home .lcol { position: fixed; top: 46px; bottom: max(10px, env(safe-area-inset-bottom)); left: var(--gx); width: var(--mw);
+  #M.home .lcol { position: fixed; top: var(--hh); bottom: max(10px, env(safe-area-inset-bottom)); left: var(--gx); width: var(--mw);
                   z-index: 3; pointer-events: none; }
   #M.home .lscroll { height: 100%; padding: 0; }
   .lhome { height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
@@ -179,7 +179,7 @@ body.grid-closed .vrule { top: var(--hh); bottom: 0; }   /* runs from the header
   .plist a { border-top: var(--line) solid var(--ink); border-bottom: 0; font-size: 1em; line-height: 1.2; padding: .45em .45em; }
   .mono { font-size: calc(clamp(9.5px, 2.6cqw, 13px) * var(--fs-text)); }
   .frame { left: calc(var(--fl) - 1.6vw); width: calc(var(--fw) + 3.2vw); }
-  .vmenu { top: 46px; left: var(--gx); width: var(--mw); font-size: calc(12px * var(--fs-lists)); }
+  .vmenu { top: var(--hh); left: var(--gx); width: var(--mw); font-size: calc(12px * var(--fs-lists)); }
   .vdesk { display: none; }
   .vdesk + .vrow { border-top: 0; }
 }

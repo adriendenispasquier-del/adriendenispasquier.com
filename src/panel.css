@@ -1,7 +1,7 @@
 /* Tuning panel: only loaded when tuning (see panel.ts). Drawn like the site itself: the page's colours, the site's
    fonts, thin lines in the ink colour, square corners, the chosen option as an inverted block. */
 #panel { --pl: max(1px, var(--line)) solid var(--ink);
-         position: fixed; right: 24px; top: 84px; z-index: 30; width: 268px; color: var(--ink); background: var(--bg);
+         position: fixed; right: 24px; top: calc(var(--hh) + 18px); z-index: 30; width: 268px; color: var(--ink); background: var(--bg);
          font-family: var(--mono); -webkit-text-stroke: var(--mono-stroke) currentColor; font-size: 11px; line-height: 1.35;
          text-transform: uppercase; letter-spacing: .03em; border: var(--pl); transition: background-color .6s ease, color .6s ease; }
 #panel summary { cursor: grab; user-select: none; touch-action: none; padding: 10px 12px 9px; list-style: none; display: flex; justify-content: space-between; align-items: baseline;
