@@ -12,7 +12,9 @@
   --hh: 66px;            /* header height */
   --gx: 2vw;             /* outer gutter */
   /* Column positions (set from the Layout sliders, in % of the window width) */
-  --lw: 34.8vw;          /* text column ends at the vertical rule */
+  --tl: 2vw;             /* text column: left edge */
+  --tw: 32.8vw;          /* text column: width */
+  --lw: 34.8vw;          /* the vertical rule beside the text column */
   --gl: 39.8vw;          /* big pictures: left edge */
   --gw: 46.4vw;          /* big pictures: width */
   --fl: 89.1vw;          /* film: left edge */
@@ -47,7 +49,7 @@ body.reveal [data-p], body.reveal [data-p] * { color: rgba(220, 40, 40, .55) !im
 .hline { position: absolute; left: 0; right: 0; bottom: 0; height: 0; border-bottom: var(--line) solid var(--ink); }
 
 /* ── Left column ── */
-.lcol { position: fixed; top: var(--hh); bottom: 0; left: var(--gx); width: calc(var(--lw) - var(--gx)); z-index: 5; container-type: inline-size; }
+.lcol { position: fixed; top: var(--hh); bottom: 0; left: var(--tl); width: var(--tw); z-index: 5; container-type: inline-size; }
 .lscroll { --pl: 8.5cqw; --pr: 9cqw; height: 100%; overflow-y: auto; scrollbar-width: none; padding: 64px var(--pr) 64px var(--pl); }
 .lscroll::-webkit-scrollbar, .gal::-webkit-scrollbar, .film::-webkit-scrollbar { display: none; }
 .vrule { position: fixed; left: var(--lw); top: calc(var(--hh) + 30px); bottom: 36px; width: 0; border-left: var(--line) solid var(--ink); z-index: 5; }

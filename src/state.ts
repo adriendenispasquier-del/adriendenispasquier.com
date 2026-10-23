@@ -27,7 +27,7 @@ export const state = {
 type Pair = { bg: string; ink: string };
 export interface Settings {
   colors: { default: Pair; pages: Record<string, Pair> };   // pages: address → colours (a list in the file)
-  layout: { gap: number; t: number; p: number; f: number; hh: number };   // hh: header height in px
+  layout: { gap: number; t: number; p: number; f: number; hh: number; order: string };   // hh: header height in px; order: columns from left, e.g. "tpf"
   layoutPhone: { gap: number; m: number; f: number; hh: number };
   dots: { shape: string; dotSize: number; fill: number; buzz: number; real: boolean };
   grid: string;                                              // "open" | "closed" | "none"
@@ -41,7 +41,7 @@ type PageColors = { page: string; bg: string; ink: string }[];
 const clone = <T>(o: T): T => JSON.parse(JSON.stringify(o));
 const fromFile = (f: typeof defaults): Settings => ({
   ...clone(f),
-  layout: { ...clone(f.layout), hh: (f.layout as any).hh ?? 66 },
+  layout: { ...clone(f.layout), hh: (f.layout as any).hh ?? 66, order: (f.layout as any).order || "tpf" },
   layoutPhone: { ...clone(f.layoutPhone), hh: (f.layoutPhone as any).hh ?? 46 },
   grid: (f as any).grid || "open",
   font: (f as any).font || "pair",
@@ -126,6 +126,8 @@ function applyFont() {
 
 // Layout. Desktop: margins and column gaps share one value; text, pictures and film split the rest and always
 // fill it. Phone: margins and the one gap share a value; main column and film split the rest.
+/** Column orders on desktop (t = text, p = pictures, f = film), from left to right. */
+export const ORDERS = ["tpf", "tfp", "ptf", "pft", "ftp", "fpt"];
 export const PIC_GAP = .45;   // space between big pictures, as a fraction of the gap
 export function applyLayout() {
   const rs = document.documentElement.style;
@@ -144,9 +146,14 @@ export function applyLayout() {
   } else {
     const l = layoutNow(), g = l.gap;
     const avail = 100 - 4 * g, T = l.t / 100 * avail, Pw = l.p / 100 * avail, Fw = l.f / 100 * avail;
-    const lw = g + T, gl = lw + g, fl = gl + Pw + g;
-    rs.setProperty("--gx", g + "vw"); rs.setProperty("--lw", lw + "vw"); rs.setProperty("--gl", gl + "vw");
-    rs.setProperty("--gw", Pw + "vw"); rs.setProperty("--fl", fl + "vw"); rs.setProperty("--fw", Fw + "vw");
+    // Columns from left to right in the chosen order (t = text, p = pictures, f = film), a gap before each.
+    const width: Record<string, number> = { t: T, p: Pw, f: Fw }, left: Record<string, number> = {};
+    let x = g;
+    for (const c of ORDERS.includes(l.order) ? l.order : "tpf") { left[c] = x; x += width[c] + g; }
+    // The vertical rule runs along the text column's side facing the pictures.
+    const rule = left.t < left.p ? left.t + T : left.t;
+    rs.setProperty("--gx", g + "vw"); rs.setProperty("--tl", left.t + "vw"); rs.setProperty("--tw", T + "vw"); rs.setProperty("--lw", rule + "vw");
+    rs.setProperty("--gl", left.p + "vw"); rs.setProperty("--gw", Pw + "vw"); rs.setProperty("--fl", left.f + "vw"); rs.setProperty("--fw", Fw + "vw");
     rs.setProperty("--gap", g * PIC_GAP + "vw");
   }
 }

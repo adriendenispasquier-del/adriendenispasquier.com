@@ -2,7 +2,7 @@
 // "Publish" saves them to content/settings.json on GitHub (the site then rebuilds itself, about a minute);
 // "Copy settings" gives the same JSON to paste by hand.
 import "./panel.css";
-import { $, state, S, DEFAULTS, FONTS, save, forgetTuning, applyColors, colorsFor, onColors, toFile } from "./state";
+import { $, state, S, DEFAULTS, FONTS, ORDERS, save, forgetTuning, applyColors, colorsFor, onColors, toFile } from "./state";
 import { PROJECTS } from "./content";
 import { setOnStat, showDots, realNow } from "./dots";
 import { replay, resample, relayout } from "./main";
@@ -33,6 +33,8 @@ const HTML = `
       <div class="lrow"><span>Pictures</span><input id="l-p" type="range" min="25" max="75" step="0.1"><output></output></div>
       <div class="lrow"><span>Film</span><input id="l-f" type="range" min="3" max="20" step="0.1"><output></output></div>
       <div class="lrow"><span>Header</span><input id="l-hh" type="range" min="36" max="140" step="1"><output></output></div>
+      <span class="lab">Column order</span>
+      <select id="l-order"></select>
     </div>
     <div id="lay-phone" class="lay" hidden>
       <div class="lrow"><span>Gaps</span><input id="p-gap" type="range" min="1" max="10" step="0.1"><output></output></div>
@@ -112,7 +114,7 @@ export function mount() {
 
   // Layout: changing one share rescales the others (keeping their proportion) so they always fill the width.
   const showLayout = () => {
-    for (const k in S.layout) { const i = inp("l-" + k); i.value = String((S.layout as any)[k]); i.nextElementSibling!.textContent = k === "hh" ? (S.layout as any)[k] + "px" : (+(S.layout as any)[k]).toFixed(1); }
+    for (const k in S.layout) { if (k === "order") { ($("l-order") as HTMLSelectElement).value = S.layout.order; continue; } const i = inp("l-" + k); i.value = String((S.layout as any)[k]); i.nextElementSibling!.textContent = k === "hh" ? (S.layout as any)[k] + "px" : (+(S.layout as any)[k]).toFixed(1); }
     for (const k in S.layoutPhone) { const i = inp("p-" + k); i.value = String((S.layoutPhone as any)[k]); i.nextElementSibling!.textContent = k === "hh" ? (S.layoutPhone as any)[k] + "px" : (+(S.layoutPhone as any)[k]).toFixed(1); }
     $("pnote").textContent = state.phone ? "" : "Applies below 760 px wide: narrow the window to see it.";
   };
@@ -120,6 +122,11 @@ export function mount() {
   const changed = () => { save(); showLayout(); relayout(); clearTimeout(lt); lt = window.setTimeout(resample, 150); };
   inp("l-gap").addEventListener("input", e => { S.layout.gap = +(e.target as HTMLInputElement).value; changed(); });
   inp("p-gap").addEventListener("input", e => { S.layoutPhone.gap = +(e.target as HTMLInputElement).value; changed(); });
+  const NAMES: Record<string, string> = { t: "Text", p: "Pictures", f: "Film" };
+  const osel = $("l-order") as HTMLSelectElement;
+  osel.innerHTML = ORDERS.map(o => `<option value="${o}">${[...o].map(c => NAMES[c]).join(" · ")}</option>`).join("");
+  osel.value = S.layout.order;
+  osel.addEventListener("change", () => { S.layout.order = osel.value; changed(); });
   inp("l-hh").addEventListener("input", e => { S.layout.hh = +(e.target as HTMLInputElement).value; changed(); });
   inp("p-hh").addEventListener("input", e => { S.layoutPhone.hh = +(e.target as HTMLInputElement).value; changed(); });
   const shares = (obj: () => Record<string, number>, keys: string[], prefix: string) => {
