@@ -161,6 +161,17 @@ collections:
               - { name: p, label: Pictures, widget: number, value_type: float, step: 0.1 }
               - { name: f, label: Film, widget: number, value_type: float, step: 0.1 }
               - { name: hh, label: Header height (px), widget: number, value_type: int, default: 66 }
+              - name: order
+                label: Column order
+                widget: select
+                default: tpf
+                options:
+                  - { label: Text · Pictures · Film, value: tpf }
+                  - { label: Text · Film · Pictures, value: tfp }
+                  - { label: Pictures · Text · Film, value: ptf }
+                  - { label: Pictures · Film · Text, value: pft }
+                  - { label: Film · Text · Pictures, value: ftp }
+                  - { label: Film · Pictures · Text, value: fpt }
           - name: layoutPhone
             label: Layout — phone
             widget: object
