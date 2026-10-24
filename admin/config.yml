@@ -245,6 +245,8 @@ collections:
                   - { label: Lichen — crust, value: crust }
                   - { label: Lichen — leafy, value: leafy }
                   - { label: Lichen — rosette, value: rosette }
+              - { name: lichenDot, label: Lichen dot size (px), widget: number, value_type: float, step: 0.1, default: 2 }
+              - { name: lichenDensity, label: Lichen density (1 = solid), widget: number, value_type: float, step: 0.05, default: 1 }
               - { name: overflow, label: Lichen overflow (% of font size), widget: number, value_type: int, default: 12 }
               - { name: branches, label: Lichen branches (space in dot sizes), widget: number, value_type: int, default: 8 }
               - { name: realBelow, label: Real type below (px), widget: number, value_type: float, step: 0.5, default: 12, hint: "Text smaller than this turns into real type once formed, titles and the name included. 0 = never." }
