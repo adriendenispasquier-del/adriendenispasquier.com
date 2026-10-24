@@ -27,17 +27,17 @@
   },
   "layoutPhone": {
     "gap": 2.7,
-    "m": 93.3,
-    "f": 6.7,
+    "m": 87.5,
+    "f": 12.5,
     "hh": 30
   },
   "dots": {
     "anim": "rosette",
-    "overflow": 40,
+    "overflow": 6,
     "branches": 20,
     "realBelow": 15,
-    "lichenDot": 0.6,
-    "lichenDensity": 1.8,
+    "lichenDot": 1.1,
+    "lichenDensity": 0.75,
     "shape": "round",
     "dotSize": 0.3,
     "fill": 0.66,
