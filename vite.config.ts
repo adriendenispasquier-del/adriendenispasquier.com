@@ -3,6 +3,7 @@ import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { prepare, makePages, ORIGIN, LEGACY, type Site } from "./src/pages";
 import { dominantColours } from "./build/colours";
+import { resized, writeSizes } from "./build/sizes";
 
 const root = (...p: string[]) => resolve(__dirname, ...p);
 const json = (f: string) => JSON.parse(readFileSync(f, "utf8"));
@@ -16,6 +17,26 @@ export default defineConfig({
       name: "colours",
       resolveId: id => id === "virtual:colours" ? "\0virtual:colours" : undefined,
       async load(id) { if (id === "\0virtual:colours") return `export default ${JSON.stringify(await dominantColours(__dirname))};`; },
+    },
+    {
+      // Resized uploads: made on request while developing, written into dist after the build.
+      name: "upload-sizes",
+      configureServer(server) {
+        server.middlewares.use(async (req, res, next) => {
+          const m = decodeURIComponent((req.url || "").split("?")[0]).match(/^\/uploads\/_w\/(\d+)\/(.+)\.webp$/);
+          if (!m) return next();
+          const buf = await resized(__dirname, m[2], +m[1]).catch(() => null);
+          if (!buf) return next();
+          res.setHeader("Content-Type", "image/webp"); res.end(buf);
+        });
+      },
+      async closeBundle() {
+        const dir = root("content/projects"), names: string[] = [];
+        const add = (m?: string) => { if (m && m.startsWith("/uploads/") && !m.slice(9).includes("/")) names.push(m.slice(9)); };
+        for (const f of readdirSync(dir).filter(f => f.endsWith(".json"))) { const p = json(resolve(dir, f)); (p.media || []).forEach(add); add(p.cover); }
+        add(json(root("content/site.json")).about?.portrait);
+        await writeSizes(__dirname, names);
+      },
     },
     {
       // After the build, write a real HTML page for every address (title, description, link previews and the

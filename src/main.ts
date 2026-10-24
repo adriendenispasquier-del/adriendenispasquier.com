@@ -23,7 +23,7 @@ applyLayout();
 if (location.hash.startsWith("#/")) history.replaceState(null, "", legacyPath(location.hash));
 else if (canonical(location.pathname) !== location.pathname) history.replaceState(null, "", canonical(location.pathname) + location.search);
 
-let busy = 0;
+let busy = 0, reading = false;   // reading: a page change is reading the new page into dots
 async function go(path: string) {
   const page = buildPage(path), token = ++busy, first = state.current === null, prev = state.page;
   closeLightbox();
@@ -42,8 +42,12 @@ async function go(path: string) {
   M.classList.toggle("home", !!page.loop);
   state.PL = document.getElementById("PL");
   centreList();
-  if (first) { await document.fonts.ready; await new Promise(r => { requestAnimationFrame(r); setTimeout(r, 60); }); }
-  dots.assign(dots.collectTargets(page.path));
+  if (first) { await Promise.race([document.fonts.ready, sleep(1500)]); await new Promise(r => { requestAnimationFrame(r); setTimeout(r, 60); }); }
+  reading = true;
+  const targets = await dots.collectTargets(page.path);   // read over a few frames: the animation never stalls
+  if (token === busy) reading = false;
+  if (!targets || token !== busy) return;
+  dots.assign(targets);
   if (!first) { await sleep(220); if (token !== busy) return; }
   renderMedia(page.items, !!page.loop, !!page.zoom);
   resetScroll();
@@ -140,7 +144,11 @@ document.querySelectorAll<HTMLElement>(".hd [data-k]").forEach(a => {
   a.addEventListener("pointerleave", () => dots.setHoverKey(null));
 });
 
-export const resample = () => { if (state.current !== null) dots.assign(dots.collectTargets(state.current), true); };
+export const resample = async () => {
+  if (state.current === null || reading) return;   // the page change in progress reads the latest layout anyway
+  const t = await dots.collectTargets(state.current);
+  if (t) dots.assign(t, true);
+};
 export const relayout = () => { applyLayout(); layoutFilm(); sync(main()); };
 let rt: number | undefined;
 addEventListener("resize", () => {
@@ -152,7 +160,10 @@ state.mq.addEventListener("change", () => { state.phone = state.mq.matches; appl
 // Start
 applyColors();
 dots.start();
-Promise.all(["400 20px redaction", "700 20px redaction", "italic 400 20px redaction", "400 12px degular-mono", "700 12px degular-mono"].map(f => document.fonts.load(f).catch(() => {})))
-  .then(() => go(location.pathname));
+// Wait for the fonts, but not forever: on a slow connection the page starts anyway (the dots redraw when they arrive).
+Promise.race([
+  Promise.all(["400 20px redaction", "700 20px redaction", "italic 400 20px redaction", "400 12px degular-mono", "700 12px degular-mono"].map(f => document.fonts.load(f).catch(() => {}))),
+  sleep(2500),
+]).then(() => go(location.pathname));
 document.fonts.addEventListener("loadingdone", resample);
 if (state.tuning) import("./panel").then(m => m.mount());

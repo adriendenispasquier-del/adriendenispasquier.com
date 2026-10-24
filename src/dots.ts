@@ -177,7 +177,7 @@ function growLichen(data: Uint8ClampedArray, w: number, h: number, bx: number, b
     }
   }
   const alive = new Uint8Array(N), done = new Uint8Array(N), when = new Float32Array(N), front: number[] = [];
-  const ox = new Float32Array(N), oy0 = new Float32Array(N), par = new Int32Array(N).fill(-1);   // each cell's spore, and who reached it
+  const vein = new Float32Array(N).fill(1), ox = new Float32Array(N), oy0 = new Float32Array(N), par = new Int32Array(N).fill(-1);   // each cell's spore, and who reached it
   const rad = (c: number, o: number) => Math.hypot(c % gw - ox[o], ((c / gw) | 0) - oy0[o]);
   const around = (c: number) => { let k = 0; const x = c % gw, y = (c / gw) | 0;
     for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const X = x + dx, Y = y + dy; if ((dx || dy) && X >= 0 && Y >= 0 && X < gw && Y < gh && alive[Y * gw + X]) k++; } return k; };
@@ -192,7 +192,9 @@ function growLichen(data: Uint8ClampedArray, w: number, h: number, bx: number, b
     if (d === 0) return mode === "leafy" ? [1, 1, .3, .05][Math.min(3, around(c))] : 1;   // leafy prefers tips: it branches before filling
     const px = cx(c), py = cy(c) + spaceOff(sc), n = noise(px, py, Math.max(32, dot * 10));
     let p = Math.pow(1 - d / (ov + 1.5), 1.6) * (.25 + .9 * n * n);
-    if (d * step > dot * 1.5 && Math.abs(noise(px + 999, py, dot * D.branches) - .5) > .15) p *= .03;   // branches, gaps in dot sizes
+    const v = vein[c] = Math.abs(noise(px + 999, py, dot * D.branches) - .5);   // 0 on a branch's middle line
+    if (d * step > dot * 1.5 && v > .15) p *= .03;   // branches, gaps in dot sizes
+    if (v < .045) p = Math.max(p, .85 * Math.pow(1 - d / (ov + 1.5), .6));   // a branch's core grows readily: visible veins
     if (mode === "leafy") p *= [1, 1, .3, .01][Math.min(3, around(c))];
     if (mode === "rosette") p *= .8;
     return p;
@@ -244,7 +246,8 @@ function growLichen(data: Uint8ClampedArray, w: number, h: number, bx: number, b
   for (let c = 0; c < N; c++) {
     if (!alive[c]) continue;
     const d = dist[c], g = Math.min(1.35, when[c] / T);
-    const grey = mode === "rosette" ? ((g * 6) % 1 > .4 ? .32 : 1) : d === 0 ? 1 : d > ov * .6 ? .32 : .55;
+    const core = d > 0 && vein[c] < .045;   // vein cores are solid, the rest of the spill is screened
+    const grey = core ? 1 : mode === "rosette" ? ((g * 6) % 1 > .4 ? .32 : 1) : d === 0 ? 1 : d > ov * .6 ? .32 : .55;
     let fr = rr * 1.45, jx = (Math.random() - .5) * wob * step, jy = (Math.random() - .5) * wob * step;   // solid: dots overlap enough to read black
     if (grey < 1) {
       const x = c % gw, y = (c / gw) | 0;
@@ -256,14 +259,26 @@ function growLichen(data: Uint8ClampedArray, w: number, h: number, bx: number, b
   return out;
 }
 
-export function collectTargets(pageId: string): Target[] {
+/** Reads the page into dot targets. Spread over several frames (a slice of a few ms each) so the animation never
+ *  stalls; a newer call makes an older one give up (it returns null). */
+let collecting = 0;
+export async function collectTargets(pageId: string): Promise<Target[] | null> {
+  const me = ++collecting;
+  let slice = performance.now();
+  const breathe = async () => {
+    if (performance.now() - slice < 6) return true;
+    await new Promise(r => setTimeout(r, 0)); slice = performance.now();
+    return me === collecting;
+  };
   const els = [...document.querySelectorAll<HTMLElement>("[data-p]")];
   const PL = state.PL, plr = PL && PL.getBoundingClientRect();
   const lich = lichen(), cap = lich ? MAX_LICHEN : MAX_TARGETS;
   let dens = lich ? 1 : dotSizeNow(), targets: Target[] = [];
   for (let pass = 0; pass < 3; pass++) {
     targets = []; keyEl = new Map(); buzzKeys = new Set(); smallKeys = new Set();
-    els.forEach((el, i) => {
+    for (let i = 0; i < els.length; i++) {
+      if (!(await breathe())) return null;
+      const el = els[i];
       const sc = PL && PL.contains(el) ? 2 : L.contains(el) ? 1 : 0;
       const key = el.dataset.k || `${pageId}:${i}`;
       keyEl.set(key, el);
@@ -272,11 +287,11 @@ export function collectTargets(pageId: string): Target[] {
       const buzz = el.matches(BUZZ_SEL) && !small;
       if (small) smallKeys.add(key); if (buzz) buzzKeys.add(key);
       // List rows outside the visible part of the carousel go straight to real type.
-      if (sc === 2 && S.dots.real && plr) { const r = el.getBoundingClientRect(); if (r.bottom < plr.top - 40 || r.top > plr.bottom + 40) { el.classList.add("real"); return; } }
+      if (sc === 2 && S.dots.real && plr) { const r = el.getBoundingClientRect(); if (r.bottom < plr.top - 40 || r.top > plr.bottom + 40) { el.classList.add("real"); continue; } }
       // Text far below the fold doesn't need dots: it becomes real type straight away.
-      if (sc && S.dots.real && !buzz && el.getBoundingClientRect().top > H * 1.3) { el.classList.add("real"); return; }
+      if (sc && S.dots.real && !buzz && el.getBoundingClientRect().top > H * 1.3) { el.classList.add("real"); continue; }
       for (const t of sampleElement(el, key, dens, buzz, sc)) targets.push(t);
-    });
+    }
     if (targets.length <= cap) break;
     dens /= Math.sqrt(cap / targets.length) * .97;   // too many: spread the dots out
   }
@@ -298,18 +313,18 @@ export function showDots(keep: Set<string>) {
 /** Magnets pulled off in a wave spreading from where you clicked. Released dots slip off with a little
  *  gravity whose direction, strength and tempo change every time. */
 export function release(keep: Set<string>) {
-  const wasReal = new Set(P.filter(p => p.hid && p.key && !keep.has(p.key)));   // text showing as real type
   if (lichen()) keep = new Set();   // lichen: everything retracts, then the new page grows (nothing stays)
   showDots(keep);
   const now = performance.now();
   if (lichen()) {
+    releasedAt = now;
     // Lichen ungrows where it is: newest growth first, retracting toward where each shape started.
     for (const p of P) {
       if (p.sc) { const o = spaceOff(p.sc); p.y -= o; p.ty -= o; p.sc = 0; }
       if (p.die || (p.key && keep.has(p.key))) continue;
       p.key = null; p.bz = false;
       // Text that was real type goes quickly, so it doesn't linger under the new page's text.
-      if (p.lc) p.dd = Math.min(p.dd ?? Infinity, now + Math.max(0, 1 - (p.g ?? 0) / 1.35) * (wasReal.has(p) ? 250 : UNGROW - POP)); else { p.die = true; p.ta = 0; }
+      if (p.lc) p.dd = Math.min(p.dd ?? Infinity, now + Math.max(0, 1 - (p.g ?? 0) / 1.35) * (UNGROW - POP)); else { p.die = true; p.ta = 0; }
     }
     releaseOrigin = null;
     return;
@@ -424,7 +439,8 @@ export function assign(targets: Target[], gentle = false) {
 
 /** Lichen: each element's dots appear in place in their growth order. What both pages share (the header, a menu
  *  title that doesn't move) stays; the rest was ungrown by release(). */
-const GROW = 1800, POP = 160, UNGROW = 600;   // ms: growth of a shape, one dot appearing, the old page retracting
+let releasedAt = -1e9;
+const GROW = 1800, POP = 160, UNGROW = 900;   // ms: growth of a shape, one dot appearing, the old page retracting
 function assignLichen(targets: Target[], gentle: boolean, now: number) {
   const byKey = new Map<string, Target[]>();
   for (const t of targets) { if (!byKey.has(t.key)) byKey.set(t.key, []); byKey.get(t.key)!.push(t); }
@@ -434,7 +450,7 @@ function assignLichen(targets: Target[], gentle: boolean, now: number) {
     if (!p.lc || !p.key || !byKey.has(p.key)) { if (!p.lc) { p.die = true; p.ta = 0; } continue; }   // particles from before: fade
     if (!have.has(p.key)) have.set(p.key, []); have.get(p.key)!.push(p);
   }
-  const land = new Map<string, number>(), leaving = P.some(p => p.lc && p.dd! < Infinity);
+  const land = new Map<string, number>();
   for (const [key, ts] of byKey) {
     const old = have.get(key) || [], el = keyEl.get(key);
     // Same shape in the same place (by count and corners): keep it as it is.
@@ -443,7 +459,7 @@ function assignLichen(targets: Target[], gentle: boolean, now: number) {
     if (same && !gentle) continue;
     // Changed: the old growth goes (at once when only re-laid out, else it ungrows), the new one grows.
     for (const p of old) { if (gentle) p.die = true, p.a = 0; else p.dd = now + Math.max(0, 1 - (p.g ?? 0) / 1.35) * (UNGROW - POP); }
-    const t0 = gentle ? now - GROW - POP : now + (leaving ? UNGROW : 0) + rand(0, 60);   // once the old page has gone
+    const t0 = gentle ? now - GROW - POP : Math.max(now, releasedAt + UNGROW) + rand(0, 60);   // once the old page has gone
     const hidden = gentle && !!el?.classList.contains("real");
     for (const t of ts) {
       const p = spawn(t.x, t.y);
