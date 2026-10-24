@@ -236,6 +236,18 @@ collections:
             label: Dots
             widget: object
             fields:
+              - name: anim
+                label: Animation
+                widget: select
+                default: particles
+                options:
+                  - { label: Particles (travel), value: particles }
+                  - { label: Lichen — crust, value: crust }
+                  - { label: Lichen — leafy, value: leafy }
+                  - { label: Lichen — rosette, value: rosette }
+              - { name: overflow, label: Lichen overflow (% of font size), widget: number, value_type: int, default: 12 }
+              - { name: branches, label: Lichen branches (space in dot sizes), widget: number, value_type: int, default: 8 }
+              - { name: realBelow, label: Real type below (px), widget: number, value_type: float, step: 0.5, default: 12, hint: "Text smaller than this turns into real type once formed, titles and the name included. 0 = never." }
               - { name: shape, label: Shape, widget: select, options: [round, square] }
               - { name: dotSize, label: Dot size, widget: number, value_type: float, step: 0.05 }
               - { name: fill, label: Fill, widget: number, value_type: float, step: 0.01 }
