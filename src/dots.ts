@@ -8,16 +8,20 @@ const PHYS = { k: .03, damp: .82 };
 const MAX_TARGETS = 45000;
 const { L, M } = dom;
 
-interface Target { x: number; y: number; r: number; key: string; buzz: boolean; sc: number }
+interface Target { x: number; y: number; r: number; key: string; buzz: boolean; sc: number; g?: number; fr?: number }   // g, fr: lichen growth time (0–1) and dot radius
 interface Dot {
   x: number; y: number; vx: number; vy: number; tx: number; ty: number; r: number; tr: number;
   key: string | null; start: number; a: number; ta: number; seed: number; die: boolean;
   vis: number; hid: boolean; bz: boolean; sc: number; rest?: boolean;
   tw?: { fx: number; fy: number; tx: number; ty: number; fr: number; tr: number; fa: number; ta: number; t0: number; dur: number } | null;
   hold?: number; kick?: number; gx?: number; gy?: number; k?: number; dm?: number; _u?: number;
+  lc?: boolean; g?: number; bt?: number; dd?: number;   // lichen: grows in place at bt, ungrows at dd
 }
+/** Lichen animations grow the dots in place instead of moving them. */
+const lichen = () => S.dots.anim === "crust" || S.dots.anim === "leafy" || S.dots.anim === "rosette";
 
 let keyEl = new Map<string, HTMLElement>(), gen = 0;
+let buzzKeys = new Set<string>(), smallKeys = new Set<string>();
 let P: Dot[] = [];
 let W = 0, H = 0, DPR = 1;
 let hoverKey: string | null = null;
@@ -84,7 +88,8 @@ const R = 2;
 function sampleElement(el: HTMLElement, key: string, sizeMul: number, buzz: boolean, sc: number): Target[] {
   const box = el.getBoundingClientRect();
   if (box.width < 1 || box.height < 1) return [];
-  const pad = 4, bx = box.left - pad, by = box.top - pad;
+  const fs0 = parseFloat(getComputedStyle(el).fontSize), lich = lichen();
+  const pad = 4 + (lich ? Math.ceil(S.dots.overflow / 100 * fs0) + 2 : 0), bx = box.left - pad, by = box.top - pad;
   const w = Math.ceil(box.width + pad * 2), h = Math.ceil(box.height + pad * 2);
   off.width = w * R; off.height = h * R;
   octx.setTransform(R, 0, 0, R, 0, 0);
@@ -129,6 +134,7 @@ function sampleElement(el: HTMLElement, key: string, sizeMul: number, buzz: bool
   // Grid-sample the raster. Bigger type gets a coarser grid; "dot size" scales it.
   const step = Math.max(Math.min(Math.max(fsMain * .072, 1.45), 4.6) * sizeMul, .7);
   const data = octx.getImageData(0, 0, off.width, off.height).data;
+  if (lich) return growLichen(data, w, h, bx, by, step, fsMain, key, buzz, sc);
   const out: Target[] = [], oy = spaceOff(sc);
   for (let y = step / 2; y < h; y += step) {
     for (let x = step / 2; x < w; x += step) {
@@ -138,21 +144,115 @@ function sampleElement(el: HTMLElement, key: string, sizeMul: number, buzz: bool
   return out;
 }
 
+// ───────── Lichen: which cells grow, and when ─────────
+// The sampled grid around the text is grown like lichen: from a spore in each separate shape, cell by cell to
+// neighbouring cells. Inside the letters everything grows; past them growth thins out with distance (spill, a
+// share of the font size), forms lobes, then keeps to branches spaced in dot sizes. Each cell gets its growth
+// time; the dots then simply appear in that order (and disappear newest first when the page changes).
+const hash = (x: number, y: number) => { let h = (x * 374761393 + y * 668265263) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
+function noise(px: number, py: number, scale: number) {   // smooth random field in page pixels (continuous across elements)
+  const fx = px / scale, fy = py / scale, x0 = Math.floor(fx), y0 = Math.floor(fy), tx = fx - x0, ty = fy - y0;
+  const sx = tx * tx * (3 - 2 * tx), sy = ty * ty * (3 - 2 * ty), a = hash(x0, y0), b = hash(x0 + 1, y0), c = hash(x0, y0 + 1), d = hash(x0 + 1, y0 + 1);
+  return a + (b - a) * sx + (c - a) * sy + (a - b - c + d) * sx * sy;
+}
+function growLichen(data: Uint8ClampedArray, w: number, h: number, bx: number, by: number, step: number, fs: number, key: string, buzz: boolean, sc: number): Target[] {
+  const D = S.dots, mode = D.anim, gw = Math.max(1, Math.floor(w / step)), gh = Math.max(1, Math.floor(h / step)), N = gw * gh;
+  const cx = (c: number) => bx + (c % gw + .5) * step, cy = (c: number) => by + ((c / gw) | 0) * step + step / 2;
+  const dist = new Int16Array(N).fill(999), q: number[] = [];
+  for (let c = 0; c < N; c++) {
+    const x = (c % gw + .5) * step, y = (((c / gw) | 0) + .5) * step;
+    if (data[((Math.round(y * R) * off.width) + Math.round(x * R)) * 4 + 3] > 90) { dist[c] = 0; q.push(c); }
+  }
+  if (!q.length) return [];
+  const ov = Math.round(D.overflow / 100 * fs / step), dot = 2 * step * D.fill;
+  for (let k = 0; k < q.length; k++) {   // distance from the letters, in cells
+    const c = q[k], x = c % gw, y = (c / gw) | 0, nd = dist[c] + 1; if (nd > ov + 1) continue;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= gw || Y >= gh) continue;
+      const j = Y * gw + X; if (dist[j] > nd) { dist[j] = nd; q.push(j); }
+    }
+  }
+  const alive = new Uint8Array(N), done = new Uint8Array(N), when = new Float32Array(N), front: number[] = [];
+  const around = (c: number) => { let k = 0; const x = c % gw, y = (c / gw) | 0;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const X = x + dx, Y = y + dy; if ((dx || dy) && X >= 0 && Y >= 0 && X < gw && Y < gh && alive[Y * gw + X]) k++; } return k; };
+  const accept = (c: number) => {
+    const d = dist[c]; if (d > ov + 1) return 0;
+    if (d === 0) return mode === "leafy" ? [1, 1, .3, .05][Math.min(3, around(c))] : 1;   // leafy prefers tips: it branches before filling
+    const px = cx(c), py = cy(c) + spaceOff(sc), n = noise(px, py, Math.max(32, dot * 10));
+    let p = Math.pow(1 - d / (ov + 1.5), 1.6) * (.25 + .9 * n * n);
+    if (d * step > dot * 1.5 && Math.abs(noise(px + 999, py, dot * D.branches) - .5) > .15) p *= .03;   // branches, gaps in dot sizes
+    if (mode === "leafy") p *= [1, 1, .3, .01][Math.min(3, around(c))];
+    if (mode === "rosette") p *= .8;
+    return p;
+  };
+  let t = 0;
+  const birth = (c: number) => {
+    alive[c] = 1; done[c] = 1; when[c] = t;
+    const x = c % gw, y = (c / gw) | 0;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= gw || Y >= gh) continue;
+      const j = Y * gw + X; if (!done[j] && dist[j] <= ov + 1) front.push(j);
+    }
+  };
+  // A spore in every separate shape (letters, dots on i's…), more in big ones.
+  const seen = new Uint8Array(N);
+  for (let c0 = 0; c0 < N; c0++) {
+    if (dist[c0] || seen[c0]) continue;
+    const blob = [c0]; seen[c0] = 1;
+    for (let k = 0; k < blob.length; k++) {
+      const c = blob[k], x = c % gw, y = (c / gw) | 0;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= gw || Y >= gh) continue;
+        const j = Y * gw + X; if (!seen[j] && !dist[j]) { seen[j] = 1; blob.push(j); }
+      }
+    }
+    for (let k = Math.max(1, Math.round(blob.length / 900)); k > 0; k--) { const c = blob[(Math.random() * blob.length) | 0]; if (!alive[c]) birth(c); }
+  }
+  // Growth: try frontier cells at random; time runs at a rate set by the size of the frontier (like real growth).
+  let guard = N * 40;
+  while (front.length && guard-- > 0) {
+    const r = (Math.random() * front.length) | 0, c = front[r]; front[r] = front[front.length - 1]; front.pop();
+    t += 1 / (front.length + 1);
+    if (done[c]) continue;
+    if (Math.random() < accept(c)) birth(c); else if (mode === "leafy" && !dist[c]) front.push(c); else done[c] = 1;
+  }
+  // Greys are a halftone screen: lighter cells keep only a staggered grid of dots, sized by the grey.
+  const out: Target[] = [], oy = spaceOff(sc), m = 3, rr = step * D.fill;
+  const T = t || 1;
+  for (let c = 0; c < N; c++) {
+    if (!alive[c]) continue;
+    const d = dist[c], g = when[c] / T;
+    const grey = mode === "rosette" ? (Math.floor(g * 7) % 2 ? .32 : 1) : d === 0 ? 1 : d > ov * .6 ? .32 : .55;
+    let fr = rr;
+    if (grey < 1) {
+      const x = c % gw, y = (c / gw) | 0;
+      if (y % m || (x + ((y / m) | 0) % 2 * 1) % m) continue;
+      fr = m * step * Math.sqrt(grey / Math.PI);
+    }
+    out.push({ x: cx(c), y: cy(c) + oy, r: step, key, buzz, sc, g, fr });
+  }
+  return out;
+}
+
 export function collectTargets(pageId: string): Target[] {
   const els = [...document.querySelectorAll<HTMLElement>("[data-p]")];
   const PL = state.PL, plr = PL && PL.getBoundingClientRect();
   let dens = dotSizeNow(), targets: Target[] = [];
   for (let pass = 0; pass < 3; pass++) {
-    targets = []; keyEl = new Map();
+    targets = []; keyEl = new Map(); buzzKeys = new Set(); smallKeys = new Set();
     els.forEach((el, i) => {
       const sc = PL && PL.contains(el) ? 2 : L.contains(el) ? 1 : 0;
       const key = el.dataset.k || `${pageId}:${i}`;
       keyEl.set(key, el);
+      // Small text (below the size set in Dots) turns into real type once formed, like body text, whatever it is.
+      const small = S.dots.realBelow > 0 && !!el.textContent!.trim() && parseFloat(getComputedStyle(el).fontSize) < S.dots.realBelow;
+      const buzz = el.matches(BUZZ_SEL) && !small;
+      if (small) smallKeys.add(key); if (buzz) buzzKeys.add(key);
       // List rows outside the visible part of the carousel go straight to real type.
       if (sc === 2 && S.dots.real && plr) { const r = el.getBoundingClientRect(); if (r.bottom < plr.top - 40 || r.top > plr.bottom + 40) { el.classList.add("real"); return; } }
       // Text far below the fold doesn't need dots: it becomes real type straight away.
-      if (sc && S.dots.real && !el.matches(BUZZ_SEL) && el.getBoundingClientRect().top > H * 1.3) { el.classList.add("real"); return; }
-      for (const t of sampleElement(el, key, dens, el.matches(BUZZ_SEL), sc)) targets.push(t);
+      if (sc && S.dots.real && !buzz && el.getBoundingClientRect().top > H * 1.3) { el.classList.add("real"); return; }
+      for (const t of sampleElement(el, key, dens, buzz, sc)) targets.push(t);
     });
     if (targets.length <= MAX_TARGETS) break;
     dens /= Math.sqrt(MAX_TARGETS / targets.length) * .97;
@@ -175,8 +275,21 @@ export function showDots(keep: Set<string>) {
 /** Magnets pulled off in a wave spreading from where you clicked. Released dots slip off with a little
  *  gravity whose direction, strength and tempo change every time. */
 export function release(keep: Set<string>) {
+  const wasReal = new Set(P.filter(p => p.hid && p.key && !keep.has(p.key)));   // text showing as real type
   showDots(keep);
   const now = performance.now();
+  if (lichen()) {
+    // Lichen ungrows where it is: newest growth first, retracting toward where each shape started.
+    for (const p of P) {
+      if (p.sc) { const o = spaceOff(p.sc); p.y -= o; p.ty -= o; p.sc = 0; }
+      if (p.die || (p.key && keep.has(p.key))) continue;
+      p.key = null; p.bz = false;
+      // Text that was real type goes quickly, so it doesn't linger under the new page's text.
+      if (p.lc) p.dd = Math.min(p.dd ?? Infinity, now + (1 - (p.g ?? 0)) * (wasReal.has(p) ? 250 : 650) + rand(0, 80)); else { p.die = true; p.ta = 0; }
+    }
+    releaseOrigin = null;
+    return;
+  }
   const O = releaseOrigin ?? { x: rand(0, W), y: rand(0, H) };
   const ga = Math.random() < .5 ? rand(Math.PI * .3, Math.PI * .7) : rand(0, Math.PI * 2);
   const gm = rand(.25, 1.6);
@@ -196,6 +309,7 @@ export function release(keep: Set<string>) {
 /** Give the dots their new targets. gentle = same page re-laid out (resize, settings): just glide. */
 export function assign(targets: Target[], gentle = false) {
   const now = performance.now();
+  if (lichen()) return assignLichen(targets, gentle, now);
   const byKey = new Map<string, Target[]>();
   for (const t of targets) { if (!byKey.has(t.key)) byKey.set(t.key, []); byKey.get(t.key)!.push(t); }
   const pool: Dot[] = [], need: Target[] = [], holding = new Map<string, Dot[]>();
@@ -284,14 +398,49 @@ export function assign(targets: Target[], gentle = false) {
   onStat(targets.length);
 }
 
+/** Lichen: each element's dots appear in place in their growth order. What both pages share (the header, a menu
+ *  title that doesn't move) stays; the rest was ungrown by release(). */
+const GROW = 1300, POP = 260;
+function assignLichen(targets: Target[], gentle: boolean, now: number) {
+  const byKey = new Map<string, Target[]>();
+  for (const t of targets) { if (!byKey.has(t.key)) byKey.set(t.key, []); byKey.get(t.key)!.push(t); }
+  const have = new Map<string, Dot[]>();
+  for (const p of P) {
+    if (p.die || p.dd !== undefined && p.dd < Infinity) continue;
+    if (!p.lc || !p.key || !byKey.has(p.key)) { if (!p.lc) { p.die = true; p.ta = 0; } continue; }   // particles from before: fade
+    if (!have.has(p.key)) have.set(p.key, []); have.get(p.key)!.push(p);
+  }
+  const land = new Map<string, number>();
+  for (const [key, ts] of byKey) {
+    const old = have.get(key) || [], el = keyEl.get(key);
+    // Same shape in the same place (by count and corners): keep it as it is.
+    const same = old.length && Math.abs(old.length - ts.length) <= Math.max(3, ts.length * .02) &&
+      Math.abs(Math.min(...old.map(p => p.tx)) - Math.min(...ts.map(t => t.x))) < 1.5 && Math.abs(Math.min(...old.map(p => p.ty)) - Math.min(...ts.map(t => t.y))) < 1.5;
+    if (same && !gentle) continue;
+    // Changed: the old growth goes (at once when only re-laid out, else it ungrows), the new one grows.
+    for (const p of old) { if (gentle) p.die = true, p.a = 0; else p.dd = now + (1 - (p.g ?? 0)) * 650; }
+    const t0 = gentle ? now - GROW - POP : now + rand(200, 380) + (old.length ? 250 : 0);   // after the old growth has mostly gone
+    const hidden = gentle && !!el?.classList.contains("real");
+    for (const t of ts) {
+      const p = spawn(t.x, t.y);
+      p.lc = true; p.key = key; p.sc = t.sc; p.tx = t.x; p.ty = t.y; p.tr = t.fr ?? t.r * S.dots.fill; p.g = t.g ?? 0;
+      p.bt = t0 + p.g * GROW; p.dd = Infinity; p.bz = t.buzz; p.a = 0; p.r = 0; p.hid = hidden; p.vis = hidden ? 0 : 1;
+      P.push(p);
+    }
+    if (!hidden) land.set(key, t0 + GROW + POP);
+  }
+  scheduleReal(land);
+  onStat(targets.length);
+}
+
 /** Turn landed body text into real type. */
 export function scheduleReal(land: Map<string, number>) {
   const g = gen;
   for (const [key, t] of land) {
     const el = keyEl.get(key);
-    if (!el || el.matches(BUZZ_SEL)) continue;
+    if (!el || buzzKeys.has(key)) continue;
     setTimeout(() => {
-      if (g !== gen || !S.dots.real || !el.isConnected) return;
+      if (g !== gen || !(S.dots.real || smallKeys.has(key)) || !el.isConnected) return;
       el.classList.add("real");
       for (const p of P) if (p.key === key) p.hid = true;
     }, Math.max(0, t - performance.now()) + 120);
@@ -324,6 +473,15 @@ function frame(now: number) {
 function update(p: Dot, now: number, dt: number) {
   const t = now * .00025, D = S.dots;
   p.vis += ((p.hid ? 0 : 1) - p.vis) * .14 * dt;
+  if (p.lc) {
+    // Lichen: no movement, the dot just grows in at its time and shrinks away at its end.
+    if (p.die) return false;
+    let u = now >= p.dd! ? 1 - (now - p.dd!) / POP : (now - p.bt!) / POP;
+    if (now >= p.dd! && u <= 0) return false;
+    u = Math.min(1, Math.max(0, u)); u = u * u * (3 - 2 * u);
+    p.r = p.tr * u; p.a = u > 0 ? 1 : 0;
+    return true;
+  }
   // Dots sitting on their magnet cost nothing until something disturbs them.
   if (p.rest) { if (p.key !== hoverKey) return true; p.rest = false; }
   if (p.tw) {
@@ -417,6 +575,6 @@ function draw(now: number) {
 /** Start: dots condense out of a faint scattered field. */
 export function start() {
   ink = [...state.inkTo];
-  for (let i = 0; i < 2500; i++) { const p = spawn(rand(0, W), rand(0, H)); p.a = 0; p.ta = .15; P.push(p); }
+  if (!lichen()) for (let i = 0; i < 2500; i++) { const p = spawn(rand(0, W), rand(0, H)); p.a = 0; p.ta = .15; P.push(p); }   // lichen grows from nothing
   requestAnimationFrame(frame);
 }

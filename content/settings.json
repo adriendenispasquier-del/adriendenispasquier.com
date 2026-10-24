@@ -36,7 +36,11 @@
     "dotSize": 0.3,
     "fill": 0.7,
     "buzz": 0.95,
-    "real": true
+    "real": true,
+    "anim": "particles",
+    "overflow": 12,
+    "branches": 8,
+    "realBelow": 12
   },
   "grid": "closed",
   "font": "castoro",

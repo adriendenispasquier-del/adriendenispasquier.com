@@ -66,6 +66,19 @@ const HTML = `
     <button class="btn" id="fsreset" type="button">Reset sizes</button>
     </div></details>
     <details class="sec" name="adp-sec"><summary>Dots</summary><div class="sbody">
+    <span class="lab">Animation</span>
+    <select id="anim">
+      <option value="particles">Particles (travel)</option>
+      <option value="crust">Lichen — crust</option>
+      <option value="leafy">Lichen — leafy</option>
+      <option value="rosette">Lichen — rosette</option>
+    </select>
+    <div id="lich" class="lay">
+      <div class="lrow"><span>Overflow</span><input id="d-overflow" type="range" min="0" max="40" step="1"><output></output></div>
+      <div class="lrow"><span>Branches</span><input id="d-branches" type="range" min="3" max="20" step="1"><output></output></div>
+    </div>
+    <div class="lrow"><span>Real below</span><input id="d-realBelow" type="range" min="0" max="24" step="0.5"><output></output></div>
+    <div class="stat">Text smaller than this turns into real type once formed (titles too). 0 = never.</div>
     <label>Dot shape
       <div class="seg" id="shape">
         <button data-v="round" type="button">Round</button>
@@ -189,7 +202,16 @@ export function mount() {
   });
   let st2: number | undefined;
   inp("dotsize").addEventListener("input", e => { D.dotSize = +(e.target as HTMLInputElement).value; save(); clearTimeout(st2); st2 = window.setTimeout(resample, 120); });
-  inp("fill").addEventListener("input", e => { D.fill = +(e.target as HTMLInputElement).value; save(); });
+  inp("fill").addEventListener("input", e => { D.fill = +(e.target as HTMLInputElement).value; save(); if (D.anim !== "particles") { clearTimeout(st2); st2 = window.setTimeout(resample, 120); } });
+  // Animation, lichen options and the small-text rule
+  const asel = $("anim") as HTMLSelectElement;
+  const showAnim = () => { asel.value = D.anim; $("lich").hidden = D.anim === "particles";
+    for (const k of ["overflow", "branches", "realBelow"] as const) { const i = inp("d-" + k); i.value = String(D[k]); i.nextElementSibling!.textContent = k === "overflow" ? D[k] + "%" : k === "branches" ? String(D[k]) : D[k] ? D[k] + "px" : "off"; } };
+  showAnim();
+  asel.addEventListener("change", () => { D.anim = asel.value; save(); showAnim(); replay(); });
+  for (const k of ["overflow", "branches", "realBelow"] as const) inp("d-" + k).addEventListener("input", e => {
+    D[k] = +(e.target as HTMLInputElement).value; save(); showAnim(); clearTimeout(st2); st2 = window.setTimeout(k === "realBelow" ? () => { showDots(new Set()); resample(); } : replay, 250);
+  });
   inp("buzz").addEventListener("input", e => { D.buzz = +(e.target as HTMLInputElement).value; save(); });
   inp("real").addEventListener("change", e => {
     D.real = (e.target as HTMLInputElement).checked; save();

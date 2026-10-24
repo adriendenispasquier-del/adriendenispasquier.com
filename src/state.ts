@@ -29,7 +29,13 @@ export interface Settings {
   colors: { default: Pair; pages: Record<string, Pair> };   // pages: address → colours (a list in the file)
   layout: { gap: number; t: number; p: number; f: number; hh: number; order: string };   // hh: header height in px; order: columns from left, e.g. "tpf"
   layoutPhone: { gap: number; m: number; f: number; hh: number };
-  dots: { shape: string; dotSize: number; fill: number; buzz: number; real: boolean };
+  dots: {
+    shape: string; dotSize: number; fill: number; buzz: number; real: boolean;
+    anim: string;        // "particles" (dots travel to the text) or lichen: "crust" | "leafy" | "rosette" (dots grow in place)
+    overflow: number;    // lichen: how far it spills past the letters, in % of the font size
+    branches: number;    // lichen: space between the branches past the letters, in dot sizes
+    realBelow: number;   // text smaller than this (px) turns into real type once formed, titles included (0 = never)
+  };
   grid: string;                                              // "open" | "closed" | "none"
   font: string;                                              // "pair" (Redaction + Degular Mono) or one family for everything
   type: { name: number; titles: number; lists: number; text: number };   // font-size multipliers
@@ -43,6 +49,7 @@ const fromFile = (f: typeof defaults): Settings => ({
   ...clone(f),
   layout: { ...clone(f.layout), hh: (f.layout as any).hh ?? 66, order: (f.layout as any).order || "tpf" },
   layoutPhone: { ...clone(f.layoutPhone), hh: (f.layoutPhone as any).hh ?? 46 },
+  dots: { ...{ anim: "particles", overflow: 12, branches: 8, realBelow: 12 }, ...clone(f.dots) as any },
   grid: (f as any).grid || "open",
   font: (f as any).font || "pair",
   type: { name: 1, titles: 1, lists: 1, text: 1, ...(f as any).type },
