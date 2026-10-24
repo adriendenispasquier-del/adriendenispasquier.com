@@ -74,6 +74,8 @@ const HTML = `
       <option value="rosette">Lichen — rosette</option>
     </select>
     <div id="lich" class="lay">
+      <div class="lrow"><span>Dot size</span><input id="d-lichenDot" type="range" min="0.6" max="8" step="0.1"><output></output></div>
+      <div class="lrow"><span>Density</span><input id="d-lichenDensity" type="range" min="0.3" max="1.8" step="0.05"><output></output></div>
       <div class="lrow"><span>Overflow</span><input id="d-overflow" type="range" min="0" max="40" step="1"><output></output></div>
       <div class="lrow"><span>Branches</span><input id="d-branches" type="range" min="3" max="20" step="1"><output></output></div>
     </div>
@@ -85,8 +87,10 @@ const HTML = `
         <button data-v="square" type="button">Square</button>
       </div>
     </label>
+    <div id="pdots" class="lay">
     <label>Dot size <input id="dotsize" type="range" min="0.3" max="1.6" step="0.05"></label>
     <label>Fill <input id="fill" type="range" min="0.25" max="0.7" step="0.01"></label>
+    </div>
     <label>Buzz <input id="buzz" type="range" min="0" max="3" step="0.05"></label>
     <label class="row2"><input id="real" type="checkbox"> Body text turns into real type</label>
     <label class="row2"><input id="reveal" type="checkbox"> Show real text underneath</label>
@@ -205,11 +209,13 @@ export function mount() {
   inp("fill").addEventListener("input", e => { D.fill = +(e.target as HTMLInputElement).value; save(); if (D.anim !== "particles") { clearTimeout(st2); st2 = window.setTimeout(resample, 120); } });
   // Animation, lichen options and the small-text rule
   const asel = $("anim") as HTMLSelectElement;
+  const LK = ["lichenDot", "lichenDensity", "overflow", "branches", "realBelow"] as const;
   const showAnim = () => { asel.value = D.anim; $("lich").hidden = D.anim === "particles";
-    for (const k of ["overflow", "branches", "realBelow"] as const) { const i = inp("d-" + k); i.value = String(D[k]); i.nextElementSibling!.textContent = k === "overflow" ? D[k] + "%" : k === "branches" ? String(D[k]) : D[k] ? D[k] + "px" : "off"; } };
+    for (const k of LK) { const i = inp("d-" + k); i.value = String(D[k]); i.nextElementSibling!.textContent = k === "overflow" ? D[k] + "%" : k === "realBelow" ? (D[k] ? D[k] + "px" : "off") : k === "lichenDot" ? D[k] + "px" : String(D[k]); }
+    $("pdots").hidden = D.anim !== "particles"; };
   showAnim();
   asel.addEventListener("change", () => { D.anim = asel.value; save(); showAnim(); replay(); });
-  for (const k of ["overflow", "branches", "realBelow"] as const) inp("d-" + k).addEventListener("input", e => {
+  for (const k of LK) inp("d-" + k).addEventListener("input", e => {
     D[k] = +(e.target as HTMLInputElement).value; save(); showAnim(); clearTimeout(st2); st2 = window.setTimeout(k === "realBelow" ? () => { showDots(new Set()); resample(); } : replay, 250);
   });
   inp("buzz").addEventListener("input", e => { D.buzz = +(e.target as HTMLInputElement).value; save(); });

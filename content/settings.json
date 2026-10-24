@@ -40,7 +40,9 @@
     "anim": "particles",
     "overflow": 12,
     "branches": 8,
-    "realBelow": 12
+    "realBelow": 12,
+    "lichenDot": 2,
+    "lichenDensity": 1
   },
   "grid": "closed",
   "font": "castoro",

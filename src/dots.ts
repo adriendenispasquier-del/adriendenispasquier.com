@@ -5,7 +5,7 @@ import { dom, state, S, dotSizeNow, buzzNow } from "./state";
 
 export const BUZZ_SEL = ".hd a, .hd button, .t-big, .t-mid, .t-title";   // these stay as dots and gently buzz
 const PHYS = { k: .03, damp: .82 };
-const MAX_TARGETS = 45000;
+const MAX_TARGETS = 45000, MAX_LICHEN = 160000;   // lichen dots don't move once grown: many more are affordable
 const { L, M } = dom;
 
 interface Target { x: number; y: number; r: number; key: string; buzz: boolean; sc: number; g?: number; fr?: number }   // g, fr: lichen growth time (0–1) and dot radius
@@ -84,12 +84,16 @@ resizeCanvas();
 
 // ───────── Sampling: DOM → dot targets ─────────
 const off = document.createElement("canvas"), octx = off.getContext("2d", { willReadFrequently: true })!;
-const R = 2;
+let R = 2;   // raster resolution (finer for tiny lichen dots)
 function sampleElement(el: HTMLElement, key: string, sizeMul: number, buzz: boolean, sc: number): Target[] {
   const box = el.getBoundingClientRect();
   if (box.width < 1 || box.height < 1) return [];
   const fs0 = parseFloat(getComputedStyle(el).fontSize), lich = lichen();
   const pad = 4 + (lich ? Math.ceil(S.dots.overflow / 100 * fs0) + 2 : 0), bx = box.left - pad, by = box.top - pad;
+  // Lichen: dot size in pixels, the same for all text; density sets the spacing (1 = solid). sizeMul > 1 when the page
+  // has too many dots and they had to be spread out.
+  const lstep = Math.max(.45, S.dots.lichenDot * .72 / S.dots.lichenDensity * sizeMul);
+  R = lich && lstep < 1.2 ? 4 : 2;
   const w = Math.ceil(box.width + pad * 2), h = Math.ceil(box.height + pad * 2);
   off.width = w * R; off.height = h * R;
   octx.setTransform(R, 0, 0, R, 0, 0);
@@ -132,7 +136,7 @@ function sampleElement(el: HTMLElement, key: string, sizeMul: number, buzz: bool
     if (rr > 0) octx.fillRect(r.right - bx - Math.max(rr, 1), r.top - by, Math.max(rr, 1), r.height);
   }
   // Grid-sample the raster. Bigger type gets a coarser grid; "dot size" scales it.
-  const step = Math.max(Math.min(Math.max(fsMain * .072, 1.45), 4.6) * sizeMul, .7);
+  const step = lich ? lstep : Math.max(Math.min(Math.max(fsMain * .072, 1.45), 4.6) * sizeMul, .7);
   const data = octx.getImageData(0, 0, off.width, off.height).data;
   if (lich) return growLichen(data, w, h, bx, by, step, fsMain, key, buzz, sc);
   const out: Target[] = [], oy = spaceOff(sc);
@@ -164,7 +168,7 @@ function growLichen(data: Uint8ClampedArray, w: number, h: number, bx: number, b
     if (data[((Math.round(y * R) * off.width) + Math.round(x * R)) * 4 + 3] > 90) { dist[c] = 0; q.push(c); }
   }
   if (!q.length) return [];
-  const ov = Math.round(D.overflow / 100 * fs / step), dot = 2 * step * D.fill;
+  const ov = Math.round(D.overflow / 100 * fs / step), dot = D.lichenDot;
   for (let k = 0; k < q.length; k++) {   // distance from the letters, in cells
     const c = q[k], x = c % gw, y = (c / gw) | 0, nd = dist[c] + 1; if (nd > ov + 1) continue;
     for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
@@ -206,7 +210,7 @@ function growLichen(data: Uint8ClampedArray, w: number, h: number, bx: number, b
         const j = Y * gw + X; if (!seen[j] && !dist[j]) { seen[j] = 1; blob.push(j); }
       }
     }
-    for (let k = Math.max(1, Math.round(blob.length / 900)); k > 0; k--) { const c = blob[(Math.random() * blob.length) | 0]; if (!alive[c]) birth(c); }
+    for (let k = Math.max(1, Math.round(blob.length * step * step / 15000)); k > 0; k--) { const c = blob[(Math.random() * blob.length) | 0]; if (!alive[c]) birth(c); }
   }
   // Growth: try frontier cells at random; time runs at a rate set by the size of the frontier (like real growth).
   let guard = N * 40;
@@ -217,7 +221,7 @@ function growLichen(data: Uint8ClampedArray, w: number, h: number, bx: number, b
     if (Math.random() < accept(c)) birth(c); else if (mode === "leafy" && !dist[c]) front.push(c); else done[c] = 1;
   }
   // Greys are a halftone screen: lighter cells keep only a staggered grid of dots, sized by the grey.
-  const out: Target[] = [], oy = spaceOff(sc), m = 3, rr = step * D.fill;
+  const out: Target[] = [], oy = spaceOff(sc), m = Math.max(2, Math.round(dot * 1.6 / step)), rr = dot / 2;   // screen pitch: about 1.6 dots
   const T = t || 1;
   for (let c = 0; c < N; c++) {
     if (!alive[c]) continue;
@@ -227,7 +231,7 @@ function growLichen(data: Uint8ClampedArray, w: number, h: number, bx: number, b
     if (grey < 1) {
       const x = c % gw, y = (c / gw) | 0;
       if (y % m || (x + ((y / m) | 0) % 2 * 1) % m) continue;
-      fr = m * step * Math.sqrt(grey / Math.PI);
+      fr = rr * Math.sqrt(grey) * 1.25;   // lighter grey, smaller dot (never bigger than a solid one)
     }
     out.push({ x: cx(c), y: cy(c) + oy, r: step, key, buzz, sc, g, fr });
   }
@@ -237,7 +241,8 @@ function growLichen(data: Uint8ClampedArray, w: number, h: number, bx: number, b
 export function collectTargets(pageId: string): Target[] {
   const els = [...document.querySelectorAll<HTMLElement>("[data-p]")];
   const PL = state.PL, plr = PL && PL.getBoundingClientRect();
-  let dens = dotSizeNow(), targets: Target[] = [];
+  const lich = lichen(), cap = lich ? MAX_LICHEN : MAX_TARGETS;
+  let dens = lich ? 1 : dotSizeNow(), targets: Target[] = [];
   for (let pass = 0; pass < 3; pass++) {
     targets = []; keyEl = new Map(); buzzKeys = new Set(); smallKeys = new Set();
     els.forEach((el, i) => {
@@ -254,8 +259,8 @@ export function collectTargets(pageId: string): Target[] {
       if (sc && S.dots.real && !buzz && el.getBoundingClientRect().top > H * 1.3) { el.classList.add("real"); return; }
       for (const t of sampleElement(el, key, dens, buzz, sc)) targets.push(t);
     });
-    if (targets.length <= MAX_TARGETS) break;
-    dens /= Math.sqrt(MAX_TARGETS / targets.length) * .97;
+    if (targets.length <= cap) break;
+    dens /= Math.sqrt(cap / targets.length) * .97;   // too many: spread the dots out
   }
   return targets;
 }
@@ -476,10 +481,11 @@ function update(p: Dot, now: number, dt: number) {
   if (p.lc) {
     // Lichen: no movement, the dot just grows in at its time and shrinks away at its end.
     if (p.die) return false;
+    if (p.rest && p.dd === Infinity) return true;
     let u = now >= p.dd! ? 1 - (now - p.dd!) / POP : (now - p.bt!) / POP;
     if (now >= p.dd! && u <= 0) return false;
     u = Math.min(1, Math.max(0, u)); u = u * u * (3 - 2 * u);
-    p.r = p.tr * u; p.a = u > 0 ? 1 : 0;
+    p.r = p.tr * u; p.a = u > 0 ? 1 : 0; p.rest = u >= 1;
     return true;
   }
   // Dots sitting on their magnet cost nothing until something disturbs them.
