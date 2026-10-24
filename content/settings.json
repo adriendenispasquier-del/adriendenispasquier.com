@@ -50,13 +50,15 @@
     "name": 0.84,
     "titles": 0.96,
     "lists": 0.76,
-    "text": 0.92
+    "text": 0.92,
+    "about": 1
   },
   "fontPhone": "castoro",
   "typePhone": {
     "name": 0.72,
     "titles": 0.96,
     "lists": 0.64,
-    "text": 1.08
+    "text": 1.08,
+    "about": 1
   }
 }

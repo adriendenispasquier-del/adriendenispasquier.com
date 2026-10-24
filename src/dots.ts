@@ -33,10 +33,12 @@ export const viewport = () => ({ W, H });
 export let onStat: (n: number) => void = () => {};
 export const setOnStat = (f: (n: number) => void) => { onStat = f; };
 
-// Dot spaces: 0 = fixed on screen (header, rules), 1 = text column (scrolls), 2 = Work project list (scrolls inside it).
+// Dot spaces: 0 = fixed on screen (header, rules), 1 = text column (scrolls), 2 = a box scrolling inside it
+// (the Work project list, or the About text).
+const box = () => state.PL || state.SB;
 export const spaceOff = (sc: number) =>
   (sc >= 1 ? (state.phone ? (M.classList.contains("home") ? 0 : M.scrollTop) : L.scrollTop) : 0) +
-  (sc === 2 && state.PL ? state.PL.scrollTop : 0);
+  (sc === 2 && box() ? box()!.scrollTop : 0);
 
 // ───────── Canvas (WebGL points, 2D fallback) ─────────
 const cv = dom.cv;
@@ -130,15 +132,17 @@ function sampleElement(el: HTMLElement, key: string, sizeMul: number, buzz: bool
   for (const e of [el, ...el.querySelectorAll<HTMLElement>("*")]) {
     const cs = getComputedStyle(e), r = e.getBoundingClientRect();
     const t = parseFloat(cs.borderTopWidth), b = parseFloat(cs.borderBottomWidth), l = parseFloat(cs.borderLeftWidth), rr = parseFloat(cs.borderRightWidth);
-    if (t > 0) octx.fillRect(r.left - bx, r.top - by, r.width, Math.max(t, 1));
-    if (b > 0) octx.fillRect(r.left - bx, r.bottom - by - Math.max(b, 1), r.width, Math.max(b, 1));
-    if (l > 0) octx.fillRect(r.left - bx, r.top - by, Math.max(l, 1), r.height);
-    if (rr > 0) octx.fillRect(r.right - bx - Math.max(rr, 1), r.top - by, Math.max(rr, 1), r.height);
+    // Lines are read at least one dot thick, so the sampling grid can't fall between them.
+    const th = (v: number) => Math.max(v, 1, lich ? lstep * 1.05 : 0);
+    if (t > 0) octx.fillRect(r.left - bx, r.top - by, r.width, th(t));
+    if (b > 0) octx.fillRect(r.left - bx, r.bottom - by - th(b), r.width, th(b));
+    if (l > 0) octx.fillRect(r.left - bx, r.top - by, th(l), r.height);
+    if (rr > 0) octx.fillRect(r.right - bx - th(rr), r.top - by, th(rr), r.height);
   }
   // Grid-sample the raster. Bigger type gets a coarser grid; "dot size" scales it.
   const step = lich ? lstep : Math.max(Math.min(Math.max(fsMain * .072, 1.45), 4.6) * sizeMul, .7);
   const data = octx.getImageData(0, 0, off.width, off.height).data;
-  if (lich) return growLichen(data, w, h, bx, by, step, fsMain, key, buzz, sc);
+  if (lich) return growLichen(data, w, h, bx, by, step, fsMain, key, buzz, sc, !el.textContent!.trim());
   const out: Target[] = [], oy = spaceOff(sc);
   for (let y = step / 2; y < h; y += step) {
     for (let x = step / 2; x < w; x += step) {
@@ -159,7 +163,7 @@ function noise(px: number, py: number, scale: number) {   // smooth random field
   const sx = tx * tx * (3 - 2 * tx), sy = ty * ty * (3 - 2 * ty), a = hash(x0, y0), b = hash(x0 + 1, y0), c = hash(x0, y0 + 1), d = hash(x0 + 1, y0 + 1);
   return a + (b - a) * sx + (c - a) * sy + (a - b - c + d) * sx * sy;
 }
-function growLichen(data: Uint8ClampedArray, w: number, h: number, bx: number, by: number, step: number, fs: number, key: string, buzz: boolean, sc: number): Target[] {
+function growLichen(data: Uint8ClampedArray, w: number, h: number, bx: number, by: number, step: number, fs: number, key: string, buzz: boolean, sc: number, rule = false): Target[] {
   const D = S.dots, mode = D.anim, gw = Math.max(1, Math.floor(w / step)), gh = Math.max(1, Math.floor(h / step)), N = gw * gh;
   const cx = (c: number) => bx + (c % gw + .5) * step, cy = (c: number) => by + ((c / gw) | 0) * step + step / 2;
   const dist = new Int16Array(N).fill(999), q: number[] = [];
@@ -246,7 +250,7 @@ function growLichen(data: Uint8ClampedArray, w: number, h: number, bx: number, b
   for (let c = 0; c < N; c++) {
     if (!alive[c]) continue;
     const d = dist[c], g = Math.min(1.35, when[c] / T);
-    const core = d > 0 && vein[c] < .045;   // vein cores are solid, the rest of the spill is screened
+    const core = rule || d > 0 && vein[c] < .045;   // vein cores (and rules: lines, never screened) are solid
     const grey = core ? 1 : mode === "rosette" ? ((g * 6) % 1 > .4 ? .32 : 1) : d === 0 ? 1 : d > ov * .6 ? .32 : .55;
     let fr = rr * 1.45, jx = (Math.random() - .5) * wob * step, jy = (Math.random() - .5) * wob * step;   // solid: dots overlap enough to read black
     if (grey < 1) {
@@ -271,7 +275,7 @@ export async function collectTargets(pageId: string): Promise<Target[] | null> {
     return me === collecting;
   };
   const els = [...document.querySelectorAll<HTMLElement>("[data-p]")];
-  const PL = state.PL, plr = PL && PL.getBoundingClientRect();
+  const PL = box(), plr = PL && PL.getBoundingClientRect();
   const lich = lichen(), cap = lich ? MAX_LICHEN : MAX_TARGETS;
   let dens = lich ? 1 : dotSizeNow(), targets: Target[] = [];
   for (let pass = 0; pass < 3; pass++) {
@@ -580,7 +584,7 @@ function draw(now: number) {
   if (buf.length < P.length * 4) buf = new Float32Array(P.length * 6);
   const o1 = spaceOff(1), o2 = spaceOff(2), D = S.dots, buzz = buzzNow();
   let plTop = 0, plBot = 0;
-  if (state.PL) { const r = state.PL.getBoundingClientRect(); plTop = r.top; plBot = r.bottom; }
+  if (box()) { const r = box()!.getBoundingClientRect(); plTop = r.top; plBot = r.bottom; }
   let n = 0;
   for (let i = 0; i < P.length; i++) {
     const p = P[i], al = p.a * p.vis;

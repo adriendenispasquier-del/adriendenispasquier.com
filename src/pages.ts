@@ -106,7 +106,7 @@ export function makePages(PROJECTS: Project[], SITE: Site) {
       : `<p class="mono" data-p style="margin-top:auto">Soon.</p>`;
     return {
       path, title, description, keys, loop: group.length > 0, image: group.length ? share(coverOf(group[0])) : firstCover(),
-      left: `<div class="lhome">${hidden(h1)}<div class="menu">${menu}</div>${list}</div>`,
+      left: `<div class="lhome">${hidden(h1)}<div class="menu">${menu}</div><div class="mrule" data-p data-k="mrule"></div>${list}</div>`,
       items: group.length ? group.map(p => ({ m: coverOf(p), href: projectPath(p), cap: p.title, alt: altOf(p), alts: [...new Set([coverOf(p), ...p.media])] }))
         : [{ m: null, ph: "Soon" }],
       noindex: !group.length, pictures: group.map(coverOf).filter(still).map(full),
@@ -145,26 +145,29 @@ export function makePages(PROJECTS: Project[], SITE: Site) {
     }
     if (path === "/about/") {
       const a = SITE.about, portrait = a.portrait ? norm(a.portrait) : null;
-      const contact = a.contact.map(c => c.url ? `<a href="${esc(linkOf(c.url))}" target="_blank" rel="noopener">${esc(c.label)}</a>` : `<span>${esc(c.label)}</span>`).join("");
+      const contact = a.contact.map(c => c.url ? `<a href="${esc(linkOf(c.url))}" target="_blank" rel="noopener">${esc(c.label)}</a>` : `<span>${esc(c.label)}</span>`).join(", ");
       return {
-        path, title: `About — ${NAME}, ${place}`, description: summary(a.text) || SITE.description, keys: ["work", "about"],
+        path, title: `About — ${NAME}, ${place}`, description: summary(a.text) || SITE.description, keys: ["about", "work", "mrule"],
         image: portrait ? share(portrait) : firstCover(), pictures: portrait ? [full(portrait)] : [],
         jsonld: ld(person, { "@type": "ProfilePage", url: ORIGIN + path, name: `About ${NAME}`, mainEntity: { "@id": person["@id"] } }),
         left: `<div class="labout">${hidden(`About ${NAME}`)}
-          <div class="menu"><a href="/" class="t-mid" data-p data-k="work">Work</a><a href="/about/" class="t-big" data-p data-k="about">About</a></div>
-          ${paras(a.text, ' style="margin-bottom:1.5em"')}
-          <div class="mono credits" data-p><span>Practice</span>${a.practice.map(t => `<span>${inline(t)}</span>`).join("")}</div>
-          <div class="mono credits" data-p><span>Contact</span>${contact}</div>
+          <div class="menu"><a href="/about/" class="t-big" data-p data-k="about">About</a><a href="/" class="t-mid" data-p data-k="work">Work</a></div>
+          <div class="mrule" data-p data-k="mrule"></div>
+          <div class="abody" id="AB">${a.text.split(/\n\s*\n/).map(t => t.trim()).filter(Boolean).map(t => `<p class="atext" data-p>${inline(t)}</p>`).join("")}</div>
+          <div class="afoot" data-p>
+            <p><span class="flab">Practice:</span> ${a.practice.map(inline).join(", ")}.</p>
+            <p><span class="flab">Contact:</span> ${contact}</p>
+          </div>
         </div>`,
         items: [{ m: portrait, ph: "Portrait", cap: NAME, alt: `Portrait of ${NAME}` }],
       };
     }
     if (path === "/personal/") return listPage(path, PERSONAL,
       `<a href="/personal/" class="t-big" data-p data-k="personal">Personal</a><a href="/" class="t-mid" data-p data-k="work">Work</a>`,
-      ["personal", "work"], `Personal work — ${NAME}`, SITE.description, `Personal work by ${NAME}`);
+      ["personal", "work", "mrule"], `Personal work — ${NAME}`, SITE.description, `Personal work by ${NAME}`);
     return listPage("/", WORK,
-      `<a href="/" class="t-big" data-p data-k="work">Work</a><a href="/about/" class="t-mid" data-p data-k="about">About</a>`,
-      ["work", "about"], SEO.title?.trim() || `${NAME} — ${job} in ${place}`, SITE.description, `${NAME} — ${job} in ${place}`);
+      `<a href="/" class="t-big" data-p data-k="work">Work</a><a href="/personal/" class="t-mid" data-p data-k="personal">Personal</a>`,
+      ["work", "personal", "mrule"], SEO.title?.trim() || `${NAME} — ${job} in ${place}`, SITE.description, `${NAME} — ${job} in ${place}`);
   }
 
   /** Every address of the site (for the sitemap and the pages written at build time). */

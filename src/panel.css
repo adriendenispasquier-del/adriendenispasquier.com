@@ -59,7 +59,7 @@
 #panel .lay[hidden] { display: none; }
 #panel .lrow { display: grid; grid-template-columns: 70px 1fr 38px; align-items: center; gap: 8px; }
 #panel .lrow output { text-align: right; font-variant-numeric: tabular-nums; }
-#panel[open] { max-height: calc(100vh - 24px); overflow-y: auto; scrollbar-width: none; }
+#panel[open] { max-height: calc(100dvh - var(--hh) - 36px); overflow-y: auto; scrollbar-width: none; }   /* never taller than the window */
 #panel:not([open]) .pbody { display: none; }   /* folded: take no space (and catch no clicks) */
 @media (max-width: 760px) and (orientation: portrait) { #panel { width: 230px; top: auto; bottom: 12px; right: 12px; } }
 body.one-font #panel, body.one-font #panel .sec > summary { text-transform: none; letter-spacing: 0; }   /* one font: no capitals, as on the site */

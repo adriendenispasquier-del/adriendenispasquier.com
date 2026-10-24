@@ -40,7 +40,10 @@ async function go(path: string) {
   // and the new magnets start pulling straight away.
   L.innerHTML = page.left; L.scrollTop = 0; M.scrollTop = 0;
   M.classList.toggle("home", !!page.loop);
+  M.classList.toggle("about", page.path === "/about/");
   state.PL = document.getElementById("PL");
+  state.SB = state.phone ? null : document.getElementById("AB");   // on phone the About text flows with the page
+  fitMenu();
   centreList();
   if (first) { await Promise.race([document.fonts.ready, sleep(1500)]); await new Promise(r => { requestAnimationFrame(r); setTimeout(r, 60); }); }
   reading = true;
@@ -131,14 +134,6 @@ document.addEventListener("dragstart", e => { if (isPicture(e.target)) e.prevent
 
 // The pull-off wave starts where you click.
 document.addEventListener("pointerdown", e => dots.setReleaseOrigin(e.clientX, e.clientY));
-// On hover, Denis / "-" / Pasquier say what they do (Color Shift / Secret Settings / Personal): the dots morph.
-let ht: number | undefined;
-const reshape = () => { clearTimeout(ht); ht = window.setTimeout(() => resample(), 40); };
-document.querySelectorAll<HTMLElement>(".hd [data-alt]").forEach(el => {
-  const base = el.textContent!;
-  el.addEventListener("pointerenter", e => { if (e.pointerType === "touch") return; el.textContent = el.dataset.alt!; reshape(); });
-  el.addEventListener("pointerleave", () => { if (el.textContent !== base) { el.textContent = base; reshape(); } });
-});
 document.querySelectorAll<HTMLElement>(".hd [data-k]").forEach(a => {
   a.addEventListener("pointerenter", () => dots.setHoverKey(a.dataset.k!));
   a.addEventListener("pointerleave", () => dots.setHoverKey(null));
@@ -146,10 +141,20 @@ document.querySelectorAll<HTMLElement>(".hd [data-k]").forEach(a => {
 
 export const resample = async () => {
   if (state.current === null || reading) return;   // the page change in progress reads the latest layout anyway
+  fitMenu();
   const t = await dots.collectTargets(state.current);
   if (t) dots.assign(t, true);
 };
-export const relayout = () => { applyLayout(); layoutFilm(); sync(main()); };
+export const relayout = () => { applyLayout(); fitMenu(); layoutFilm(); sync(main()); };
+
+/** The menu (Work · Personal, About · Work) shrinks to fit the text column: it never runs over the pictures. */
+export function fitMenu() {
+  const m = document.querySelector<HTMLElement>(".menu"); if (!m) return;
+  m.style.setProperty("--fit", "1");
+  const kids = [...m.children] as HTMLElement[], gap = parseFloat(getComputedStyle(m).columnGap) || 0;
+  const need = kids.reduce((a, k) => a + k.getBoundingClientRect().width, 0) + gap * (kids.length - 1), have = m.clientWidth;
+  if (need > have) m.style.setProperty("--fit", String(have / need * .98));
+}
 let rt: number | undefined;
 addEventListener("resize", () => {
   clearTimeout(rt);
@@ -162,7 +167,8 @@ applyColors();
 dots.start();
 // Wait for the fonts, but not forever: on a slow connection the page starts anyway (the dots redraw when they arrive).
 Promise.race([
-  Promise.all(["400 20px redaction", "700 20px redaction", "italic 400 20px redaction", "400 12px degular-mono", "700 12px degular-mono"].map(f => document.fonts.load(f).catch(() => {}))),
+  Promise.all(["400 20px redaction", "700 20px redaction", "italic 400 20px redaction", "400 12px degular-mono", "700 12px degular-mono", "20px 'Noto Sans Egyptian Hieroglyphs'"]
+    .map(f => document.fonts.load(f, f.includes("Hieroglyphs") ? "𓇗𓆣" : undefined).catch(() => {}))),
   sleep(2500),
 ]).then(() => go(location.pathname));
 document.fonts.addEventListener("loadingdone", resample);

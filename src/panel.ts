@@ -63,6 +63,7 @@ const HTML = `
     <div class="lrow"><span>Titles</span><input id="fs-titles" type="range" min="0.5" max="1.6" step="0.02"><output></output></div>
     <div class="lrow"><span>Lists</span><input id="fs-lists" type="range" min="0.6" max="1.8" step="0.02"><output></output></div>
     <div class="lrow"><span>Text</span><input id="fs-text" type="range" min="0.7" max="1.6" step="0.02"><output></output></div>
+    <div class="lrow"><span>About</span><input id="fs-about" type="range" min="0.5" max="1.8" step="0.02"><output></output></div>
     <button class="btn" id="fsreset" type="button">Reset sizes</button>
     </div></details>
     <details class="sec" name="adp-sec"><summary>Dots</summary><div class="sbody">
@@ -182,7 +183,7 @@ export function mount() {
   let ftab = state.phone ? "phone" : "desk";
   const isPh = () => ftab === "phone";
   const type = () => isPh() ? S.typePhone : S.type;
-  const sizes = ["name", "titles", "lists", "text"] as const;
+  const sizes = ["name", "titles", "lists", "text", "about"] as const;
   const showSizes = () => sizes.forEach(k => { const i = inp("fs-" + k); i.value = String(type()[k]); i.nextElementSibling!.textContent = Math.round(type()[k] * 100) + "%"; });
   const showFont = () => {
     $("ftab").querySelectorAll<HTMLElement>("button").forEach(b => b.classList.toggle("on", b.dataset.v === ftab));

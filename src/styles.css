@@ -8,7 +8,7 @@
   --line: 1px;           /* grid lines (0 with Grid: none) */
   --frame-line: 1.5px;   /* the film's frame: navigation, kept with every grid option */
   /* Font sizes, as multipliers (Settings → Font sizes) */
-  --fs-name: 1; --fs-titles: 1; --fs-lists: 1; --fs-text: 1;
+  --fs-name: 1; --fs-titles: 1; --fs-lists: 1; --fs-text: 1; --fs-about: 1;
   --hh: 66px;            /* header height */
   --gx: 2vw;             /* outer gutter */
   /* Column positions (set from the Layout sliders, in % of the window width) */
@@ -45,7 +45,9 @@ body.reveal [data-p], body.reveal [data-p] * { color: rgba(220, 40, 40, .55) !im
 .hd { position: fixed; top: 0; left: var(--gx); right: var(--gx); height: var(--hh); z-index: 10;
       display: flex; justify-content: space-between; align-items: center; font-size: calc(20px * var(--fs-name)); pointer-events: none; }
 .hd a, .hd button { pointer-events: auto; padding: 6px 0; cursor: pointer; }
-#vbtn { padding: 6px 14px; margin: 0 -14px; }   /* bigger target for the small "-", same position */
+/* 𓇗 (colour shift) and 𓆣 (settings): side by side, centred on the vertical rule */
+.hicons { position: absolute; top: 0; height: 100%; left: calc(var(--lw) - var(--gx)); transform: translateX(-50%); display: flex; align-items: center; gap: .35em; }
+.glyph { font-family: "Noto Sans Egyptian Hieroglyphs", var(--serif); font-size: 1.15em; line-height: 1; padding: 6px .25em !important; }
 .hline { position: absolute; left: 0; right: 0; bottom: 0; height: 0; border-bottom: var(--line) solid var(--ink); }
 
 /* ── Left column ── */
@@ -58,10 +60,24 @@ body.reveal [data-p], body.reveal [data-p] * { color: rgba(220, 40, 40, .55) !im
 .lhome { display: flex; flex-direction: column; height: 100%; }
 .t-big { display: block; align-self: flex-start; font-size: calc(clamp(30px, 25cqw, 210px) * var(--fs-titles)); font-weight: var(--weight, 400); line-height: .9; letter-spacing: -.03em; margin-left: -.04em; }
 .t-mid { display: block; align-self: flex-start; font-size: calc(clamp(16px, 6.4cqw, 46px) * var(--fs-titles)); line-height: 1.1; margin-top: 7cqw; letter-spacing: -.01em; }
-.labout .t-mid { margin-top: 0; margin-bottom: 36px; }
-.labout .t-big { margin-bottom: 56px; }
+/* Menu: the page's title big, the other one small beside it on the same line; together they never run past the
+   text column (--fit is set from the script). A rule underneath. */
+.menu { display: flex; align-items: baseline; justify-content: space-between; column-gap: 4cqw; }
+.menu .t-big, .menu .t-mid { margin: 0; white-space: nowrap; align-self: baseline; }
+.menu .t-big { font-size: calc(clamp(30px, 25cqw, 210px) * var(--fs-titles) * var(--fit, 1)); }
+.menu .t-mid { font-size: calc(clamp(16px, 6.4cqw, 46px) * var(--fs-titles) * var(--fit, 1)); }
+.mrule { border-top: var(--line) solid var(--ink); margin-top: 4cqw; }
+/* About: the text scrolls in its own box between the menu and the footer (Practice, Contact) */
+#M.about .lscroll { overflow: hidden; padding-bottom: 0; }
+.labout { display: flex; flex-direction: column; height: 100%; }
+.abody { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; padding: 6cqw 0; }
+.abody::-webkit-scrollbar { display: none; }
+.atext { font-size: calc(clamp(15px, 4.8cqw, 32px) * var(--fs-about)); line-height: 1.22; text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+.atext + .atext { margin-top: .55em; }
+.afoot { border-top: var(--line) solid var(--ink); padding: 4cqw 0 calc(4cqw + 18px); font-size: calc(clamp(10px, 2.5cqw, 14px) * var(--fs-text)); line-height: 1.55; }
+.afoot a { text-decoration: underline; text-underline-offset: .2em; }
 /* The project list is a vertical carousel: the project in view sits in its middle. */
-.plist { list-style: none; flex: 1; min-height: 0; overflow: hidden; margin-top: 10cqw; }
+.plist { list-style: none; flex: 1; min-height: 0; overflow: hidden; margin-top: 5cqw; }
 .plist a { display: flex; justify-content: space-between; gap: 16px; padding: .5em .45em .4em; border-top: var(--line) solid var(--ink);
            font-family: var(--mono); -webkit-text-stroke: var(--mono-stroke) currentColor;
            font-size: calc(clamp(10px, 2.6cqw, 16px) * var(--fs-lists)); text-transform: uppercase; letter-spacing: .03em; white-space: nowrap; }
@@ -124,10 +140,10 @@ a.gi:hover .cap { opacity: 1; }
          border: var(--frame-line) solid var(--ink); pointer-events: none; z-index: 6; }
 .out { opacity: 0; }
 
-#M, .fwrap, .menu { display: contents; }
+#M, .fwrap { display: contents; }
 
 /* ── Visitor settings ("-" in the header): drops down under the header, as wide as the pictures column ── */
-.vmenu { position: fixed; top: var(--hh); left: var(--gl); width: var(--gw); z-index: 25; background: var(--bg); color: var(--ink);
+.vmenu { position: fixed; top: var(--hh); left: var(--gl); width: var(--gw); z-index: 25; max-height: calc(100dvh - var(--hh)); overflow-y: auto; background: var(--bg); color: var(--ink);
          font-family: var(--mono); -webkit-text-stroke: var(--mono-stroke) currentColor; text-transform: uppercase; letter-spacing: .03em;
          font-size: calc(clamp(10px, .8vw, 13px) * var(--fs-lists)); border-bottom: max(1px, var(--line)) solid var(--ink);
          clip-path: inset(0 0 100% 0); visibility: hidden; transition: clip-path .45s cubic-bezier(.2,.7,.2,1), visibility 0s .45s,
@@ -149,7 +165,7 @@ a.gi:hover .cap { opacity: 1; }
 body.grid-none { --line: 0px; }
 /* Closed: nothing is boxed; each horizontal line runs the full width of the text column, so it meets the
    vertical rule (and the lines form cells). The text stays where it was. */
-body.grid-closed .services, body.grid-closed .credits, body.grid-closed .next, body.grid-closed .plist {
+body.grid-closed .services, body.grid-closed .credits, body.grid-closed .next, body.grid-closed .plist, body.grid-closed .mrule, body.grid-closed .afoot {
   margin-left: calc(-1 * var(--pl)); margin-right: calc(-1 * var(--pr)); padding-left: var(--pl); padding-right: var(--pr); }
 body.grid-closed .plist { padding-left: 0; padding-right: 0; }
 body.grid-closed .plist a { padding-left: calc(.45em + var(--pl)); padding-right: calc(.45em + var(--pr)); }
@@ -167,11 +183,17 @@ body.grid-closed .vrule { top: var(--hh); bottom: 0; }   /* runs from the header
 
   .vrule { display: none; }
   .gal { position: relative; inset: auto; left: auto; width: 100%; height: auto; overflow: visible; }
-  /* Work / About side by side, small, at the top (Work and About pages) */
-  .menu { display: flex; align-items: baseline; column-gap: 5cqw; }
-  .menu .t-big { font-size: calc(12cqw * var(--fs-titles)); margin: 0; }
-  .menu .t-mid { font-size: calc(5.5cqw * var(--fs-titles)); margin: 0; }
-  .labout .menu { margin-bottom: 9cqw; }
+  /* Header: the signs sit just before About */
+  .hicons { position: static; transform: none; margin-left: auto; margin-right: 1em; height: auto; }
+  /* The menu, smaller */
+  .menu .t-big { font-size: calc(12cqw * var(--fs-titles) * var(--fit, 1)); }
+  .menu .t-mid { font-size: calc(5.5cqw * var(--fs-titles) * var(--fit, 1)); }
+  .mrule { margin-top: 3cqw; }
+  /* About flows with the page */
+  #M.about .lscroll { overflow: visible; }
+  .labout { height: auto; }
+  .abody { overflow: visible; padding: 7cqw 0; }
+  .atext { font-size: calc(clamp(15px, 5cqw, 22px) * var(--fs-about)); }
   /* Work: the menu is pinned at the top, the project list at the bottom; the pictures scroll in between */
   #M.home .lcol { position: fixed; top: var(--hh); bottom: max(10px, env(safe-area-inset-bottom)); left: var(--gx); width: var(--mw);
                   z-index: 3; pointer-events: none; }
@@ -179,6 +201,7 @@ body.grid-closed .vrule { top: var(--hh); bottom: 0; }   /* runs from the header
   .lhome { height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
   #M.home .menu, #M.home .plist { pointer-events: auto; background: var(--bg); }
   #M.home .menu { padding: 10px 0 12px; box-shadow: 0 -60px 0 var(--bg); }
+  #M.home .mrule { display: none; }   /* the list sits at the bottom here: no rule under the menu */
   .plist { flex: none; margin-top: 0; font-size: calc(clamp(13px, 4.9cqw, 19px) * var(--fs-lists));
            height: calc(var(--rows, 5) * (2.1em + var(--line))); overflow: hidden; box-shadow: 0 60px 0 var(--bg); }   /* moves with the pictures, like on desktop */
   .plist a { border-top: var(--line) solid var(--ink); border-bottom: 0; font-size: 1em; line-height: 1.2; padding: .45em .45em; }

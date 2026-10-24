@@ -15,6 +15,7 @@ export const state = {
   phone: mq.matches,
   mq,
   PL: null as HTMLElement | null,       // the Work project list (its own scroll space)
+  SB: null as HTMLElement | null,       // the About text box (scrolls on its own, like the list)
   current: null as string | null,       // current path
   page: null as Page | null,
   colTop: 66,                           // text-column dots are clipped above this line
@@ -40,9 +41,9 @@ export interface Settings {
   };
   grid: string;                                              // "open" | "closed" | "none"
   font: string;                                              // "pair" (Redaction + Degular Mono) or one family for everything
-  type: { name: number; titles: number; lists: number; text: number };   // font-size multipliers
+  type: { name: number; titles: number; lists: number; text: number; about: number };   // font-size multipliers
   fontPhone: string;                                         // the same two, for phones
-  typePhone: { name: number; titles: number; lists: number; text: number };
+  typePhone: { name: number; titles: number; lists: number; text: number; about: number };
   panelPos?: { l: number; t: number };
 }
 type PageColors = { page: string; bg: string; ink: string }[];
@@ -54,9 +55,9 @@ const fromFile = (f: typeof defaults): Settings => ({
   dots: { ...{ anim: "particles", overflow: 12, branches: 8, realBelow: 12, lichenDot: 2, lichenDensity: 1 }, ...clone(f.dots) as any },
   grid: (f as any).grid || "open",
   font: (f as any).font || "pair",
-  type: { name: 1, titles: 1, lists: 1, text: 1, ...(f as any).type },
+  type: { name: 1, titles: 1, lists: 1, text: 1, about: 1, ...(f as any).type },
   fontPhone: (f as any).fontPhone || (f as any).font || "pair",
-  typePhone: { name: 1, titles: 1, lists: 1, text: 1, ...((f as any).typePhone || (f as any).type) },
+  typePhone: { name: 1, titles: 1, lists: 1, text: 1, about: 1, ...((f as any).typePhone || (f as any).type) },
   colors: { default: { ...f.colors.default }, pages: Object.fromEntries((f.colors.pages as PageColors).map(c => [canonical(c.page), { bg: c.bg, ink: c.ink }])) },
 });
 /** The settings as stored in content/settings.json (per-page colours as a list, for the admin). */
@@ -144,7 +145,7 @@ export function applyLayout() {
   document.body.classList.remove("grid-open", "grid-closed", "grid-none");
   document.body.classList.add("grid-" + S.grid);
   const type = state.phone ? S.typePhone : S.type;
-  for (const k of ["name", "titles", "lists", "text"] as const) rs.setProperty(`--fs-${k}`, String(type[k]));
+  for (const k of ["name", "titles", "lists", "text", "about"] as const) rs.setProperty(`--fs-${k}`, String(type[k]));
   applyFont();
   rs.setProperty("--hh", (state.phone ? S.layoutPhone.hh : S.layout.hh) + "px");
   if (state.phone) {
