@@ -18,10 +18,10 @@
     ]
   },
   "layout": {
-    "gap": 0.5,
-    "t": 49.2,
-    "p": 45.63,
-    "f": 5.17,
+    "gap": 1.4,
+    "t": 45.02,
+    "p": 47.2,
+    "f": 7.78,
     "hh": 36,
     "order": "tpf"
   },
@@ -32,26 +32,26 @@
     "hh": 30
   },
   "dots": {
-    "anim": "rosette",
-    "overflow": 6,
-    "branches": 20,
+    "anim": "particles",
+    "overflow": 40,
+    "branches": 7,
     "realBelow": 15,
-    "lichenDot": 1.1,
-    "lichenDensity": 0.75,
+    "lichenDot": 0.6,
+    "lichenDensity": 1.8,
     "shape": "round",
     "dotSize": 0.3,
-    "fill": 0.66,
+    "fill": 0.62,
     "buzz": 0.3,
     "real": true
   },
   "grid": "closed",
   "font": "castoro",
   "type": {
-    "name": 0.84,
+    "name": 0.68,
     "titles": 0.96,
     "lists": 0.76,
     "text": 0.92,
-    "about": 1
+    "about": 1.24
   },
   "fontPhone": "castoro",
   "typePhone": {
