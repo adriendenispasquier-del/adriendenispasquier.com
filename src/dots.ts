@@ -177,10 +177,18 @@ function growLichen(data: Uint8ClampedArray, w: number, h: number, bx: number, b
     }
   }
   const alive = new Uint8Array(N), done = new Uint8Array(N), when = new Float32Array(N), front: number[] = [];
+  const ox = new Float32Array(N), oy0 = new Float32Array(N), par = new Int32Array(N).fill(-1);   // each cell's spore, and who reached it
+  const rad = (c: number, o: number) => Math.hypot(c % gw - ox[o], ((c / gw) | 0) - oy0[o]);
   const around = (c: number) => { let k = 0; const x = c % gw, y = (c / gw) | 0;
     for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const X = x + dx, Y = y + dy; if ((dx || dy) && X >= 0 && Y >= 0 && X < gw && Y < gh && alive[Y * gw + X]) k++; } return k; };
   const accept = (c: number) => {
     const d = dist[c]; if (d > ov + 1) return 0;
+    // Growth radiates from its spore: cells further out than the one that reached them are favoured
+    // (strongly for leafy, which then grows in branches like mycelium; mildly for crust and rosette).
+    const pa = par[c], out = pa < 0 || rad(c, pa) > rad(pa, pa) + .2 ? 1 : mode === "leafy" ? .08 : .5;
+    return out * acceptRaw(c, d);
+  };
+  const acceptRaw = (c: number, d: number) => {
     if (d === 0) return mode === "leafy" ? [1, 1, .3, .05][Math.min(3, around(c))] : 1;   // leafy prefers tips: it branches before filling
     const px = cx(c), py = cy(c) + spaceOff(sc), n = noise(px, py, Math.max(32, dot * 10));
     let p = Math.pow(1 - d / (ov + 1.5), 1.6) * (.25 + .9 * n * n);
@@ -192,10 +200,12 @@ function growLichen(data: Uint8ClampedArray, w: number, h: number, bx: number, b
   let t = 0;
   const birth = (c: number) => {
     alive[c] = 1; done[c] = 1; when[c] = t;
+    const pa = par[c];
+    if (pa < 0) { ox[c] = c % gw; oy0[c] = (c / gw) | 0; } else { ox[c] = ox[pa]; oy0[c] = oy0[pa]; }   // inherit the spore
     const x = c % gw, y = (c / gw) | 0;
     for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
       const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= gw || Y >= gh) continue;
-      const j = Y * gw + X; if (!done[j] && dist[j] <= ov + 1) front.push(j);
+      const j = Y * gw + X; if (!done[j] && dist[j] <= ov + 1) { if (par[j] < 0) par[j] = c; front.push(j); }
     }
   };
   // A spore in every separate shape (letters, dots on i's…), more in big ones.
@@ -210,7 +220,12 @@ function growLichen(data: Uint8ClampedArray, w: number, h: number, bx: number, b
         const j = Y * gw + X; if (!seen[j] && !dist[j]) { seen[j] = 1; blob.push(j); }
       }
     }
-    for (let k = Math.max(1, Math.round(blob.length * step * step / 6000)); k > 0; k--) { const c = blob[(Math.random() * blob.length) | 0]; if (!alive[c]) birth(c); }
+    // The first spore at the shape's centre (the cell nearest its middle), so it grows outward from there;
+    // very big shapes get a few more.
+    let mx = 0, my = 0; for (const c of blob) { mx += c % gw; my += (c / gw) | 0; } mx /= blob.length; my /= blob.length;
+    let best = blob[0], bd = Infinity; for (const c of blob) { const dd = (c % gw - mx) ** 2 + (((c / gw) | 0) - my) ** 2; if (dd < bd) { bd = dd; best = c; } }
+    birth(best);
+    for (let k = Math.floor(blob.length * step * step / 40000); k > 0; k--) { const c = blob[(Math.random() * blob.length) | 0]; if (!alive[c]) birth(c); }
   }
   // Growth: try frontier cells at random; time runs at a rate set by the size of the frontier (like real growth).
   let guard = N * 40;
@@ -222,10 +237,13 @@ function growLichen(data: Uint8ClampedArray, w: number, h: number, bx: number, b
   }
   // Greys are a halftone screen: lighter cells keep only a staggered grid of dots, sized by the grey.
   const out: Target[] = [], oy = spaceOff(sc), m = Math.max(2, Math.round(dot * 2.2 / step)), rr = dot / 2;   // screen pitch: about two dots
-  const T = t || 1, wob = .7 * Math.min(1, Math.max(.15, 1.5 - D.lichenDensity));   // each dot slightly off the grid: organic, less wobble when dense
+  // Time is measured on the letters themselves (the spill around them finishes a little after).
+  let T = 0; for (let c = 0; c < N; c++) if (alive[c] && !dist[c] && when[c] > T) T = when[c];
+  T = T || t || 1;
+  const wob = .7 * Math.min(1, Math.max(.15, 1.5 - D.lichenDensity));   // each dot slightly off the grid: organic, less wobble when dense
   for (let c = 0; c < N; c++) {
     if (!alive[c]) continue;
-    const d = dist[c], g = when[c] / T;
+    const d = dist[c], g = Math.min(1.35, when[c] / T);
     const grey = mode === "rosette" ? ((g * 6) % 1 > .4 ? .32 : 1) : d === 0 ? 1 : d > ov * .6 ? .32 : .55;
     let fr = rr * 1.45, jx = (Math.random() - .5) * wob * step, jy = (Math.random() - .5) * wob * step;   // solid: dots overlap enough to read black
     if (grey < 1) {
@@ -281,6 +299,7 @@ export function showDots(keep: Set<string>) {
  *  gravity whose direction, strength and tempo change every time. */
 export function release(keep: Set<string>) {
   const wasReal = new Set(P.filter(p => p.hid && p.key && !keep.has(p.key)));   // text showing as real type
+  if (lichen()) keep = new Set();   // lichen: everything retracts, then the new page grows (nothing stays)
   showDots(keep);
   const now = performance.now();
   if (lichen()) {
@@ -290,7 +309,7 @@ export function release(keep: Set<string>) {
       if (p.die || (p.key && keep.has(p.key))) continue;
       p.key = null; p.bz = false;
       // Text that was real type goes quickly, so it doesn't linger under the new page's text.
-      if (p.lc) p.dd = Math.min(p.dd ?? Infinity, now + (1 - (p.g ?? 0)) * (wasReal.has(p) ? 250 : 650) + rand(0, 80)); else { p.die = true; p.ta = 0; }
+      if (p.lc) p.dd = Math.min(p.dd ?? Infinity, now + Math.max(0, 1 - (p.g ?? 0) / 1.35) * (wasReal.has(p) ? 250 : UNGROW - POP)); else { p.die = true; p.ta = 0; }
     }
     releaseOrigin = null;
     return;
@@ -405,7 +424,7 @@ export function assign(targets: Target[], gentle = false) {
 
 /** Lichen: each element's dots appear in place in their growth order. What both pages share (the header, a menu
  *  title that doesn't move) stays; the rest was ungrown by release(). */
-const GROW = 1300, POP = 260;
+const GROW = 1800, POP = 160, UNGROW = 600;   // ms: growth of a shape, one dot appearing, the old page retracting
 function assignLichen(targets: Target[], gentle: boolean, now: number) {
   const byKey = new Map<string, Target[]>();
   for (const t of targets) { if (!byKey.has(t.key)) byKey.set(t.key, []); byKey.get(t.key)!.push(t); }
@@ -415,7 +434,7 @@ function assignLichen(targets: Target[], gentle: boolean, now: number) {
     if (!p.lc || !p.key || !byKey.has(p.key)) { if (!p.lc) { p.die = true; p.ta = 0; } continue; }   // particles from before: fade
     if (!have.has(p.key)) have.set(p.key, []); have.get(p.key)!.push(p);
   }
-  const land = new Map<string, number>();
+  const land = new Map<string, number>(), leaving = P.some(p => p.lc && p.dd! < Infinity);
   for (const [key, ts] of byKey) {
     const old = have.get(key) || [], el = keyEl.get(key);
     // Same shape in the same place (by count and corners): keep it as it is.
@@ -423,8 +442,8 @@ function assignLichen(targets: Target[], gentle: boolean, now: number) {
       Math.abs(Math.min(...old.map(p => p.tx)) - Math.min(...ts.map(t => t.x))) < 1.5 && Math.abs(Math.min(...old.map(p => p.ty)) - Math.min(...ts.map(t => t.y))) < 1.5;
     if (same && !gentle) continue;
     // Changed: the old growth goes (at once when only re-laid out, else it ungrows), the new one grows.
-    for (const p of old) { if (gentle) p.die = true, p.a = 0; else p.dd = now + (1 - (p.g ?? 0)) * 650; }
-    const t0 = gentle ? now - GROW - POP : now + rand(200, 380) + (old.length ? 250 : 0);   // after the old growth has mostly gone
+    for (const p of old) { if (gentle) p.die = true, p.a = 0; else p.dd = now + Math.max(0, 1 - (p.g ?? 0) / 1.35) * (UNGROW - POP); }
+    const t0 = gentle ? now - GROW - POP : now + (leaving ? UNGROW : 0) + rand(0, 60);   // once the old page has gone
     const hidden = gentle && !!el?.classList.contains("real");
     for (const t of ts) {
       const p = spawn(t.x, t.y);
