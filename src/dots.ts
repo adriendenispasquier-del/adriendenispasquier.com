@@ -210,7 +210,7 @@ function growLichen(data: Uint8ClampedArray, w: number, h: number, bx: number, b
         const j = Y * gw + X; if (!seen[j] && !dist[j]) { seen[j] = 1; blob.push(j); }
       }
     }
-    for (let k = Math.max(1, Math.round(blob.length * step * step / 15000)); k > 0; k--) { const c = blob[(Math.random() * blob.length) | 0]; if (!alive[c]) birth(c); }
+    for (let k = Math.max(1, Math.round(blob.length * step * step / 6000)); k > 0; k--) { const c = blob[(Math.random() * blob.length) | 0]; if (!alive[c]) birth(c); }
   }
   // Growth: try frontier cells at random; time runs at a rate set by the size of the frontier (like real growth).
   let guard = N * 40;
@@ -221,19 +221,19 @@ function growLichen(data: Uint8ClampedArray, w: number, h: number, bx: number, b
     if (Math.random() < accept(c)) birth(c); else if (mode === "leafy" && !dist[c]) front.push(c); else done[c] = 1;
   }
   // Greys are a halftone screen: lighter cells keep only a staggered grid of dots, sized by the grey.
-  const out: Target[] = [], oy = spaceOff(sc), m = Math.max(2, Math.round(dot * 1.6 / step)), rr = dot / 2;   // screen pitch: about 1.6 dots
-  const T = t || 1;
+  const out: Target[] = [], oy = spaceOff(sc), m = Math.max(2, Math.round(dot * 2.2 / step)), rr = dot / 2;   // screen pitch: about two dots
+  const T = t || 1, wob = .7 * Math.min(1, Math.max(.15, 1.5 - D.lichenDensity));   // each dot slightly off the grid: organic, less wobble when dense
   for (let c = 0; c < N; c++) {
     if (!alive[c]) continue;
     const d = dist[c], g = when[c] / T;
-    const grey = mode === "rosette" ? (Math.floor(g * 7) % 2 ? .32 : 1) : d === 0 ? 1 : d > ov * .6 ? .32 : .55;
-    let fr = rr;
+    const grey = mode === "rosette" ? ((g * 6) % 1 > .4 ? .32 : 1) : d === 0 ? 1 : d > ov * .6 ? .32 : .55;
+    let fr = rr * 1.45, jx = (Math.random() - .5) * wob * step, jy = (Math.random() - .5) * wob * step;   // solid: dots overlap enough to read black
     if (grey < 1) {
       const x = c % gw, y = (c / gw) | 0;
       if (y % m || (x + ((y / m) | 0) % 2 * 1) % m) continue;
-      fr = rr * Math.sqrt(grey) * 1.25;   // lighter grey, smaller dot (never bigger than a solid one)
+      fr = Math.min(rr * 1.45, m * step * Math.sqrt(grey / Math.PI)); jx = jy = 0;   // lighter grey, smaller dot (never bigger than a solid one); the screen stays regular
     }
-    out.push({ x: cx(c), y: cy(c) + oy, r: step, key, buzz, sc, g, fr });
+    out.push({ x: cx(c) + jx, y: cy(c) + oy + jy, r: step, key, buzz, sc, g, fr });
   }
   return out;
 }
