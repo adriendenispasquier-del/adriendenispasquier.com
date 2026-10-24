@@ -1,4 +1,4 @@
-import{o as ot,$ as s,S as n,c as N,s as l,a as O,b as r,O as at,D as T,F as it,r as x,d as j,e as V,f as lt,g as rt,h as dt,t as ut,P as pt,i as ct}from"./index-BU0r6kXG.js";const vt=`
+import{o as ot,$ as s,S as n,c as N,s as l,a as O,b as r,O as at,D as T,F as it,r as x,d as j,e as V,f as lt,g as rt,h as dt,t as ut,P as pt,i as ct}from"./index-CqNOg9PG.js";const vt=`
 <details id="panel">
   <summary title="Drag to move · click to fold">Settings</summary>
   <div class="pbody">
