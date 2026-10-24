@@ -11,8 +11,11 @@
   <!-- Fonts: Adobe Fonts kit (Redaction, Degular Mono) -->
   <link rel="preconnect" href="https://use.typekit.net" crossorigin>
   <link rel="stylesheet" href="https://use.typekit.net/nva7btn.css">
-  <script type="module" crossorigin src="/assets/index-CqNOg9PG.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-BeL9xw3j.css">
+  <!-- The two header signs (𓇗 colour shift, 𓆣 settings): only these two characters of the font are downloaded -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Egyptian+Hieroglyphs&text=%F0%93%87%97%F0%93%86%A3&display=block">
+  <script type="module" crossorigin src="/assets/index-DIR8ZQWp.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CZ45NoEb.css">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Adrien Denis-Pasquier">
   <meta property="og:title" content="Fat Cat — Photography — Adrien Denis-Pasquier">
@@ -26,15 +29,16 @@
   <canvas id="c"></canvas>
 
   <header class="hd">
-    <a href="/" data-p data-k="h1">Adrien</a>
-    <button type="button" id="invert" data-p data-k="h2" data-alt="Color Shift" aria-pressed="false" aria-label="Color shift">Denis</button>
-    <button type="button" id="vbtn" data-p data-k="h3" data-alt="Secret Settings" aria-expanded="false" aria-controls="vmenu" aria-label="Secret settings">-</button>
-    <a href="/personal/" data-p data-k="h4" data-alt="Personal">Pasquier</a>
+    <a href="/" data-p data-k="h1">Adrien Denis-Pasquier</a>
+    <div class="hicons">
+      <button type="button" id="invert" class="glyph" data-p data-k="h2" aria-pressed="false" aria-label="Colour shift" title="Colour shift">𓇗</button>
+      <button type="button" id="vbtn" class="glyph" data-p data-k="h3" aria-expanded="false" aria-controls="vmenu" aria-label="Settings" title="Settings">𓆣</button>
+    </div>
+    <a href="/about/" data-p data-k="h4">About</a>
     <div class="hline" data-p data-k="hline"></div>
-    <p class="sr">Adrien Denis-Pasquier</p>
   </header>
 
-  <!-- Visitor settings, opened with the "-" in the header -->
+  <!-- Visitor settings, opened with 𓆣 in the header -->
   <div class="vmenu" id="vmenu" role="dialog" aria-label="Settings">
     <label class="vrow vdesk"><span>Text</span><input type="range" id="v-t" min="15" max="60" step="0.1"></label>
     <label class="vrow"><span>Film</span><input type="range" id="v-f" min="3" max="20" step="0.1"></label>

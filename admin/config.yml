@@ -211,6 +211,7 @@ collections:
               - { name: titles, label: Titles, widget: number, value_type: float, step: 0.02, default: 1 }
               - { name: lists, label: Lists, widget: number, value_type: float, step: 0.02, default: 1 }
               - { name: text, label: Text, widget: number, value_type: float, step: 0.02, default: 1 }
+              - { name: about, label: About text, widget: number, value_type: float, step: 0.02, default: 1 }
           - name: fontPhone
             label: Font (phone)
             widget: select
@@ -232,6 +233,7 @@ collections:
               - { name: titles, label: Titles, widget: number, value_type: float, step: 0.02, default: 1 }
               - { name: lists, label: Lists, widget: number, value_type: float, step: 0.02, default: 1 }
               - { name: text, label: Text, widget: number, value_type: float, step: 0.02, default: 1 }
+              - { name: about, label: About text, widget: number, value_type: float, step: 0.02, default: 1 }
           - name: dots
             label: Dots
             widget: object
