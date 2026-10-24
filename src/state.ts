@@ -153,6 +153,7 @@ export function applyLayout() {
     rs.setProperty("--gx", g + "vw"); rs.setProperty("--mw", mw + "vw");
     rs.setProperty("--fl", (g + mw + g) + "vw"); rs.setProperty("--fw", fw + "vw");
     rs.setProperty("--gap", g * PIC_GAP + "vw");
+    rs.setProperty("--mwa", (mw + g + fw) + "vw");   // About (no film): the main column takes the film's place too
   } else {
     const l = layoutNow(), g = l.gap;
     const avail = 100 - 4 * g, T = l.t / 100 * avail, Pw = l.p / 100 * avail, Fw = l.f / 100 * avail;
@@ -164,6 +165,9 @@ export function applyLayout() {
     const rule = left.t < left.p ? left.t + T : left.t;
     rs.setProperty("--gx", g + "vw"); rs.setProperty("--tl", left.t + "vw"); rs.setProperty("--tw", T + "vw"); rs.setProperty("--lw", rule + "vw");
     rs.setProperty("--gl", left.p + "vw"); rs.setProperty("--gw", Pw + "vw"); rs.setProperty("--fl", left.f + "vw"); rs.setProperty("--fw", Fw + "vw");
+    // About has no film: the pictures take its place too when the two sit side by side.
+    const ord = ORDERS.includes(l.order) ? l.order : "tpf", together = Math.abs(ord.indexOf("p") - ord.indexOf("f")) === 1;
+    rs.setProperty("--gla", (together ? Math.min(left.p, left.f) : left.p) + "vw"); rs.setProperty("--gwa", (together ? Pw + g + Fw : Pw) + "vw");
     rs.setProperty("--gap", g * PIC_GAP + "vw");
   }
 }

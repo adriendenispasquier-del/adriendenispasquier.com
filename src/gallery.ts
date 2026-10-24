@@ -91,6 +91,7 @@ for (const el of [L, G, F, M]) {
     if (lbOpen) return;
     if (state.phone) { if (cols().includes(el) && !(el === M && F.contains(e.target as Node))) { anim = null; driver = el; untouched = false; } return; }
     if (el === M) return;
+    if (el === L && state.SB?.contains(e.target as Node)) return;   // the About text scrolls on its own
     untouched = false; anim = null; driver = el;
     // Over the text column, the wheel moves at picture speed and the text follows in proportion
     // (the text is often only a little taller than the screen, so scrolling it natively would jump the pictures).

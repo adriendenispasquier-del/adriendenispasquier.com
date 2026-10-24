@@ -161,6 +161,10 @@ a.gi:hover .cap { opacity: 1; }
 .vmenu input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 11px; height: 11px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
 .vmenu input[type=range]::-moz-range-thumb { width: 11px; height: 11px; border-radius: 50%; background: var(--ink); border: 0; }
 
+/* About: no film; the picture takes its place */
+body.about .fwrap > * { display: none; }
+body.about .gal { left: var(--gla); width: var(--gwa); }
+
 /* ── Grid. Open (default): lines between things. Closed: the lines close into cells. None: no lines. ── */
 body.grid-none { --line: 0px; }
 /* Closed: nothing is boxed; each horizontal line runs the full width of the text column, so it meets the
@@ -189,6 +193,8 @@ body.grid-closed .vrule { top: var(--hh); bottom: 0; }   /* runs from the header
   .menu .t-big { font-size: calc(12cqw * var(--fs-titles) * var(--fit, 1)); }
   .menu .t-mid { font-size: calc(5.5cqw * var(--fs-titles) * var(--fit, 1)); }
   .mrule { margin-top: 3cqw; }
+  body.about #M { width: var(--mwa); }
+  body.about .gal { left: auto; width: 100%; }
   /* About flows with the page */
   #M.about .lscroll { overflow: visible; }
   .labout { height: auto; }

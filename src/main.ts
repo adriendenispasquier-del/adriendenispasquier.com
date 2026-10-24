@@ -41,11 +41,12 @@ async function go(path: string) {
   L.innerHTML = page.left; L.scrollTop = 0; M.scrollTop = 0;
   M.classList.toggle("home", !!page.loop);
   M.classList.toggle("about", page.path === "/about/");
+  document.body.classList.toggle("about", page.path === "/about/");   // no film there
   state.PL = document.getElementById("PL");
   state.SB = state.phone ? null : document.getElementById("AB");   // on phone the About text flows with the page
   fitMenu();
   centreList();
-  if (first) { await Promise.race([document.fonts.ready, sleep(1500)]); await new Promise(r => { requestAnimationFrame(r); setTimeout(r, 60); }); }
+  if (first) { await Promise.race([document.fonts.ready, sleep(300)]); await new Promise(r => { requestAnimationFrame(r); setTimeout(r, 60); }); }
   reading = true;
   const targets = await dots.collectTargets(page.path);   // read over a few frames: the animation never stalls
   if (token === busy) reading = false;
@@ -165,11 +166,11 @@ state.mq.addEventListener("change", () => { state.phone = state.mq.matches; appl
 // Start
 applyColors();
 dots.start();
-// Wait for the fonts, but not forever: on a slow connection the page starts anyway (the dots redraw when they arrive).
+// Wait for the fonts, but not forever: on a slow connection the page starts after 1.8 s anyway (the dots redraw when they arrive).
 Promise.race([
   Promise.all(["400 20px redaction", "700 20px redaction", "italic 400 20px redaction", "400 12px degular-mono", "700 12px degular-mono", "20px 'Noto Sans Egyptian Hieroglyphs'"]
     .map(f => document.fonts.load(f, f.includes("Hieroglyphs") ? "𓇗𓆣" : undefined).catch(() => {}))),
-  sleep(2500),
+  sleep(1800),
 ]).then(() => go(location.pathname));
 document.fonts.addEventListener("loadingdone", resample);
 if (state.tuning) import("./panel").then(m => m.mount());
