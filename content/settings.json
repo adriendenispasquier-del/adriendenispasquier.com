@@ -32,22 +32,22 @@
     "hh": 30
   },
   "dots": {
+    "anim": "rosette",
+    "overflow": 40,
+    "branches": 20,
+    "realBelow": 15,
+    "lichenDot": 0.6,
+    "lichenDensity": 1.8,
     "shape": "round",
     "dotSize": 0.3,
-    "fill": 0.7,
-    "buzz": 0.95,
-    "real": true,
-    "anim": "particles",
-    "overflow": 12,
-    "branches": 8,
-    "realBelow": 12,
-    "lichenDot": 2,
-    "lichenDensity": 1
+    "fill": 0.66,
+    "buzz": 0.3,
+    "real": true
   },
   "grid": "closed",
   "font": "castoro",
   "type": {
-    "name": 0.72,
+    "name": 0.84,
     "titles": 0.96,
     "lists": 0.76,
     "text": 0.92
