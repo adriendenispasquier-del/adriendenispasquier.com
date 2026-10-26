@@ -24,15 +24,13 @@
     {
       "src": "/uploads/HOT COMPOST #2-2.webp",
       "tags": [
-        "Photography",
-        "Illustration"
+        "Photography"
       ]
     },
     {
       "src": "/uploads/HOT COMPOST #1-2.webp",
       "tags": [
-        "Photography",
-        "Illustration"
+        "Photography"
       ]
     },
     {
@@ -45,25 +43,28 @@
     {
       "src": "/uploads/Sunday Brunch Oddkin Adrien Denis Pasquier2.webp",
       "tags": [
-        "Photography",
         "Illustration"
       ]
     },
     {
       "src": "/uploads/Across Borders Burgenland post-1.jpg",
       "tags": [
-        "Photography",
         "Illustration"
       ]
     },
     {
       "src": "/uploads/Primitive mistakes.webp",
       "tags": [
-        "Photography",
         "Illustration"
       ]
     }
   ],
   "cover": "/uploads/HOT COMPOST #2-2.webp",
-  "draft": false
+  "personal": false,
+  "draft": false,
+  "seo": {
+    "title": "",
+    "description": "",
+    "alt": ""
+  }
 }
