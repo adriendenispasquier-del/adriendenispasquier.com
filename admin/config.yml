@@ -195,6 +195,8 @@ collections:
               - { label: Closed, value: closed }
               - { label: Open, value: open }
               - { label: None, value: none }
+          - { name: line, label: Line thickness (px), widget: number, value_type: float, step: 0.05, default: 1 }
+          - { name: spacing, label: Section spacing, widget: number, value_type: float, step: 0.05, default: 1, hint: "Vertical space between the text column's sections. 1 = default, 1.5 = half as much again." }
           - name: font
             label: Font
             widget: select
@@ -256,6 +258,7 @@ collections:
               - { name: lichenDensity, label: Lichen density (1 = solid), widget: number, value_type: float, step: 0.05, default: 1 }
               - { name: overflow, label: Lichen overflow (% of font size), widget: number, value_type: int, default: 12 }
               - { name: branches, label: Lichen branches (space in dot sizes), widget: number, value_type: int, default: 8 }
+              - { name: speed, label: Animation speed, widget: number, value_type: float, step: 0.05, default: 1, hint: "1 = default, 2 = twice as fast, 0.5 = half speed." }
               - { name: allReal, label: Everything turns into real type, widget: boolean, default: true, hint: "After the dots animation, all text (name, menu, titles) becomes real type. Off: the name and titles stay as dots." }
               - { name: realBelow, label: Real type below (px), widget: number, value_type: float, step: 0.5, default: 12, hint: "Text smaller than this turns into real type once formed, titles and the name included. 0 = never." }
               - { name: shape, label: Shape, widget: select, options: [round, square] }
