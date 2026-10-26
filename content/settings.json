@@ -38,28 +38,28 @@
     "realBelow": 15,
     "lichenDot": 0.6,
     "lichenDensity": 1.8,
+    "allReal": true,
     "shape": "round",
     "dotSize": 0.3,
     "fill": 0.62,
     "buzz": 0.3,
-    "real": true,
-    "allReal": true
+    "real": true
   },
   "grid": "closed",
   "font": "castoro",
   "type": {
-    "name": 1,
-    "titles": 1,
-    "lists": 1,
-    "text": 1,
-    "about": 1
+    "name": 0.82,
+    "titles": 0.74,
+    "lists": 0.78,
+    "text": 0.78,
+    "about": 0.8
   },
   "fontPhone": "castoro",
   "typePhone": {
-    "name": 1,
-    "titles": 1,
-    "lists": 1,
-    "text": 1,
+    "name": 0.84,
+    "titles": 0.86,
+    "lists": 0.78,
+    "text": 0.88,
     "about": 1
   }
 }
