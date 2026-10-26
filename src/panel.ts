@@ -193,7 +193,25 @@ export function mount() {
   const isPh = () => ftab === "phone";
   const type = () => isPh() ? S.typePhone : S.type;
   const sizes = ["name", "titles", "lists", "text", "about"] as const;
-  const showSizes = () => sizes.forEach(k => { const i = inp("fs-" + k); i.value = String(type()[k]); i.nextElementSibling!.textContent = Math.round(type()[k] * 100) + "%"; });
+  // Each size is also shown in points, measured on the page (it depends on the column width and the device).
+  const ptOf = (k: typeof sizes[number]) => {
+    let px = 0;
+    if (k === "name") { const e = document.querySelector(".hd a"); if (e) px = parseFloat(getComputedStyle(e).fontSize); }
+    else {
+      const L = document.getElementById("L"); if (!L) return 0;
+      const probe = document.createElement("span");
+      probe.style.cssText = `position:absolute;visibility:hidden;font-size:calc(var(--base) * var(--fs-${k}))`;
+      L.appendChild(probe); px = parseFloat(getComputedStyle(probe).fontSize); probe.remove();
+    }
+    // Measured at the size in use; scaled to the value on the tab being edited (1px = 0.75pt).
+    const live = parseFloat(document.documentElement.style.getPropertyValue(`--fs-${k}`)) || 1;
+    return px * .75 * type()[k] / live;
+  };
+  const showSizes = () => sizes.forEach(k => {
+    const i = inp("fs-" + k); i.value = String(type()[k]);
+    i.nextElementSibling!.textContent = `${Math.round(type()[k] * 100)}% · ${Math.round(ptOf(k) * 2) / 2}pt`;
+  });
+  addEventListener("resize", () => setTimeout(showSizes, 300));   // the points follow the column width
   const showFont = () => {
     $("ftab").querySelectorAll<HTMLElement>("button").forEach(b => b.classList.toggle("on", b.dataset.v === ftab));
     fsel.value = isPh() ? S.fontPhone : S.font; showSizes();

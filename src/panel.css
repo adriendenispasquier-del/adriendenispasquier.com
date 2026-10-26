@@ -57,7 +57,7 @@
 #panel h4 { font-size: inherit; font-weight: 400; opacity: .55; margin-top: 4px; }
 #panel .lay { display: grid; gap: 6px; }
 #panel .lay[hidden] { display: none; }
-#panel .lrow { display: grid; grid-template-columns: 70px 1fr 38px; align-items: center; gap: 8px; }
+#panel .lrow { display: grid; grid-template-columns: 70px 1fr auto; align-items: center; gap: 8px; }
 #panel .lrow output { text-align: right; font-variant-numeric: tabular-nums; }
 #panel[open] { max-height: calc(100dvh - var(--hh) - 36px); overflow-y: auto; scrollbar-width: none; }   /* never taller than the window */
 #panel:not([open]) .pbody { display: none; }   /* folded: take no space (and catch no clicks) */
