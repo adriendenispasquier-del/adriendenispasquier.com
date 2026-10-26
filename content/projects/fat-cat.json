@@ -9,9 +9,14 @@
   "text": "The Fat Cat is one of the first cocktail-focused bars in Toulouse. Founded in 2015 by Quentin Pierre-Antoine and Emmy Jeannin, it quickly became known for its precise mixology and intimate atmosphere.\n\nThe challenge was to constantly reinvent the visual approach: isolating a single ingredient, exploring new angles and perspectives, and working with minimal sets to emphasise shape, colour and materiality. Through careful composition, light and texture, each ingredient was transformed into a singular, striking visual — not just documenting the cocktail, but distilling its character into an expressive image.",
   "credits": [
     {
-      "label": "Featuring",
+      "label": "Founders",
       "value": "Quentin Pierre-Antoine, Emmy Jeannin",
       "url": ""
+    },
+    {
+      "label": "Cocktails Recipes by",
+      "value": "Valentin Pérès",
+      "url": "https://www.instagram.com/justablacktee/"
     }
   ],
   "media": [
@@ -95,5 +100,11 @@
     }
   ],
   "cover": "",
-  "draft": false
+  "personal": false,
+  "draft": false,
+  "seo": {
+    "title": "",
+    "description": "",
+    "alt": ""
+  }
 }
