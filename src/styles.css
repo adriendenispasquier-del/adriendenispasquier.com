@@ -185,7 +185,7 @@ body.grid-closed .vrule { top: var(--hh); bottom: 0; }   /* runs from the header
   #M { display: block; position: fixed; top: var(--hh); bottom: 0; left: var(--gx); width: var(--mw); z-index: 2;
        overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
   #M::-webkit-scrollbar { display: none; }
-  .lcol { position: relative; inset: auto; left: auto; width: 100%; }
+  .lcol { position: relative; inset: auto; left: auto; width: 100%; container-type: normal; }   /* not a container: the About sheet can cover the whole screen */
   .lscroll { --pl: 0px; --pr: 0px; height: auto; overflow: visible; padding: 26px 0 30px; }
 
   .vrule { display: none; }
