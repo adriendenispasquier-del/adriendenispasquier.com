@@ -27,7 +27,7 @@ let busy = 0, reading = false;   // reading: a page change is reading the new pa
 async function go(path: string) {
   let page = buildPage(path);
   const token = ++busy, first = state.current === null, prev = state.page;
-  closeLightbox(); document.body.classList.remove("aopen");
+  closeLightbox(); openAbout(false);
   if (!first) {
     const keep = new Set(KEEP_ALWAYS);
     for (const k of page.keys || []) if (prev?.keys?.includes(k)) keep.add(k);   // shared menu titles morph in place
@@ -89,7 +89,7 @@ function swapList(f: string) {
 let filtering = 0;
 async function applyFilter(f: string) {
   const token = ++filtering;
-  state.filter = f; markMenu(f); document.body.classList.remove("aopen");
+  state.filter = f; markMenu(f); openAbout(false);
   // Fade the list and pictures out, swap them, fade back in.
   M.classList.add("swap"); G.classList.add("out"); F.classList.add("out");
   await sleep(260); if (token !== filtering) return;
@@ -132,10 +132,20 @@ try { state.invert = localStorage.getItem("adp-invert") === "1"; invertBtn.setAt
 invertBtn.addEventListener("click", () => setInvert(!state.invert));
 
 // Phone: About opens as a sheet over the pictures (its text shows as real type there).
+// The sheet moves to the end of the page while open: Safari clips it to the scrolling main column otherwise.
 const abtn = document.getElementById("abtn")!;
+let sheetHome: Comment | null = null;
 const openAbout = (on: boolean) => {
   document.body.classList.toggle("aopen", on); abtn.setAttribute("aria-expanded", String(on));
-  if (on) document.querySelectorAll<HTMLElement>(".about [data-p]").forEach(e => e.classList.add("real"));
+  const about = document.querySelector<HTMLElement>(".about");
+  if (on && about && !sheetHome) {
+    about.querySelectorAll<HTMLElement>("[data-p]").forEach(e => e.classList.add("real"));
+    sheetHome = document.createComment("about"); about.before(sheetHome); document.body.append(about);
+  } else if (!on && sheetHome) {
+    const sheet = document.body.querySelector<HTMLElement>(":scope > .about");
+    if (sheet && sheetHome.isConnected) sheetHome.replaceWith(sheet); else { sheet?.remove(); sheetHome.remove(); }
+    sheetHome = null;
+  }
 };
 abtn.addEventListener("click", () => {
   if (state.current !== "/") { history.pushState(null, "", "/"); go("/").then(() => openAbout(true)); }
