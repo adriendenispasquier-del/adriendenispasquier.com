@@ -16,6 +16,7 @@ export const state = {
   mq,
   PL: null as HTMLElement | null,       // the Work project list (its own scroll space)
   SB: null as HTMLElement | null,       // the About text box (scrolls on its own, like the list)
+  filter: "",                           // home: the chosen filter ("" = All)
   current: null as string | null,       // current path
   page: null as Page | null,
   colTop: 66,                           // text-column dots are clipped above this line
@@ -36,6 +37,7 @@ export interface Settings {
     overflow: number;    // lichen: how far it spills past the letters, in % of the font size
     branches: number;    // lichen: space between the branches past the letters, in dot sizes
     realBelow: number;   // text smaller than this (px) turns into real type once formed, titles included (0 = never)
+    allReal: boolean;    // everything (name, menu, titles too) turns into real type once formed
     lichenDot: number;   // lichen: dot size in px, the same for all text
     lichenDensity: number;   // lichen: how close the dots sit for their size (1 = solid)
   };
@@ -52,7 +54,7 @@ const fromFile = (f: typeof defaults): Settings => ({
   ...clone(f),
   layout: { ...clone(f.layout), hh: (f.layout as any).hh ?? 66, order: (f.layout as any).order || "tpf" },
   layoutPhone: { ...clone(f.layoutPhone), hh: (f.layoutPhone as any).hh ?? 46 },
-  dots: { ...{ anim: "particles", overflow: 12, branches: 8, realBelow: 12, lichenDot: 2, lichenDensity: 1 }, ...clone(f.dots) as any },
+  dots: { ...{ anim: "particles", overflow: 12, branches: 8, realBelow: 12, lichenDot: 2, lichenDensity: 1, allReal: true }, ...clone(f.dots) as any },
   grid: (f as any).grid || "open",
   font: (f as any).font || "pair",
   type: { name: 1, titles: 1, lists: 1, text: 1, about: 1, ...(f as any).type },

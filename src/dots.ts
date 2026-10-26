@@ -37,8 +37,9 @@ export const setOnStat = (f: (n: number) => void) => { onStat = f; };
 // (the Work project list, or the About text).
 const box = () => state.PL || state.SB;
 export const spaceOff = (sc: number) =>
-  (sc >= 1 ? (state.phone ? (M.classList.contains("home") ? 0 : M.scrollTop) : L.scrollTop) : 0) +
-  (sc === 2 && box() ? box()!.scrollTop : 0);
+  sc === 1 ? (state.phone ? M.scrollTop : L.scrollTop)
+  : sc === 2 ? (state.phone ? 0 : L.scrollTop) + (box() ? box()!.scrollTop : 0)   // on phone the list is pinned at the bottom
+  : 0;
 
 // ───────── Canvas (WebGL points, 2D fallback) ─────────
 const cv = dom.cv;
@@ -288,7 +289,7 @@ export async function collectTargets(pageId: string): Promise<Target[] | null> {
       keyEl.set(key, el);
       // Small text (below the size set in Dots) turns into real type once formed, like body text, whatever it is.
       const small = S.dots.realBelow > 0 && !!el.textContent!.trim() && parseFloat(getComputedStyle(el).fontSize) < S.dots.realBelow;
-      const buzz = el.matches(BUZZ_SEL) && !small;
+      const buzz = el.matches(BUZZ_SEL) && !small && !S.dots.allReal;   // with everything turning into type, nothing stays as dots
       if (small) smallKeys.add(key); if (buzz) buzzKeys.add(key);
       // List rows outside the visible part of the carousel go straight to real type.
       if (sc === 2 && S.dots.real && plr) { const r = el.getBoundingClientRect(); if (r.bottom < plr.top - 40 || r.top > plr.bottom + 40) { el.classList.add("real"); continue; } }
@@ -484,7 +485,7 @@ export function scheduleReal(land: Map<string, number>) {
     const el = keyEl.get(key);
     if (!el || buzzKeys.has(key)) continue;
     setTimeout(() => {
-      if (g !== gen || !(S.dots.real || smallKeys.has(key)) || !el.isConnected) return;
+      if (g !== gen || !(S.dots.real || S.dots.allReal || smallKeys.has(key)) || !el.isConnected) return;
       el.classList.add("real");
       for (const p of P) if (p.key === key) p.hid = true;
     }, Math.max(0, t - performance.now()) + 120);

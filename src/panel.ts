@@ -93,6 +93,7 @@ const HTML = `
     <label>Fill <input id="fill" type="range" min="0.25" max="0.7" step="0.01"></label>
     </div>
     <label>Buzz <input id="buzz" type="range" min="0" max="3" step="0.05"></label>
+    <label class="row2"><input id="allreal" type="checkbox"> Everything turns into real type</label>
     <label class="row2"><input id="real" type="checkbox"> Body text turns into real type</label>
     <label class="row2"><input id="reveal" type="checkbox"> Show real text underneath</label>
     <button class="btn" id="replay" type="button">Replay transition</button>
@@ -225,6 +226,8 @@ export function mount() {
     showDots(new Set());
     if (D.real) realNow(); else resample();
   });
+  inp("allreal").checked = D.allReal;
+  inp("allreal").addEventListener("change", e => { D.allReal = (e.target as HTMLInputElement).checked; save(); showDots(new Set()); replay(); });
   inp("reveal").addEventListener("change", e => document.body.classList.toggle("reveal", (e.target as HTMLInputElement).checked));
   $("replay").addEventListener("click", replay);
 

@@ -83,7 +83,8 @@ collections:
         hint: In page order; drag to reorder. The first one is the cover unless one is set below.
         field: { name: item, label: Picture or video, widget: file }
       - { name: cover, label: Cover (optional), widget: file, required: false, hint: Picture for the Work page and link previews. }
-      - { name: personal, label: Personal, widget: boolean, required: false, default: false, hint: "Shown under Personal (Pasquier in the header) instead of Work." }
+      - { name: categories, label: Filters, widget: list, required: false, hint: "The menu filters this project appears under, one per line, spelled as in Site → Filters (e.g. Photography)." }
+      - { name: personal, label: Personal, widget: boolean, required: false, default: false, hint: "Personal work: not in All, shown under its own Personal filter (which appears once there is some)." }
       - { name: draft, label: Hidden, widget: boolean, required: false, default: false, hint: Hidden projects are not on the site. }
       - name: seo
         label: Search engines (optional)
@@ -103,6 +104,7 @@ collections:
         file: content/site.json
         fields:
           - { name: name, label: Name, widget: string }
+          - { name: filters, label: Filters (menu), widget: list, hint: "The menu after All, in order (e.g. Brand Identity, Photography, Illustration). Each project lists the ones it belongs to." }
           - { name: description, label: Description, widget: text, hint: "For search engines and link previews (Work and Personal). Aim for 120–160 characters." }
           - name: seo
             label: Search engines
@@ -251,6 +253,7 @@ collections:
               - { name: lichenDensity, label: Lichen density (1 = solid), widget: number, value_type: float, step: 0.05, default: 1 }
               - { name: overflow, label: Lichen overflow (% of font size), widget: number, value_type: int, default: 12 }
               - { name: branches, label: Lichen branches (space in dot sizes), widget: number, value_type: int, default: 8 }
+              - { name: allReal, label: Everything turns into real type, widget: boolean, default: true, hint: "After the dots animation, all text (name, menu, titles) becomes real type. Off: the name and titles stay as dots." }
               - { name: realBelow, label: Real type below (px), widget: number, value_type: float, step: 0.5, default: 12, hint: "Text smaller than this turns into real type once formed, titles and the name included. 0 = never." }
               - { name: shape, label: Shape, widget: select, options: [round, square] }
               - { name: dotSize, label: Dot size, widget: number, value_type: float, step: 0.05 }

@@ -41,62 +41,58 @@ body.reveal [data-p], body.reveal [data-p] * { color: rgba(220, 40, 40, .55) !im
 
 #c { position: fixed; left: 0; top: 0; pointer-events: none; z-index: 20; }   /* sized in pixels from the script (100vh is wrong on iPhone) */
 
-/* ── Header: the name spread across the full width, a rule under it, drawn over the pictures ── */
+/* ── Header: the name, the colour-swap sign on the vertical rule, a rule under it (drawn over the pictures) ── */
 .hd { position: fixed; top: 0; left: var(--gx); right: var(--gx); height: var(--hh); z-index: 10;
-      display: flex; justify-content: space-between; align-items: center; font-size: calc(20px * var(--fs-name)); pointer-events: none; }
+      display: flex; justify-content: space-between; align-items: center; font-size: calc(clamp(12px, .9vw, 17px) * var(--fs-name)); pointer-events: none; }
 .hd a, .hd button { pointer-events: auto; padding: 6px 0; cursor: pointer; }
-/* 𓇗 (colour shift) and 𓆣 (settings): side by side, centred on the vertical rule */
-.hicons { position: absolute; top: 0; height: 100%; left: calc(var(--lw) - var(--gx)); transform: translateX(-50%); display: flex; align-items: center; gap: .35em; }
-.glyph { font-family: "Noto Sans Egyptian Hieroglyphs", var(--serif); font-size: 1.15em; line-height: 1; padding: 6px .25em !important; }
+.hicons { position: absolute; top: 0; height: 100%; left: calc(var(--lw) - var(--gx)); transform: translateX(-50%); display: flex; align-items: center; }
+.glyph { font-family: "Noto Sans Egyptian Hieroglyphs", var(--serif); font-size: 1.1em; line-height: 1; padding: 6px .3em !important; }
+.abtn { display: none; }
 .hline { position: absolute; left: 0; right: 0; bottom: 0; height: 0; border-bottom: var(--line) solid var(--ink); }
 
-/* ── Left column ── */
+/* ── Left column: one size for everything (--base, scaled by the Font sizes settings); labels on the left,
+      text on the right. Sizes follow the column width (cqw), so narrowing it shrinks the type. ── */
 .lcol { position: fixed; top: var(--hh); bottom: 0; left: var(--tl); width: var(--tw); z-index: 5; container-type: inline-size; }
-.lscroll { --pl: 8.5cqw; --pr: 9cqw; height: 100%; overflow-y: auto; scrollbar-width: none; padding: 64px var(--pr) 64px var(--pl); }
+.lscroll { --pl: 0px; --pr: 2.4cqw; --base: clamp(12px, 2.45cqw, 17px); height: 100%; overflow-y: auto; scrollbar-width: none; padding: 0 var(--pr) 18px var(--pl); }
 .lscroll::-webkit-scrollbar, .gal::-webkit-scrollbar, .film::-webkit-scrollbar { display: none; }
 .vrule { position: fixed; left: var(--lw); top: calc(var(--hh) + 30px); bottom: 36px; width: 0; border-left: var(--line) solid var(--ink); z-index: 5; }
+.lcol a.inl, .row .body a { text-decoration: underline; text-decoration-thickness: var(--line, 1px); text-underline-offset: .2em; }
 
-/* Sizes are in cqw (% of the text column width), so narrowing the column shrinks the type instead of cropping it. */
+/* Menu: All · Brand Identity · Photography… spread across the column; the chosen one slanted and underlined */
+.menu { display: flex; justify-content: space-between; gap: 1em; padding: .85em 0 .75em; }
+.fl { font-size: calc(var(--base) * var(--fs-titles)); white-space: nowrap; text-underline-offset: .2em; transition: font-style .2s; }
+.fl.on { font-style: italic; text-decoration: underline; text-decoration-thickness: var(--line, 1px); }
+.fl:hover { font-style: italic; }
+.mrule { border-top: var(--line) solid var(--ink); margin-right: calc(-1 * var(--pr)); }
+
+/* Rows: a label (About, Practices, a project's name, a credit) and its text */
+.row { display: grid; grid-template-columns: 34.5% 1fr; padding: 1.35em 0 1.15em; font-size: calc(var(--base) * var(--fs-about)); }
+.row.ruled { border-top: var(--line) solid var(--ink); margin-right: calc(-1 * var(--pr)); padding-right: var(--pr); }
+.row .lab { font-size: 1em; font-weight: inherit; line-height: 1.33; }
+.row.it .lab, .row.head .lab { font-style: italic; }
+.txt { line-height: 1.33; text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+.txt + .txt { margin-top: .75em; }
+.lproj .row { font-size: calc(var(--base) * var(--fs-text)); }
+.credits .row { padding: .3em 0; }
+.credits { padding: .9em 0; border-top: var(--line) solid var(--ink); margin-right: calc(-1 * var(--pr)); padding-right: var(--pr); }
+.next { display: flex; justify-content: space-between; padding: .8em var(--pr) .8em 0; margin-right: calc(-1 * var(--pr)); border-top: var(--line) solid var(--ink);
+        font-size: calc(var(--base) * var(--fs-lists)); }
+
+/* Home: menu and About at the top, the project list at the bottom (a vertical carousel: the project in view
+   sits in its middle) */
 .lhome { display: flex; flex-direction: column; height: 100%; }
-.t-big { display: block; align-self: flex-start; font-size: calc(clamp(30px, 25cqw, 210px) * var(--fs-titles)); font-weight: var(--weight, 400); line-height: .9; letter-spacing: -.03em; margin-left: -.04em; }
-.t-mid { display: block; align-self: flex-start; font-size: calc(clamp(16px, 6.4cqw, 46px) * var(--fs-titles)); line-height: 1.1; margin-top: 7cqw; letter-spacing: -.01em; }
-/* Menu: the page's title big, the other one small beside it on the same line; together they never run past the
-   text column (--fit is set from the script). A rule underneath. */
-.menu { display: flex; align-items: baseline; justify-content: space-between; column-gap: 4cqw; }
-.menu .t-big, .menu .t-mid { margin: 0; white-space: nowrap; align-self: baseline; }
-.menu .t-big { font-size: calc(clamp(30px, 25cqw, 210px) * var(--fs-titles) * var(--fit, 1)); }
-.menu .t-mid { font-size: calc(clamp(16px, 6.4cqw, 46px) * var(--fs-titles) * var(--fit, 1)); }
-.mrule { border-top: var(--line) solid var(--ink); margin-top: 4cqw; }
-/* About: the text scrolls in its own box between the menu and the footer (Practice, Contact) */
-#M.about .lscroll { overflow: hidden; padding-bottom: 0; }
-.labout { display: flex; flex-direction: column; height: 100%; }
-.abody { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; padding: 6cqw 0; }
-.abody::-webkit-scrollbar { display: none; }
-.atext { font-size: calc(clamp(15px, 4.8cqw, 32px) * var(--fs-about)); line-height: 1.22; text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
-.atext + .atext { margin-top: .55em; }
-.afoot { border-top: var(--line) solid var(--ink); padding: 4cqw 0 calc(4cqw + 18px); font-size: calc(clamp(10px, 2.5cqw, 14px) * var(--fs-text)); line-height: 1.55; }
-.afoot a { text-decoration: underline; text-underline-offset: .2em; }
-/* The project list is a vertical carousel: the project in view sits in its middle. */
-.plist { list-style: none; flex: 1; min-height: 0; overflow: hidden; margin-top: 5cqw; }
-.plist a { display: flex; justify-content: space-between; gap: 16px; padding: .5em .45em .4em; border-top: var(--line) solid var(--ink);
-           font-family: var(--mono); -webkit-text-stroke: var(--mono-stroke) currentColor;
-           font-size: calc(clamp(10px, 2.6cqw, 16px) * var(--fs-lists)); text-transform: uppercase; letter-spacing: .03em; white-space: nowrap; }
-/* One font for everything: no outline thickening, and no capitals (Work list, project texts, credits, captions, menus). */
+.about { flex: 0 1 auto; min-height: 0; overflow-y: auto; scrollbar-width: none; }
+.about::-webkit-scrollbar { display: none; }
+.plist { list-style: none; flex: 1 1 0; min-height: 30%; margin-top: 1.2em;   /* About gets the room it needs, the list the rest */ overflow: hidden; margin-right: calc(-1 * var(--pr)); }
+.plist a { display: grid; grid-template-columns: 34.5% 1fr; padding: .55em var(--pr) .5em 0; border-top: var(--line) solid var(--ink);
+           font-size: calc(var(--base) * var(--fs-lists)); white-space: nowrap; }
+.plist .pn { font-style: italic; overflow: hidden; text-overflow: ellipsis; padding-right: 1em; }
+.plist .ps { overflow: hidden; text-overflow: ellipsis; }
+.soon { margin-top: auto; padding: 1em 0; font-size: calc(var(--base) * var(--fs-lists)); }
+/* Filtering: the list fades out and back in with the pictures */
+.plist, .soon { transition: opacity .26s ease; }
+#M.swap .plist, #M.swap .soon { opacity: 0; }
 body.one-font { --mono-stroke: 0px; }
-body.one-font :is(.plist a, .mono, .next, .ph, .gi .cap, .vmenu, #panel) { text-transform: none; letter-spacing: 0; }
-.plist a.on.real { background: var(--ink); }
-.plist a.on.real, .plist a.on.real * { color: var(--bg) !important; }
-
-.t-title { font-size: calc(clamp(22px, 9.6cqw, 66px) * var(--fs-titles)); font-weight: var(--weight, 400); line-height: 1; letter-spacing: -.015em; margin-bottom: 28px; }
-.mono { font-family: var(--mono); -webkit-text-stroke: var(--mono-stroke) currentColor; font-size: calc(clamp(9.5px, 2.35cqw, 13.5px) * var(--fs-text)); line-height: 1.5; text-transform: uppercase; letter-spacing: .03em; }
-.services { padding-bottom: 14px; border-bottom: var(--line) solid var(--ink); margin-bottom: 22px; }
-.lproj .mono + .mono { margin-top: 1.5em; }
-.credits { margin-top: 40px; padding-top: 18px; border-top: var(--line) solid var(--ink); display: grid; gap: 4px; }
-.lcol a.inl { text-decoration: underline; text-decoration-thickness: var(--line, 1px); text-underline-offset: .22em; }
-.credits b { font-weight: var(--weight, 400); opacity: .55; margin-right: 1.2em; }
-.next { display: flex; justify-content: space-between; margin-top: 56px; padding-top: 8px; border-top: var(--line) solid var(--ink);
-        font-family: var(--mono); font-weight: var(--bold, 700); letter-spacing: .03em;
-        font-size: calc(clamp(10px, 2.6cqw, 16px) * var(--fs-lists)); text-transform: uppercase; }   /* Next project: Degular Mono Bold */
 
 /* ── Big pictures ── */
 .gal { position: fixed; top: 0; bottom: 0; left: var(--gl); width: var(--gw); overflow-y: auto; scrollbar-width: none; z-index: 1;
@@ -169,10 +165,7 @@ body.about .gal { left: var(--gla); width: var(--gwa); }
 body.grid-none { --line: 0px; }
 /* Closed: nothing is boxed; each horizontal line runs the full width of the text column, so it meets the
    vertical rule (and the lines form cells). The text stays where it was. */
-body.grid-closed .services, body.grid-closed .credits, body.grid-closed .next, body.grid-closed .plist, body.grid-closed .mrule, body.grid-closed .afoot {
-  margin-left: calc(-1 * var(--pl)); margin-right: calc(-1 * var(--pr)); padding-left: var(--pl); padding-right: var(--pr); }
-body.grid-closed .plist { padding-left: 0; padding-right: 0; }
-body.grid-closed .plist a { padding-left: calc(.45em + var(--pl)); padding-right: calc(.45em + var(--pr)); }
+/* (The text column's lines already run up to the vertical rule.) */
 body.grid-closed .vrule { top: var(--hh); bottom: 0; }   /* runs from the header line to the bottom */
 
 /* ── Phone: one main column (text, then the pictures) and the film down the right side.
@@ -187,33 +180,29 @@ body.grid-closed .vrule { top: var(--hh); bottom: 0; }   /* runs from the header
 
   .vrule { display: none; }
   .gal { position: relative; inset: auto; left: auto; width: 100%; height: auto; overflow: visible; }
-  /* Header: the signs sit just before About */
-  .hicons { position: static; transform: none; margin-left: auto; margin-right: 1em; height: auto; }
-  /* The menu, smaller */
-  .menu .t-big { font-size: calc(12cqw * var(--fs-titles) * var(--fit, 1)); }
-  .menu .t-mid { font-size: calc(5.5cqw * var(--fs-titles) * var(--fit, 1)); }
-  .mrule { margin-top: 3cqw; }
+  /* Header: the colour-swap sign at the right end */
+  .hicons { position: static; transform: none; margin-left: auto; height: auto; }
+  .lscroll { --base: clamp(13px, 3.9cqw, 17px); }
   body.about #M { width: var(--mwa); }
   body.about .gal { left: auto; width: 100%; }
-  /* About flows with the page */
-  #M.about .lscroll { overflow: visible; }
-  .labout { height: auto; }
-  .abody { overflow: visible; padding: 7cqw 0; }
-  .atext { font-size: calc(clamp(15px, 5cqw, 22px) * var(--fs-about)); }
-  /* Work: the menu is pinned at the top, the project list at the bottom; the pictures scroll in between */
-  #M.home .lcol { position: fixed; top: var(--hh); bottom: max(10px, env(safe-area-inset-bottom)); left: var(--gx); width: var(--mw);
-                  z-index: 3; pointer-events: none; }
-  #M.home .lscroll { height: 100%; padding: 0; }
-  .lhome { height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
-  #M.home .menu, #M.home .plist { pointer-events: auto; background: var(--bg); }
-  #M.home .menu { padding: 10px 0 12px; box-shadow: 0 -60px 0 var(--bg); }
-  #M.home .mrule { display: none; }   /* the list sits at the bottom here: no rule under the menu */
-  .plist { flex: none; margin-top: 0; font-size: calc(clamp(13px, 4.9cqw, 19px) * var(--fs-lists));
-           height: calc(var(--rows, 5) * (2.1em + var(--line))); overflow: hidden; box-shadow: 0 60px 0 var(--bg); }   /* moves with the pictures, like on desktop */
-  .plist a { border-top: var(--line) solid var(--ink); border-bottom: 0; font-size: 1em; line-height: 1.2; padding: .45em .45em; }
-  .mono { font-size: calc(clamp(9.5px, 2.6cqw, 13px) * var(--fs-text)); }
+  .hd { right: auto; width: var(--mw); }   /* the header stops at the main column (the film runs beside it) */
+  .abtn { display: inline; margin-right: 1em; }
+  body.aopen .abtn { font-style: italic; text-decoration: underline; text-underline-offset: .2em; }
+  /* About opens as a sheet from the header's About (the pictures scroll endlessly, so it can't sit above them) */
+  .about { display: none; }
+  body.aopen .fwrap { visibility: hidden; }   /* the film doesn't show through the sheet */
+  body.aopen .about { display: block; position: fixed; top: var(--hh); left: 0; right: 0; bottom: 0; z-index: 30; overflow-y: auto;
+                      background: var(--bg); padding: 0 var(--gx) 2em; }
+  /* Home: the menu pinned at the top and the project list at the bottom; the pictures scroll in between */
+  #M.home .lscroll { padding: 0; }
+  .lhome { height: auto; display: block; padding-top: 3.2em; }
+  #M.home .menu { position: fixed; top: var(--hh); left: var(--gx); width: var(--mw); z-index: 4; background: var(--bg);
+                  border-bottom: var(--line) solid var(--ink); padding: .8em 0 .7em; }
+  #M.home .mrule { display: none; }
+  .about { overflow: visible; padding-bottom: 1.2em; }
+  #M.home .plist { position: fixed; bottom: max(10px, env(safe-area-inset-bottom)); left: var(--gx); width: var(--mw); z-index: 4; margin: 0;
+                   height: calc(var(--rows, 5) * (2.1em + var(--line))); background: var(--bg); box-shadow: 0 60px 0 var(--bg); }
+  .plist a { padding-right: 0; }
+  .row { grid-template-columns: 30% 1fr; }
   .frame { left: calc(var(--fl) - 1.6vw); width: calc(var(--fw) + 3.2vw); }
-  .vmenu { top: var(--hh); left: var(--gx); width: var(--mw); font-size: calc(12px * var(--fs-lists)); }
-  .vdesk { display: none; }
-  .vdesk + .vrow { border-top: 0; }
 }

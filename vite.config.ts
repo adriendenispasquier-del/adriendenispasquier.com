@@ -72,7 +72,6 @@ export default defineConfig({
         }
         // Redirect pages at the previous site's addresses (/photography/fat-cat → /work/fat-cat/ …).
         for (const [old, to] of Object.entries(LEGACY)) {
-          if (old === "about") continue;   // a real page now
           mkdirSync(root("dist", old), { recursive: true });
           writeFileSync(root("dist", old, "index.html"), `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><title>Adrien Denis-Pasquier</title>

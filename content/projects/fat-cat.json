@@ -1,6 +1,9 @@
 {
   "title": "Fat Cat",
   "type": "Photography",
+  "categories": [
+    "Photography"
+  ],
   "order": 3,
   "services": [
     "Product photography",

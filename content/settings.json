@@ -42,23 +42,24 @@
     "dotSize": 0.3,
     "fill": 0.62,
     "buzz": 0.3,
-    "real": true
+    "real": true,
+    "allReal": true
   },
   "grid": "closed",
   "font": "castoro",
   "type": {
-    "name": 0.68,
-    "titles": 0.96,
-    "lists": 0.76,
-    "text": 0.92,
-    "about": 1.24
+    "name": 1,
+    "titles": 1,
+    "lists": 1,
+    "text": 1,
+    "about": 1
   },
   "fontPhone": "castoro",
   "typePhone": {
-    "name": 0.72,
-    "titles": 0.96,
-    "lists": 0.64,
-    "text": 1.08,
+    "name": 1,
+    "titles": 1,
+    "lists": 1,
+    "text": 1,
     "about": 1
   }
 }

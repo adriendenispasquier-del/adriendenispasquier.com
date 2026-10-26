@@ -1,7 +1,7 @@
 import "./styles.css";
-import { buildPage, legacyPath, canonical, type Page } from "./content";
+import { buildPage, legacyPath, canonical, filtered, listHTML, itemsOf, FILTERS, type Page } from "./content";
 import { ORIGIN } from "./pages";
-import { dom, state, loadTuning, applyColors, applyLayout, V, saveVisitor, resetVisitor, layoutNow, layoutPhoneNow, dotSizeNow, buzzNow } from "./state";
+import { dom, state, S, loadTuning, applyColors, applyLayout, resetVisitor } from "./state";
 import * as dots from "./dots";
 import { renderMedia, resetScroll, layoutFilm, sync, main, closeLightbox, centreList } from "./gallery";
 
@@ -25,8 +25,9 @@ else if (canonical(location.pathname) !== location.pathname) history.replaceStat
 
 let busy = 0, reading = false;   // reading: a page change is reading the new page into dots
 async function go(path: string) {
-  const page = buildPage(path), token = ++busy, first = state.current === null, prev = state.page;
-  closeLightbox();
+  let page = buildPage(path);
+  const token = ++busy, first = state.current === null, prev = state.page;
+  closeLightbox(); document.body.classList.remove("aopen");
   if (!first) {
     const keep = new Set(KEEP_ALWAYS);
     for (const k of page.keys || []) if (prev?.keys?.includes(k)) keep.add(k);   // shared menu titles morph in place
@@ -39,6 +40,12 @@ async function go(path: string) {
   // The text column is drawn by dots, so it can swap at once: the old dots are already loose
   // and the new magnets start pulling straight away.
   L.innerHTML = page.left; L.scrollTop = 0; M.scrollTop = 0;
+  // Home: the filter in the address (?filter=photography) chooses the list and the pictures.
+  if (page.path === "/") {
+    state.filter = filterFrom(location.search);
+    if (state.filter) { swapList(state.filter); page = { ...page, items: itemsOf(filtered(state.filter)) }; }
+  }
+  markMenu(page.path === "/" ? state.filter : null);
   M.classList.toggle("home", !!page.loop);
   M.classList.toggle("about", page.path === "/about/");
   document.body.classList.toggle("about", page.path === "/about/");   // no film there
@@ -64,6 +71,35 @@ function setMeta(page: Page) {
   document.querySelector('link[rel="canonical"]')?.setAttribute("href", ORIGIN + page.path);
 }
 
+// ── Filters (All, Brand Identity, Photography…): on the home page they swap the list and the pictures in place.
+const filterFrom = (search: string) => { const f = new URLSearchParams(search).get("filter") || ""; return FILTERS.some(x => x.slug === f) ? f : ""; };
+function markMenu(on: string | null) {
+  document.querySelectorAll<HTMLElement>(".menu .fl").forEach(a => {
+    const sel = on !== null && a.dataset.f === on;
+    a.classList.toggle("on", sel); if (sel) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current");
+  });
+}
+/** Put the filter's projects in the list (as real type when the dots turn into type). */
+function swapList(f: string) {
+  const old = L.querySelector(".plist, .soon"); if (!old) return;
+  old.insertAdjacentHTML("afterend", listHTML(filtered(f))); old.remove();
+  state.PL = document.getElementById("PL");
+  if (S.dots.allReal || S.dots.real) L.querySelectorAll<HTMLElement>(".plist [data-p], .soon").forEach(e => e.classList.add("real"));
+}
+let filtering = 0;
+async function applyFilter(f: string) {
+  const token = ++filtering;
+  state.filter = f; markMenu(f); document.body.classList.remove("aopen");
+  // Fade the list and pictures out, swap them, fade back in.
+  M.classList.add("swap"); G.classList.add("out"); F.classList.add("out");
+  await sleep(260); if (token !== filtering) return;
+  swapList(f); centreList();
+  renderMedia(itemsOf(filtered(f)), true, false); resetScroll();
+  resample();
+  await sleep(30);
+  M.classList.remove("swap"); G.classList.remove("out"); F.classList.remove("out");
+}
+
 // Internal links change page without reloading.
 document.addEventListener("click", e => {
   const a = (e.target as Element).closest?.("a");
@@ -71,10 +107,18 @@ document.addEventListener("click", e => {
   const url = new URL(a.href, location.href);
   if (url.origin !== location.origin) return;
   e.preventDefault();
+  if (a.dataset.f !== undefined) {   // a filter
+    history.pushState(null, "", url.pathname + url.search);
+    if (state.current === "/") { if (a.dataset.f !== state.filter) applyFilter(a.dataset.f); } else go("/");
+    return;
+  }
   const path = canonical(url.pathname);
   if (path !== state.current) { history.pushState(null, "", path); go(path); }
 });
-addEventListener("popstate", () => go(location.pathname));
+addEventListener("popstate", () => {
+  if (state.current === "/" && canonical(location.pathname) === "/") { const f = filterFrom(location.search); if (f !== state.filter) applyFilter(f); }
+  else go(location.pathname);
+});
 export const replay = () => go(state.current ?? "/");
 
 // "Denis" in the header swaps background and text colours for this visitor (remembered in their browser).
@@ -87,46 +131,20 @@ const setInvert = (on: boolean) => {
 try { state.invert = localStorage.getItem("adp-invert") === "1"; invertBtn.setAttribute("aria-pressed", String(state.invert)); } catch { /* ignore */ }
 invertBtn.addEventListener("click", () => setInvert(!state.invert));
 
-// "-" in the header opens the visitor settings: column widths, dot size and buzz, for this visitor only.
-const vbtn = document.getElementById("vbtn")!, vmenu = document.getElementById("vmenu")!;
-const vin = (id: string) => document.getElementById(id) as HTMLInputElement;
-function showVisitor() {
-  const l = layoutNow(), lp = layoutPhoneNow();
-  vin("v-t").value = String(l.t);
-  const f = vin("v-f");
-  if (state.phone) { f.min = "6"; f.max = "40"; f.value = String(lp.f); } else { f.min = "3"; f.max = "20"; f.value = String(l.f); }
-  vin("v-dot").value = String(dotSizeNow()); vin("v-buzz").value = String(buzzNow());
-}
-const openMenu = (on: boolean) => {
-  vmenu.classList.toggle("open", on); vbtn.setAttribute("aria-expanded", String(on));
-  if (on) showVisitor();
+// Phone: About opens as a sheet over the pictures (its text shows as real type there).
+const abtn = document.getElementById("abtn")!;
+const openAbout = (on: boolean) => {
+  document.body.classList.toggle("aopen", on); abtn.setAttribute("aria-expanded", String(on));
+  if (on) document.querySelectorAll<HTMLElement>(".about [data-p]").forEach(e => e.classList.add("real"));
 };
-vbtn.addEventListener("click", () => openMenu(!vmenu.classList.contains("open")));
-document.addEventListener("pointerdown", e => { if (vmenu.classList.contains("open") && !vmenu.contains(e.target as Node) && !vbtn.contains(e.target as Node)) openMenu(false); });
-addEventListener("keydown", e => { if (e.key === "Escape") openMenu(false); });
-let vt: number | undefined;
-const visitorChanged = (layout: boolean) => {
-  saveVisitor();
-  if (layout) relayout();
-  clearTimeout(vt); vt = window.setTimeout(resample, 150);
-};
-// Text and film widths: the pictures take the rest (the three always fill the width).
-const share = (k: "t" | "f", v: number) => {
-  const l = layoutNow(), others = (["t", "p", "f"] as const).filter(x => x !== k), rest = others.reduce((a, x) => a + l[x], 0) || 1;
-  const next = { t: l.t, p: l.p, f: l.f };
-  for (const x of others) next[x] = (100 - v) * l[x] / rest;
-  next[k] = v;
-  V.layout = next;
-};
-vin("v-t").addEventListener("input", e => { share("t", +(e.target as HTMLInputElement).value); visitorChanged(true); });
-vin("v-f").addEventListener("input", e => {
-  const v = +(e.target as HTMLInputElement).value;
-  if (state.phone) V.layoutPhone = { m: 100 - v, f: v }; else share("f", v);
-  visitorChanged(true);
+abtn.addEventListener("click", () => {
+  if (state.current !== "/") { history.pushState(null, "", "/"); go("/").then(() => openAbout(true)); }
+  else openAbout(!document.body.classList.contains("aopen"));
 });
-vin("v-dot").addEventListener("input", e => { V.dotSize = +(e.target as HTMLInputElement).value; visitorChanged(false); });
-vin("v-buzz").addEventListener("input", e => { V.buzz = +(e.target as HTMLInputElement).value; saveVisitor(); });
-document.getElementById("v-reset")!.addEventListener("click", () => { resetVisitor(); relayout(); resample(); showVisitor(); });
+addEventListener("keydown", e => { if (e.key === "Escape") openAbout(false); });
+
+// The visitor settings are gone: forget any widths or dot sizes a visitor had set before.
+resetVisitor();
 
 // Pictures: no right-click menu ("Save image as…") and no dragging them out.
 const isPicture = (t: EventTarget | null) => !!(t as Element)?.closest?.(".gi, .fi, .lbm");

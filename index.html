@@ -11,9 +11,9 @@
   <!-- Fonts: Adobe Fonts kit (Redaction, Degular Mono) -->
   <link rel="preconnect" href="https://use.typekit.net" crossorigin>
   <link rel="stylesheet" href="https://use.typekit.net/nva7btn.css">
-  <!-- The two header signs (𓇗 colour shift, 𓆣 settings): only these two characters of the font are downloaded -->
+  <!-- The colour-swap sign (𓇗): only this character of the font is downloaded -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Egyptian+Hieroglyphs&text=%F0%93%87%97%F0%93%86%A3&display=block">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Egyptian+Hieroglyphs&text=%F0%93%87%97&display=block">
 </head>
 <body>
   <canvas id="c"></canvas>
@@ -21,21 +21,11 @@
   <header class="hd">
     <a href="/" data-p data-k="h1">Adrien Denis-Pasquier</a>
     <div class="hicons">
-      <button type="button" id="invert" class="glyph" data-p data-k="h2" aria-pressed="false" aria-label="Colour shift" title="Colour shift">𓇗</button>
-      <button type="button" id="vbtn" class="glyph" data-p data-k="h3" aria-expanded="false" aria-controls="vmenu" aria-label="Settings" title="Settings">𓆣</button>
+      <button type="button" id="abtn" class="abtn" aria-expanded="false">About</button>
+      <button type="button" id="invert" class="glyph" data-p data-k="h2" aria-pressed="false" aria-label="Swap colours" title="Swap colours">𓇗</button>
     </div>
-    <a href="/about/" data-p data-k="h4">About</a>
     <div class="hline" data-p data-k="hline"></div>
   </header>
-
-  <!-- Visitor settings, opened with 𓆣 in the header -->
-  <div class="vmenu" id="vmenu" role="dialog" aria-label="Settings">
-    <label class="vrow vdesk"><span>Text</span><input type="range" id="v-t" min="15" max="60" step="0.1"></label>
-    <label class="vrow"><span>Film</span><input type="range" id="v-f" min="3" max="20" step="0.1"></label>
-    <label class="vrow"><span>Dots</span><input type="range" id="v-dot" min="0.3" max="1.6" step="0.05"></label>
-    <label class="vrow"><span>Buzz</span><input type="range" id="v-buzz" min="0" max="3" step="0.05"></label>
-    <div class="vrow vbtns"><button type="button" id="v-reset">Reset</button></div>
-  </div>
 
   <main id="M">
     <div class="lcol"><div class="lscroll" id="L"></div></div>
