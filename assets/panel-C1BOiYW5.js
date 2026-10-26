@@ -1,4 +1,4 @@
-import{o as dt,$ as s,S as n,c as R,s as r,a as B,b as u,O as rt,D as F,F as pt,r as x,d as E,e as N,f as ut,g as ct,h as vt,t as ht,P as gt,i as bt}from"./index-DM2UngZ0.js";const yt=`
+import{o as dt,$ as s,S as n,c as R,s as r,a as B,b as u,O as rt,D as F,F as pt,r as x,d as E,e as N,f as ut,g as ct,h as vt,t as ht,P as gt,i as bt}from"./index-CbiTBHDG.js";const yt=`
 <details id="panel">
   <summary title="Drag to move · click to fold">Settings</summary>
   <div class="pbody">
