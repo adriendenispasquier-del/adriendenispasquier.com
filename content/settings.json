@@ -64,10 +64,10 @@
   },
   "fontPhone": "castoro",
   "typePhone": {
-    "name": 0.84,
-    "titles": 0.86,
-    "lists": 0.78,
-    "text": 0.88,
-    "about": 1
+    "name": 1.08,
+    "titles": 1.06,
+    "lists": 1.08,
+    "text": 1.06,
+    "about": 1.06
   }
 }
