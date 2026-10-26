@@ -80,10 +80,13 @@ collections:
       - name: media
         label: Pictures and videos
         widget: list
-        hint: In page order; drag to reorder. The first one is the cover unless one is set below.
-        field: { name: item, label: Picture or video, widget: file }
+        hint: "In page order; drag to reorder. The first one is the cover unless one is set below. Filters: the menu filters this picture shows under (a project appears under a filter when one of its pictures has it)."
+        summary: "{{src}} — {{tags}}"
+        fields:
+          - { name: src, label: Picture or video, widget: file }
+          # Keep these options the same as Site → Filters.
+          - { name: tags, label: Filters, widget: select, multiple: true, required: false, options: [Brand Identity, Photography, Illustration] }
       - { name: cover, label: Cover (optional), widget: file, required: false, hint: Picture for the Work page and link previews. }
-      - { name: categories, label: Filters, widget: list, required: false, hint: "The menu filters this project appears under, one per line, spelled as in Site → Filters (e.g. Photography)." }
       - { name: personal, label: Personal, widget: boolean, required: false, default: false, hint: "Personal work: not in All, shown under its own Personal filter (which appears once there is some)." }
       - { name: draft, label: Hidden, widget: boolean, required: false, default: false, hint: Hidden projects are not on the site. }
       - name: seo
