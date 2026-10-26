@@ -12,8 +12,8 @@
       },
       {
         "page": "/work/oddkin/",
-        "bg": "#666b34",
-        "ink": "#f5f5d6"
+        "bg": "#e0e6b7",
+        "ink": "#354821"
       },
       {
         "page": "/work/archipel-berlin/",
@@ -37,14 +37,14 @@
     "hh": 30
   },
   "dots": {
-    "anim": "crust",
+    "anim": "particles",
     "overflow": 5,
     "branches": 6,
     "realBelow": 16.5,
     "lichenDot": 0.6,
     "lichenDensity": 0.7,
     "allReal": true,
-    "speed": 2.55,
+    "speed": 1,
     "shape": "round",
     "dotSize": 0.3,
     "fill": 0.62,
