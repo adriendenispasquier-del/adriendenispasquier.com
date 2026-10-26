@@ -9,6 +9,16 @@
         "page": "/work/luca-baking-around/",
         "bg": "#fbfcf8",
         "ink": "#1c1c1c"
+      },
+      {
+        "page": "/work/oddkin/",
+        "bg": "#666b34",
+        "ink": "#f5f5d6"
+      },
+      {
+        "page": "/work/archipel-berlin/",
+        "bg": "#f4f0e7",
+        "ink": "#000000"
       }
     ]
   },
@@ -17,7 +27,7 @@
     "t": 46.28,
     "p": 48.52,
     "f": 5.2,
-    "hh": 36,
+    "hh": 40,
     "order": "tpf"
   },
   "layoutPhone": {
@@ -34,20 +44,20 @@
     "lichenDot": 0.6,
     "lichenDensity": 0.7,
     "allReal": true,
+    "speed": 1,
     "shape": "round",
     "dotSize": 0.3,
     "fill": 0.62,
     "buzz": 0.3,
-    "real": true,
-    "speed": 1
+    "real": true
   },
   "grid": "closed",
-  "line": 1,
-  "spacing": 1,
+  "line": 1.05,
+  "spacing": 1.3,
   "font": "castoro",
   "type": {
-    "name": 0.82,
-    "titles": 0.74,
+    "name": 0.86,
+    "titles": 0.78,
     "lists": 0.78,
     "text": 0.78,
     "about": 0.8
