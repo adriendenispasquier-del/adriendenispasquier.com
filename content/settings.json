@@ -37,14 +37,14 @@
     "hh": 30
   },
   "dots": {
-    "anim": "crust",
+    "anim": "particles",
     "overflow": 5,
     "branches": 6,
     "realBelow": 16.5,
     "lichenDot": 0.6,
     "lichenDensity": 0.7,
     "allReal": true,
-    "speed": 1,
+    "speed": 2.55,
     "shape": "round",
     "dotSize": 0.3,
     "fill": 0.62,
@@ -56,11 +56,11 @@
   "spacing": 0.85,
   "font": "castoro",
   "type": {
-    "name": 0.86,
-    "titles": 0.78,
-    "lists": 0.78,
-    "text": 0.78,
-    "about": 0.8
+    "name": 0.88,
+    "titles": 0.88,
+    "lists": 0.88,
+    "text": 0.88,
+    "about": 0.88
   },
   "fontPhone": "castoro",
   "typePhone": {
