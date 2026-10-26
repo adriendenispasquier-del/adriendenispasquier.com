@@ -136,18 +136,24 @@ export function makePages(PROJECTS: Project[], SITE: Site) {
   const rule = `<div class="hrule" data-p></div>`;
   const row = (label: string, body: string, cls = "") => `${cls.includes("ruled") ? rule : ""}<div class="row${cls}"><span class="lab" data-p>${label}</span><div class="body">${body}</div></div>`;
 
-  /** Home: the menu, About and Practices, the project list; the pictures of the chosen filter. */
-  function home(): Page {
-    const a = SITE.about, title = SEO.title?.trim() || `${NAME} — ${job} in ${place}`;
+  /** About, Practices and Contact (on the home page, and the phone's About sheet on every page). */
+  const aboutHTML = () => {
+    const a = SITE.about;
     const contact = a.contact.map(c => c.url ? `<a href="${esc(linkOf(c.url))}" target="_blank" rel="noopener">${esc(c.label)}</a>` : esc(c.label)).join(", ");
-    return {
-      path: "/", title, description: SITE.description, keys: menuKeys, loop: WORK.length > 0, image: firstCover(),
-      left: `<div class="lhome">${hidden(`${NAME} — ${job} in ${place}`)}${menu("")}
-        <div class="about">
+    return `<div class="about">
           ${row("About", a.text.split(/\n\s*\n/).map(t => t.trim()).filter(Boolean).map(t => `<p class="txt" data-p>${inline(t)}</p>`).join(""))}
           ${row("Practices", `<p class="txt" data-p>${a.practice.map(inline).join(", ")}.</p>`, " ruled it")}
           ${a.contact.length ? row("Contact", `<p class="txt" data-p>${contact}</p>`, " it") : ""}
-        </div>
+        </div>`;
+  };
+
+  /** Home: the menu, About and Practices, the project list; the pictures of the chosen filter. */
+  function home(): Page {
+    const title = SEO.title?.trim() || `${NAME} — ${job} in ${place}`;
+    return {
+      path: "/", title, description: SITE.description, keys: menuKeys, loop: WORK.length > 0, image: firstCover(),
+      left: `<div class="lhome">${hidden(`${NAME} — ${job} in ${place}`)}${menu("")}
+        ${aboutHTML()}
         ${listHTML(WORK)}</div>`,
       items: itemsOf(WORK), pictures: WORK.map(coverOf).filter(still).map(full),
       jsonld: ld(person,
@@ -187,7 +193,7 @@ export function makePages(PROJECTS: Project[], SITE: Site) {
   /** Every address of the site (for the sitemap and the pages written at build time). */
   const paths = () => ["/", ...PROJECTS.map(projectPath)];
 
-  return { buildPage, paths, filtered, listHTML, itemsOf, FILTERS };
+  return { buildPage, paths, filtered, listHTML, itemsOf, aboutHTML, FILTERS };
 }
 
 /** Addresses of the previous site → new ones. Used for old #/… links in the browser, and at build time to

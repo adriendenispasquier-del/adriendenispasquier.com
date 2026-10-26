@@ -1,5 +1,5 @@
 import "./styles.css";
-import { buildPage, legacyPath, canonical, filtered, listHTML, itemsOf, FILTERS, type Page } from "./content";
+import { buildPage, legacyPath, canonical, filtered, listHTML, itemsOf, aboutHTML, FILTERS, type Page } from "./content";
 import { ORIGIN } from "./pages";
 import { dom, state, S, loadTuning, applyColors, applyLayout, resetVisitor } from "./state";
 import * as dots from "./dots";
@@ -132,25 +132,27 @@ try { state.invert = localStorage.getItem("adp-invert") === "1"; invertBtn.setAt
 invertBtn.addEventListener("click", () => setInvert(!state.invert));
 
 // Phone: About opens as a sheet over the pictures (its text shows as real type there).
-// The sheet moves to the end of the page while open: Safari clips it to the scrolling main column otherwise.
+// The sheet sits at the end of the page while open: Safari clips it to the scrolling main column otherwise.
+// On the home page it is the page's own About (moved there and back); on other pages it is made for the sheet.
 const abtn = document.getElementById("abtn")!;
-let sheetHome: Comment | null = null;
+let sheetHome: Comment | null = null, sheetMade = false;
 const openAbout = (on: boolean) => {
   document.body.classList.toggle("aopen", on); abtn.setAttribute("aria-expanded", String(on));
-  const about = document.querySelector<HTMLElement>(".about");
-  if (on && about && !sheetHome) {
-    about.querySelectorAll<HTMLElement>("[data-p]").forEach(e => e.classList.add("real"));
-    sheetHome = document.createComment("about"); about.before(sheetHome); document.body.append(about);
-  } else if (!on && sheetHome) {
-    const sheet = document.body.querySelector<HTMLElement>(":scope > .about");
-    if (sheet && sheetHome.isConnected) sheetHome.replaceWith(sheet); else { sheet?.remove(); sheetHome.remove(); }
-    sheetHome = null;
+  const sheet = document.body.querySelector<HTMLElement>(":scope > .about");
+  if (on && !sheet) {
+    const about = L.querySelector<HTMLElement>(".about");
+    if (about) { sheetHome = document.createComment("about"); about.before(sheetHome); document.body.append(about); }
+    else {   // plain type, not read by the dots
+      document.body.insertAdjacentHTML("beforeend", aboutHTML()); sheetMade = true;
+      document.querySelectorAll("body > .about [data-p]").forEach(e => e.removeAttribute("data-p"));
+    }
+    document.querySelectorAll<HTMLElement>("body > .about [data-p]").forEach(e => e.classList.add("real"));
+  } else if (!on && sheet) {
+    if (sheetHome?.isConnected && !sheetMade) sheetHome.replaceWith(sheet); else { sheet.remove(); sheetHome?.remove(); }
+    sheetHome = null; sheetMade = false;
   }
 };
-abtn.addEventListener("click", () => {
-  if (state.current !== "/") { history.pushState(null, "", "/"); go("/").then(() => openAbout(true)); }
-  else openAbout(!document.body.classList.contains("aopen"));
-});
+abtn.addEventListener("click", () => openAbout(!document.body.classList.contains("aopen")));
 addEventListener("keydown", e => { if (e.key === "Escape") openAbout(false); });
 
 // The visitor settings are gone: forget any widths or dot sizes a visitor had set before.
