@@ -52,6 +52,8 @@ const HTML = `
       <button data-v="open" type="button">Open</button>
       <button data-v="none" type="button">None</button>
     </div>
+    <div class="lrow"><span>Lines</span><input id="g-line" type="range" min="0.25" max="3" step="0.05"><output></output></div>
+    <div class="lrow"><span>Spacing</span><input id="g-spacing" type="range" min="0.2" max="3" step="0.05"><output></output></div>
     <div class="seg" id="ftab">
       <button data-v="desk" type="button">Desktop</button>
       <button data-v="phone" type="button">Phone</button>
@@ -93,6 +95,7 @@ const HTML = `
     <label>Fill <input id="fill" type="range" min="0.25" max="0.7" step="0.01"></label>
     </div>
     <label>Buzz <input id="buzz" type="range" min="0" max="3" step="0.05"></label>
+    <div class="lrow"><span>Speed</span><input id="d-speed" type="range" min="0.2" max="3" step="0.05"><output></output></div>
     <label class="row2"><input id="allreal" type="checkbox"> Everything turns into real type</label>
     <label class="row2"><input id="real" type="checkbox"> Body text turns into real type</label>
     <label class="row2"><input id="reveal" type="checkbox"> Show real text underneath</label>
@@ -174,6 +177,11 @@ export function mount() {
   // Grid and font sizes
   const showGrid = () => $("grid").querySelectorAll<HTMLElement>("button").forEach(b => b.classList.toggle("on", b.dataset.v === S.grid));
   showGrid();
+  // Line thickness and the space between the text column's sections
+  const gk = [["g-line", "line", "px"], ["g-spacing", "spacing", "×"]] as const;
+  const showG = () => gk.forEach(([id, k, u]) => { const i = inp(id); i.value = String(S[k]); i.nextElementSibling!.textContent = S[k] + u; });
+  showG();
+  for (const [id, k] of gk) inp(id).addEventListener("input", e => { S[k] = +(e.target as HTMLInputElement).value; showG(); changed(); });
   $("grid").addEventListener("click", e => {
     const b = (e.target as Element).closest<HTMLElement>("button"); if (!b) return;
     S.grid = b.dataset.v!; showGrid(); changed();
@@ -226,6 +234,10 @@ export function mount() {
     showDots(new Set());
     if (D.real) realNow(); else resample();
   });
+  const showSpeed = () => { inp("d-speed").value = String(D.speed); inp("d-speed").nextElementSibling!.textContent = D.speed + "×"; };
+  showSpeed();
+  inp("d-speed").addEventListener("input", e => { D.speed = +(e.target as HTMLInputElement).value; save(); showSpeed(); });
+  inp("d-speed").addEventListener("change", () => replay());   // let go of the slider: see the transition at that speed
   inp("allreal").checked = D.allReal;
   inp("allreal").addEventListener("change", e => { D.allReal = (e.target as HTMLInputElement).checked; save(); showDots(new Set()); replay(); });
   inp("reveal").addEventListener("change", e => document.body.classList.toggle("reveal", (e.target as HTMLInputElement).checked));

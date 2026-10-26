@@ -20,6 +20,11 @@ interface Dot {
 /** Lichen animations grow the dots in place instead of moving them. */
 const lichen = () => S.dots.anim === "crust" || S.dots.anim === "leafy" || S.dots.anim === "rosette";
 
+/** The animations run on their own clock: Animation speed (Dots settings) makes it run faster or slower than real time. */
+const speed = () => Math.min(3, Math.max(.2, S.dots.speed ?? 1));
+let vNow = performance.now(), realLast = performance.now();
+export function clock() { const r = performance.now(); vNow += (r - realLast) * speed(); realLast = r; return vNow; }
+
 let keyEl = new Map<string, HTMLElement>(), gen = 0;
 let buzzKeys = new Set<string>(), smallKeys = new Set<string>();
 let P: Dot[] = [];
@@ -320,7 +325,7 @@ export function showDots(keep: Set<string>) {
 export function release(keep: Set<string>) {
   if (lichen()) keep = new Set();   // lichen: everything retracts, then the new page grows (nothing stays)
   showDots(keep);
-  const now = performance.now();
+  const now = clock();
   if (lichen()) {
     releasedAt = now;
     // Lichen ungrows where it is: newest growth first, retracting toward where each shape started.
@@ -352,7 +357,7 @@ export function release(keep: Set<string>) {
 
 /** Give the dots their new targets. gentle = same page re-laid out (resize, settings): just glide. */
 export function assign(targets: Target[], gentle = false) {
-  const now = performance.now();
+  const now = clock();
   if (lichen()) return assignLichen(targets, gentle, now);
   const byKey = new Map<string, Target[]>();
   for (const t of targets) { if (!byKey.has(t.key)) byKey.set(t.key, []); byKey.get(t.key)!.push(t); }
@@ -488,10 +493,10 @@ export function scheduleReal(land: Map<string, number>) {
       if (g !== gen || !(S.dots.real || S.dots.allReal || smallKeys.has(key)) || !el.isConnected) return;
       el.classList.add("real");
       for (const p of P) if (p.key === key) p.hid = true;
-    }, Math.max(0, t - performance.now()) + 120);
+    }, Math.max(0, t - clock()) / speed() + 120);
   }
 }
-export const realNow = () => scheduleReal(new Map([...keyEl.keys()].map(k => [k, performance.now()])));
+export const realNow = () => scheduleReal(new Map([...keyEl.keys()].map(k => [k, clock()])));
 
 function setTarget(p: Dot, t: Target, start: number) {
   if (t.sc !== p.sc) { p.y += spaceOff(t.sc) - spaceOff(p.sc); p.sc = t.sc; }
@@ -502,10 +507,10 @@ function shuffle<T>(a: T[]) { for (let i = a.length - 1; i > 0; i--) { const j =
 
 // ───────── Animation loop ─────────
 const inout = (u: number) => u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
-let last = performance.now();
+let last = clock();
 
-function frame(now: number) {
-  const dt = Math.min((now - last) / 16.67, 3); last = now;
+function frame() {
+  const now = clock(), dt = Math.min((now - last) / 16.67, 3); last = now;
   for (let i = 0; i < 3; i++) ink[i] += (state.inkTo[i] - ink[i]) * .06 * dt;
   // Update in place and compact the array (removing thousands of dots stays cheap).
   let w = 0;

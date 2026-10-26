@@ -170,7 +170,7 @@ function onScrolled() {
   if (PL) {
     const a = ks[k], b = ks[k + 1];
     const frac = b ? Math.min(1, Math.max(0, (c - mid(a)) / (mid(b) - mid(a)))) : 0;
-    const rows = PL.children as HTMLCollectionOf<HTMLElement>, n = rows.length / LIST_COPIES, j = 2 * n + (+a.dataset.i!);
+    const rows = PL.children as HTMLCollectionOf<HTMLElement>, cp = copiesOf(PL), n = rows.length / cp, j = (cp >> 1) * n + (+a.dataset.i!);   // the middle copy
     const r0 = rows[j], r1 = rows[j + 1] || r0;
     PL.scrollTop = mid(r0) + (mid(r1) - mid(r0)) * frac - PL.offsetTop - PL.clientHeight / 2;
     mark = (frac < .5 ? r0 : r1).querySelector("a");
@@ -178,11 +178,12 @@ function onScrolled() {
   if (mark !== onRow) { onRow?.classList.remove("on"); mark?.classList.add("on"); onRow = mark; }
 }
 
+const copiesOf = (PL: HTMLElement) => +(PL.dataset.copies || LIST_COPIES);
 /** Put the Work list on its middle copy before its dots are sampled. */
 export function centreList() {
   const PL = state.PL; if (!PL) return;
-  const r = PL.children[2 * PL.children.length / LIST_COPIES] as HTMLElement;
-  if (r && LIST_COPIES >= 3) PL.scrollTop = r.offsetTop + r.offsetHeight / 2 - PL.offsetTop - PL.clientHeight / 2;
+  const cp = copiesOf(PL), r = PL.children[(cp >> 1) * PL.children.length / cp] as HTMLElement;
+  if (r && cp >= 3) PL.scrollTop = r.offsetTop + r.offsetHeight / 2 - PL.offsetTop - PL.clientHeight / 2;
 }
 
 // ───────── Rendering ─────────

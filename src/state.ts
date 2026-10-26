@@ -38,10 +38,13 @@ export interface Settings {
     branches: number;    // lichen: space between the branches past the letters, in dot sizes
     realBelow: number;   // text smaller than this (px) turns into real type once formed, titles included (0 = never)
     allReal: boolean;    // everything (name, menu, titles too) turns into real type once formed
+    speed: number;       // animation speed (1 = default, 2 = twice as fast)
     lichenDot: number;   // lichen: dot size in px, the same for all text
     lichenDensity: number;   // lichen: how close the dots sit for their size (1 = solid)
   };
   grid: string;                                              // "open" | "closed" | "none"
+  line: number;                                              // grid line thickness, px
+  spacing: number;                                           // vertical space between the text column's sections (1 = default)
   font: string;                                              // "pair" (Redaction + Degular Mono) or one family for everything
   type: { name: number; titles: number; lists: number; text: number; about: number };   // font-size multipliers
   fontPhone: string;                                         // the same two, for phones
@@ -54,8 +57,10 @@ const fromFile = (f: typeof defaults): Settings => ({
   ...clone(f),
   layout: { ...clone(f.layout), hh: (f.layout as any).hh ?? 66, order: (f.layout as any).order || "tpf" },
   layoutPhone: { ...clone(f.layoutPhone), hh: (f.layoutPhone as any).hh ?? 46 },
-  dots: { ...{ anim: "particles", overflow: 12, branches: 8, realBelow: 12, lichenDot: 2, lichenDensity: 1, allReal: true }, ...clone(f.dots) as any },
+  dots: { ...{ anim: "particles", overflow: 12, branches: 8, realBelow: 12, lichenDot: 2, lichenDensity: 1, allReal: true, speed: 1 }, ...clone(f.dots) as any },
   grid: (f as any).grid || "open",
+  line: (f as any).line ?? 1,
+  spacing: (f as any).spacing ?? 1,
   font: (f as any).font || "pair",
   type: { name: 1, titles: 1, lists: 1, text: 1, about: 1, ...(f as any).type },
   fontPhone: (f as any).fontPhone || (f as any).font || "pair",
@@ -65,7 +70,7 @@ const fromFile = (f: typeof defaults): Settings => ({
 /** The settings as stored in content/settings.json (per-page colours as a list, for the admin). */
 export const toFile = (s: Settings) => ({
   colors: { default: s.colors.default, pages: Object.entries(s.colors.pages).map(([page, c]) => ({ page, ...c })) },
-  layout: s.layout, layoutPhone: s.layoutPhone, dots: s.dots, grid: s.grid, font: s.font, type: s.type, fontPhone: s.fontPhone, typePhone: s.typePhone,
+  layout: s.layout, layoutPhone: s.layoutPhone, dots: s.dots, grid: s.grid, line: s.line, spacing: s.spacing, font: s.font, type: s.type, fontPhone: s.fontPhone, typePhone: s.typePhone,
 });
 export const DEFAULTS = fromFile(defaults);
 export const S: Settings = clone(DEFAULTS);
@@ -84,6 +89,8 @@ export function loadTuning() {
     S.typePhone = { ...S.typePhone, ...st.typePhone };
     if (st.fontPhone) S.fontPhone = st.fontPhone;
     if (st.grid) S.grid = st.grid;
+    if (st.line !== undefined) S.line = st.line;
+    if (st.spacing !== undefined) S.spacing = st.spacing;
     if (st.font) S.font = st.font;
     S.panelPos = st.panelPos;
   } catch { /* storage unavailable */ }
@@ -146,6 +153,7 @@ export function applyLayout() {
   // Grid and font sizes
   document.body.classList.remove("grid-open", "grid-closed", "grid-none");
   document.body.classList.add("grid-" + S.grid);
+  rs.setProperty("--line", S.line + "px"); rs.setProperty("--vgap", String(S.spacing));
   const type = state.phone ? S.typePhone : S.type;
   for (const k of ["name", "titles", "lists", "text", "about"] as const) rs.setProperty(`--fs-${k}`, String(type[k]));
   applyFont();

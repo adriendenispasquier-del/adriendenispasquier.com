@@ -38,9 +38,12 @@
     "dotSize": 0.3,
     "fill": 0.62,
     "buzz": 0.3,
-    "real": true
+    "real": true,
+    "speed": 1
   },
   "grid": "closed",
+  "line": 1,
+  "spacing": 1,
   "font": "castoro",
   "type": {
     "name": 0.82,

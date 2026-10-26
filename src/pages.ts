@@ -119,9 +119,11 @@ export function makePages(PROJECTS: Project[], SITE: Site) {
     `<a href="${f.slug ? `/?filter=${f.slug}` : "/"}" class="fl${on === f.slug ? " on" : ""}" data-f="${f.slug}" data-p data-k="f-${f.slug || "all"}"${on === f.slug ? ' aria-current="true"' : ""}>${esc(f.name)}</a>`).join("")}</nav>
     <div class="mrule" data-p data-k="mrule"></div>`;
   const menuKeys = ["f-all", ...FILTERS.map(f => "f-" + f.slug), "mrule"];
-  /** The project list (several copies: it scrolls round as a carousel) and the matching pictures. */
+  /** The project list (several copies: it scrolls round as a carousel) and the matching pictures. Short lists (a filter
+   *  with one or two projects) get more copies, so the list is always tall enough to scroll. */
+  const copiesFor = (n: number) => { const c = Math.max(LIST_COPIES, Math.ceil(45 / Math.max(1, n))); return c % 2 ? c : c + 1; };
   const listHTML = (group: Project[]) => group.length
-    ? `<ul class="plist" id="PL">${Array.from({ length: LIST_COPIES }, (_, c) => group.map((p, i) =>
+    ? `<ul class="plist" id="PL" data-copies="${copiesFor(group.length)}">${Array.from({ length: copiesFor(group.length) }, (_, c) => group.map((p, i) =>
         `<li data-c="${c}"><a href="${projectPath(p)}" data-p data-i="${i}"><span class="pn">${esc(p.title)}</span><span class="ps">${p.services.map(esc).join(", ")}</span></a></li>`).join("")).join("")}</ul>`
     : `<p class="soon" data-p>Soon.</p>`;
   const itemsOf = (group: Project[], f = ""): Item[] => group.length
