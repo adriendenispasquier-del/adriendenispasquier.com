@@ -9,11 +9,6 @@
         "page": "/work/luca-baking-around/",
         "bg": "#fbfcf8",
         "ink": "#1c1c1c"
-      },
-      {
-        "page": "/work/fat-cat/",
-        "bg": "#080808",
-        "ink": "#ffffff"
       }
     ]
   },
@@ -32,12 +27,12 @@
     "hh": 30
   },
   "dots": {
-    "anim": "particles",
-    "overflow": 40,
-    "branches": 7,
-    "realBelow": 15,
+    "anim": "crust",
+    "overflow": 5,
+    "branches": 6,
+    "realBelow": 16.5,
     "lichenDot": 0.6,
-    "lichenDensity": 1.8,
+    "lichenDensity": 0.7,
     "allReal": true,
     "shape": "round",
     "dotSize": 0.3,
