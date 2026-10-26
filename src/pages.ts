@@ -132,7 +132,9 @@ export function makePages(PROJECTS: Project[], SITE: Site) {
         return { m: first, href: projectPath(p), cap: p.title, alt: altOf(p), alts: [...new Set([first, ...ms])], slug: p.slug };
       })
     : [{ m: null, ph: "Soon" }];
-  const row = (label: string, body: string, cls = "") => `<div class="row${cls}"><span class="lab" data-p>${label}</span><div class="body">${body}</div></div>`;
+  // A ruled row starts with a grid line (drawn by the dots like the other lines, and following the grid setting).
+  const rule = `<div class="hrule" data-p></div>`;
+  const row = (label: string, body: string, cls = "") => `${cls.includes("ruled") ? rule : ""}<div class="row${cls}"><span class="lab" data-p>${label}</span><div class="body">${body}</div></div>`;
 
   /** Home: the menu, About and Practices, the project list; the pictures of the chosen filter. */
   function home(): Page {
@@ -175,7 +177,7 @@ export function makePages(PROJECTS: Project[], SITE: Site) {
       left: `<div class="lproj">${menu(null)}
         <div class="row head"><h1 class="lab it" data-p>${esc(p.title)}</h1><div class="body"><p class="txt" data-p>${p.services.map(esc).join(", ")}</p></div></div>
         ${row("", p.text.split(/\n\s*\n/).map(t => t.trim()).filter(Boolean).map(t => `<p class="txt" data-p>${inline(t)}</p>`).join(""), " ruled")}
-        ${credits ? `<div class="credits">${credits}</div>` : ""}
+        ${credits ? `${rule}<div class="credits">${credits}</div>` : ""}
         ${nx !== p ? `<a class="next" href="${projectPath(nx)}" data-p><span>Next — <i>${esc(nx.title)}</i></span><span>→</span></a>` : ""}
       </div>`,
       items: p.media.map((m, i) => ({ m, cap: p.title, alt: p.media.length > 1 ? `${altOf(p)} (${i + 1}/${p.media.length})` : altOf(p) })), zoom: true,

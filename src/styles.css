@@ -63,19 +63,18 @@ body.reveal [data-p], body.reveal [data-p] * { color: rgba(220, 40, 40, .55) !im
 .fl { font-size: calc(var(--base) * var(--fs-titles)); white-space: nowrap; text-underline-offset: .2em; transition: font-style .2s; }
 .fl.on { font-style: italic; text-decoration: underline; text-decoration-thickness: var(--line, 1px); }
 .fl:hover { font-style: italic; }
-.mrule { border-top: var(--line) solid var(--ink); margin-right: calc(-1 * var(--pr)); }
+.mrule, .hrule { border-top: var(--line) solid var(--ink); }
 
 /* Rows: a label (About, Practices, a project's name, a credit) and its text */
 .row { display: grid; grid-template-columns: 34.5% 1fr; padding: calc(1.35em * var(--vgap, 1)) 0 calc(1.15em * var(--vgap, 1)); font-size: calc(var(--base) * var(--fs-about)); }
-.row.ruled { border-top: var(--line) solid var(--ink); margin-right: calc(-1 * var(--pr)); padding-right: var(--pr); }
 .row .lab { font-size: 1em; font-weight: inherit; line-height: 1.33; }
 .row.it .lab, .row.head .lab { font-style: italic; }
 .txt { line-height: 1.33; text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
 .txt + .txt { margin-top: .75em; }
 .lproj .row { font-size: calc(var(--base) * var(--fs-text)); }
 .credits .row { padding: calc(.3em * var(--vgap, 1)) 0; }
-.credits { padding: calc(.9em * var(--vgap, 1)) 0; border-top: var(--line) solid var(--ink); margin-right: calc(-1 * var(--pr)); padding-right: var(--pr); }
-.next { display: flex; justify-content: space-between; padding: calc(.8em * var(--vgap, 1)) var(--pr) calc(.8em * var(--vgap, 1)) 0; margin-right: calc(-1 * var(--pr)); border-top: var(--line) solid var(--ink);
+.credits { padding: calc(.9em * var(--vgap, 1)) 0; }
+.next { display: flex; justify-content: space-between; padding: calc(.8em * var(--vgap, 1)) 0; border-top: var(--line) solid var(--ink);
         font-size: calc(var(--base) * var(--fs-lists)); }
 
 /* Home: menu and About at the top, the project list at the bottom (a vertical carousel: the project in view
@@ -83,8 +82,8 @@ body.reveal [data-p], body.reveal [data-p] * { color: rgba(220, 40, 40, .55) !im
 .lhome { display: flex; flex-direction: column; height: 100%; }
 .about { flex: 0 1 auto; min-height: 0; overflow-y: auto; scrollbar-width: none; }
 .about::-webkit-scrollbar { display: none; }
-.plist { list-style: none; flex: 1 1 0; min-height: 30%; margin-top: calc(1.2em * var(--vgap, 1));   /* About gets the room it needs, the list the rest */ overflow: hidden; margin-right: calc(-1 * var(--pr)); }
-.plist a { display: grid; grid-template-columns: 34.5% 1fr; padding: .55em var(--pr) .5em 0; border-top: var(--line) solid var(--ink);
+.plist { list-style: none; flex: 1 1 0; min-height: 30%; margin-top: calc(1.2em * var(--vgap, 1));   /* About gets the room it needs, the list the rest */ overflow: hidden; }
+.plist a { display: grid; grid-template-columns: 34.5% 1fr; padding: .55em 0 .5em; border-top: var(--line) solid var(--ink);
            font-size: calc(var(--base) * var(--fs-lists)); white-space: nowrap; }
 .plist .pn { font-style: italic; overflow: hidden; text-overflow: ellipsis; padding-right: 1em; }
 .plist .ps { overflow: hidden; text-overflow: ellipsis; }
@@ -168,7 +167,9 @@ body.about .gal { left: var(--gla); width: var(--gwa); }
 body.grid-none { --line: 0px; }
 /* Closed: nothing is boxed; each horizontal line runs the full width of the text column, so it meets the
    vertical rule (and the lines form cells). The text stays where it was. */
-/* (The text column's lines already run up to the vertical rule.) */
+/* Closed: the lines run on to the vertical rule (open: they stop with the text) */
+body.grid-closed :is(.mrule, .hrule, .next, .plist) { margin-right: calc(-1 * var(--pr)); }
+body.grid-closed :is(.next, .plist a) { padding-right: var(--pr); }
 body.grid-closed .vrule { top: var(--hh); bottom: 0; }   /* runs from the header line to the bottom */
 
 /* ── Phone: one main column (text, then the pictures) and the film down the right side.
