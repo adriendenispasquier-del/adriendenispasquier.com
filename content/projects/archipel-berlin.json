@@ -15,93 +15,77 @@
     {
       "src": "v1774535107/Archipel_Billboard_by_Adrien_Denis-Pasquier_xa1ocv.jpg",
       "tags": [
-        "Brand Identity",
-        "Photography",
-        "Illustration"
+        "Brand Identity"
       ]
     },
     {
       "src": "video:v1774527159/Archipel_logo_by_Adrien_Denis-Pasquier4_lcp5gb.mp4",
       "tags": [
-        "Brand Identity",
-        "Photography",
-        "Illustration"
+        "Brand Identity"
       ]
     },
     {
       "src": "v1774276283/Archipel_by_Adrien_Denis-Pasquier_book_yhjllp.jpg",
       "tags": [
-        "Brand Identity",
-        "Photography",
-        "Illustration"
+        "Brand Identity"
       ]
     },
     {
       "src": "video:v1774431517/MacBook_Archipel_by_Adrien_Denis-Pasquier_tpu1hv.mp4",
       "tags": [
-        "Brand Identity",
-        "Photography",
-        "Illustration"
+        "Brand Identity"
       ]
     },
     {
       "src": "video:v1774426403/phones_illus_by_Adrien_Denis-Pasquier3_peufyl.mp4",
       "tags": [
-        "Brand Identity",
-        "Photography",
-        "Illustration"
+        "Brand Identity"
       ]
     },
     {
       "src": "https://res.cloudinary.com/df2kod03a/video/upload/v1792572719/Archipel_-_Poster_cwmo7q.mp4",
       "tags": [
-        "Brand Identity",
-        "Photography",
-        "Illustration"
+        "Brand Identity"
       ]
     },
     {
       "src": "/uploads/Archipel Doodles.mp4",
       "tags": [
-        "Brand Identity",
-        "Photography",
         "Illustration"
       ]
     },
     {
       "src": "v1774426105/Bookb_biadhp.gif",
       "tags": [
-        "Brand Identity",
-        "Photography",
-        "Illustration"
+        "Photography"
       ]
     },
     {
       "src": "v1774535905/posters_wwsq9m.jpg",
       "tags": [
         "Brand Identity",
-        "Photography",
-        "Illustration"
+        "Photography"
       ]
     },
     {
       "src": "v1774270286/phones_copie_udq4rq.jpg",
       "tags": [
-        "Brand Identity",
-        "Photography",
-        "Illustration"
+        "Brand Identity"
       ]
     },
     {
       "src": "v1774536517/Large_Fence_Banner_Archipel_by_Adrien_Denis-Pasquier_olv994.jpg",
       "tags": [
-        "Brand Identity",
-        "Photography",
-        "Illustration"
+        "Brand Identity"
       ]
     }
   ],
   "cover": "/uploads/Archipel Doodles.mp4",
   "personal": false,
-  "draft": false
+  "draft": false,
+  "seo": {
+    "title": "",
+    "description": "",
+    "alt": ""
+  }
 }
