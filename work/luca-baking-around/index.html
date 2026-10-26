@@ -11,11 +11,11 @@
   <!-- Fonts: Adobe Fonts kit (Redaction, Degular Mono) -->
   <link rel="preconnect" href="https://use.typekit.net" crossorigin>
   <link rel="stylesheet" href="https://use.typekit.net/nva7btn.css">
-  <!-- The two header signs (𓇗 colour shift, 𓆣 settings): only these two characters of the font are downloaded -->
+  <!-- The colour-swap sign (𓇗): only this character of the font is downloaded -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Egyptian+Hieroglyphs&text=%F0%93%87%97%F0%93%86%A3&display=block">
-  <script type="module" crossorigin src="/assets/index-BRJLpY-z.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-107sVee0.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Egyptian+Hieroglyphs&text=%F0%93%87%97&display=block">
+  <script type="module" crossorigin src="/assets/index-B-tjF8Pp.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-BgW_MWNY.css">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Adrien Denis-Pasquier">
   <meta property="og:title" content="Luca Baking Around — Key Visuals — Adrien Denis-Pasquier">
@@ -31,31 +31,21 @@
   <header class="hd">
     <a href="/" data-p data-k="h1">Adrien Denis-Pasquier</a>
     <div class="hicons">
-      <button type="button" id="invert" class="glyph" data-p data-k="h2" aria-pressed="false" aria-label="Colour shift" title="Colour shift">𓇗</button>
-      <button type="button" id="vbtn" class="glyph" data-p data-k="h3" aria-expanded="false" aria-controls="vmenu" aria-label="Settings" title="Settings">𓆣</button>
+      <button type="button" id="abtn" class="abtn" aria-expanded="false">About</button>
+      <button type="button" id="invert" class="glyph" data-p data-k="h2" aria-pressed="false" aria-label="Swap colours" title="Swap colours">𓇗</button>
     </div>
-    <a href="/about/" data-p data-k="h4">About</a>
     <div class="hline" data-p data-k="hline"></div>
   </header>
 
-  <!-- Visitor settings, opened with 𓆣 in the header -->
-  <div class="vmenu" id="vmenu" role="dialog" aria-label="Settings">
-    <label class="vrow vdesk"><span>Text</span><input type="range" id="v-t" min="15" max="60" step="0.1"></label>
-    <label class="vrow"><span>Film</span><input type="range" id="v-f" min="3" max="20" step="0.1"></label>
-    <label class="vrow"><span>Dots</span><input type="range" id="v-dot" min="0.3" max="1.6" step="0.05"></label>
-    <label class="vrow"><span>Buzz</span><input type="range" id="v-buzz" min="0" max="3" step="0.05"></label>
-    <div class="vrow vbtns"><button type="button" id="v-reset">Reset</button></div>
-  </div>
-
   <main id="M">
-    <div class="lcol"><div class="lscroll" id="L"><div class="lproj">
-          <h1 class="t-title" data-p>Luca Baking Around</h1>
-          <p class="mono services" data-p>Illustration</p>
-          <p class="mono" data-p>Luca is a young and talented baker from Napoli.
-We met in Berlin, and I didn’t expect such genuine creative curiosity from a baker. I was very glad to discover that he, like more and more people, understands that creativity, being an artist, has to free itself from the general expectations of what it means. It is a way to think, a way to be, and it can connect unexpected worlds, like baking, photography, illustration...</p><p class="mono" data-p>No agenda here, just whatever comes out and always a pleasure.</p>
-          <div class="mono credits" data-p><span>Credits</span><span><b>Featuring</b><a class="inl" href="https://instagram.com/caputoviglione" target="_blank" rel="noopener">Luca Caputo Viglione</a></span></div>
-          <a class="next" href="/work/cyberleaders/" data-p><span>Next — Cyberleaders</span><span>→</span></a>
-        </div></div></div>
+    <div class="lcol"><div class="lscroll" id="L"><div class="lproj"><nav class="menu" aria-label="Filter the work"><a href="/" class="fl" data-f="" data-p data-k="f-all">All</a><a href="/?filter=brand-identity" class="fl" data-f="brand-identity" data-p data-k="f-brand-identity">Brand Identity</a><a href="/?filter=photography" class="fl" data-f="photography" data-p data-k="f-photography">Photography</a><a href="/?filter=illustration" class="fl" data-f="illustration" data-p data-k="f-illustration">Illustration</a></nav>
+    <div class="mrule" data-p data-k="mrule"></div>
+        <div class="row head"><h1 class="lab it" data-p>Luca Baking Around</h1><div class="body"><p class="txt" data-p>Illustration</p></div></div>
+        <div class="row ruled"><span class="lab" data-p></span><div class="body"><p class="txt" data-p>Luca is a young and talented baker from Napoli.
+We met in Berlin, and I didn’t expect such genuine creative curiosity from a baker. I was very glad to discover that he, like more and more people, understands that creativity, being an artist, has to free itself from the general expectations of what it means. It is a way to think, a way to be, and it can connect unexpected worlds, like baking, photography, illustration...</p><p class="txt" data-p>No agenda here, just whatever comes out and always a pleasure.</p></div></div>
+        <div class="credits"><div class="row it"><span class="lab" data-p>Featuring</span><div class="body"><p class="txt" data-p><a class="inl" href="https://instagram.com/caputoviglione" target="_blank" rel="noopener">Luca Caputo Viglione</a></p></div></div></div>
+        <a class="next" href="/work/cyberleaders/" data-p><span>Next — <i>Cyberleaders</i></span><span>→</span></a>
+      </div></div></div>
     <div class="vrule" data-p data-k="vrule"></div>
     <div class="gal" id="G"><div class="gtrack" id="GT"></div></div>
   </main>

@@ -11,11 +11,11 @@
   <!-- Fonts: Adobe Fonts kit (Redaction, Degular Mono) -->
   <link rel="preconnect" href="https://use.typekit.net" crossorigin>
   <link rel="stylesheet" href="https://use.typekit.net/nva7btn.css">
-  <!-- The two header signs (𓇗 colour shift, 𓆣 settings): only these two characters of the font are downloaded -->
+  <!-- The colour-swap sign (𓇗): only this character of the font is downloaded -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Egyptian+Hieroglyphs&text=%F0%93%87%97%F0%93%86%A3&display=block">
-  <script type="module" crossorigin src="/assets/index-BRJLpY-z.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-107sVee0.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Egyptian+Hieroglyphs&text=%F0%93%87%97&display=block">
+  <script type="module" crossorigin src="/assets/index-B-tjF8Pp.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-BgW_MWNY.css">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Adrien Denis-Pasquier">
   <meta property="og:title" content="Oddkin — Key Visuals — Adrien Denis-Pasquier">
@@ -31,30 +31,20 @@
   <header class="hd">
     <a href="/" data-p data-k="h1">Adrien Denis-Pasquier</a>
     <div class="hicons">
-      <button type="button" id="invert" class="glyph" data-p data-k="h2" aria-pressed="false" aria-label="Colour shift" title="Colour shift">𓇗</button>
-      <button type="button" id="vbtn" class="glyph" data-p data-k="h3" aria-expanded="false" aria-controls="vmenu" aria-label="Settings" title="Settings">𓆣</button>
+      <button type="button" id="abtn" class="abtn" aria-expanded="false">About</button>
+      <button type="button" id="invert" class="glyph" data-p data-k="h2" aria-pressed="false" aria-label="Swap colours" title="Swap colours">𓇗</button>
     </div>
-    <a href="/about/" data-p data-k="h4">About</a>
     <div class="hline" data-p data-k="hline"></div>
   </header>
 
-  <!-- Visitor settings, opened with 𓆣 in the header -->
-  <div class="vmenu" id="vmenu" role="dialog" aria-label="Settings">
-    <label class="vrow vdesk"><span>Text</span><input type="range" id="v-t" min="15" max="60" step="0.1"></label>
-    <label class="vrow"><span>Film</span><input type="range" id="v-f" min="3" max="20" step="0.1"></label>
-    <label class="vrow"><span>Dots</span><input type="range" id="v-dot" min="0.3" max="1.6" step="0.05"></label>
-    <label class="vrow"><span>Buzz</span><input type="range" id="v-buzz" min="0" max="3" step="0.05"></label>
-    <div class="vrow vbtns"><button type="button" id="v-reset">Reset</button></div>
-  </div>
-
   <main id="M">
-    <div class="lcol"><div class="lscroll" id="L"><div class="lproj">
-          <h1 class="t-title" data-p>Oddkin</h1>
-          <p class="mono services" data-p>Key Visuals - Illustration - Photography</p>
-          <p class="mono" data-p>Oddkin was founded in 2025 by Alessandro Salerno as an artisan food project built on a solidarity model, where members turn a monthly pledge into store credit and better prices for everyone. In May 2026 it opened its flagship Feinkost store on Danziger Straße in Prenzlauer Berg, a shop that doubles as a stage for events, brunches and pop-ups. Part grocery, part community hub, part ongoing experiment.</p><p class="mono" data-p>The visual world grew from that same idea of kinship. Hand-drawn creatures, butterflies and odd little families populate the website and event posters, giving a warm, slightly strange personality to what could have been just another deli.</p><p class="mono" data-p>Beyond the image, the project meant building the whole machine: a Shopify store with tiered member pricing, subscriptions, pickup and cargo-bike delivery, plus the photography and product stories that make each producer feel like someone you’ve met.</p>
-          <div class="mono credits" data-p><span>Credits</span><span><b>Creative Direction</b><a class="inl" href="https://apresentforce.com/" target="_blank" rel="noopener">Meredith Hattam</a></span><span><b>Founder</b>Alessandro Salerno</span></div>
-          <a class="next" href="/work/archipel-berlin/" data-p><span>Next — Archipel Berlin</span><span>→</span></a>
-        </div></div></div>
+    <div class="lcol"><div class="lscroll" id="L"><div class="lproj"><nav class="menu" aria-label="Filter the work"><a href="/" class="fl" data-f="" data-p data-k="f-all">All</a><a href="/?filter=brand-identity" class="fl" data-f="brand-identity" data-p data-k="f-brand-identity">Brand Identity</a><a href="/?filter=photography" class="fl" data-f="photography" data-p data-k="f-photography">Photography</a><a href="/?filter=illustration" class="fl" data-f="illustration" data-p data-k="f-illustration">Illustration</a></nav>
+    <div class="mrule" data-p data-k="mrule"></div>
+        <div class="row head"><h1 class="lab it" data-p>Oddkin</h1><div class="body"><p class="txt" data-p>Key Visuals, Illustration, Photography</p></div></div>
+        <div class="row ruled"><span class="lab" data-p></span><div class="body"><p class="txt" data-p>Oddkin was founded in 2025 by Alessandro Salerno as an artisan food project built on a solidarity model, where members turn a monthly pledge into store credit and better prices for everyone. In May 2026 it opened its flagship Feinkost store on Danziger Straße in Prenzlauer Berg, a shop that doubles as a stage for events, brunches and pop-ups. Part grocery, part community hub, part ongoing experiment.</p><p class="txt" data-p>The visual world grew from that same idea of kinship. Hand-drawn creatures, butterflies and odd little families populate the website and event posters, giving a warm, slightly strange personality to what could have been just another deli.</p><p class="txt" data-p>Beyond the image, the project meant building the whole machine: a Shopify store with tiered member pricing, subscriptions, pickup and cargo-bike delivery, plus the photography and product stories that make each producer feel like someone you’ve met.</p></div></div>
+        <div class="credits"><div class="row it"><span class="lab" data-p>Creative Direction</span><div class="body"><p class="txt" data-p><a class="inl" href="https://apresentforce.com/" target="_blank" rel="noopener">Meredith Hattam</a></p></div></div><div class="row it"><span class="lab" data-p>Founder</span><div class="body"><p class="txt" data-p>Alessandro Salerno</p></div></div></div>
+        <a class="next" href="/work/archipel-berlin/" data-p><span>Next — <i>Archipel Berlin</i></span><span>→</span></a>
+      </div></div></div>
     <div class="vrule" data-p data-k="vrule"></div>
     <div class="gal" id="G"><div class="gtrack" id="GT"></div></div>
   </main>
