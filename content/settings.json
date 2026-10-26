@@ -1,7 +1,7 @@
 {
   "colors": {
     "default": {
-      "bg": "#fbfcf8",
+      "bg": "#f6f7f3",
       "ink": "#000000"
     },
     "pages": [
@@ -37,7 +37,7 @@
     "hh": 30
   },
   "dots": {
-    "anim": "particles",
+    "anim": "crust",
     "overflow": 5,
     "branches": 6,
     "realBelow": 16.5,
