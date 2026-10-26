@@ -1,10 +1,6 @@
 {
   "title": "Oddkin",
   "type": "Key Visuals",
-  "categories": [
-    "Photography",
-    "Illustration"
-  ],
   "order": 1,
   "services": [
     "Key Visuals",
@@ -25,12 +21,48 @@
     }
   ],
   "media": [
-    "/uploads/HOT COMPOST #2-2.webp",
-    "/uploads/HOT COMPOST #1-2.webp",
-    "/uploads/Sunday Brunch Oddkin Adrien Denis Pasquier.webp",
-    "/uploads/Sunday Brunch Oddkin Adrien Denis Pasquier2.webp",
-    "/uploads/Across Borders Burgenland post-1.jpg",
-    "/uploads/Primitive mistakes.webp"
+    {
+      "src": "/uploads/HOT COMPOST #2-2.webp",
+      "tags": [
+        "Photography",
+        "Illustration"
+      ]
+    },
+    {
+      "src": "/uploads/HOT COMPOST #1-2.webp",
+      "tags": [
+        "Photography",
+        "Illustration"
+      ]
+    },
+    {
+      "src": "/uploads/Sunday Brunch Oddkin Adrien Denis Pasquier.webp",
+      "tags": [
+        "Photography",
+        "Illustration"
+      ]
+    },
+    {
+      "src": "/uploads/Sunday Brunch Oddkin Adrien Denis Pasquier2.webp",
+      "tags": [
+        "Photography",
+        "Illustration"
+      ]
+    },
+    {
+      "src": "/uploads/Across Borders Burgenland post-1.jpg",
+      "tags": [
+        "Photography",
+        "Illustration"
+      ]
+    },
+    {
+      "src": "/uploads/Primitive mistakes.webp",
+      "tags": [
+        "Photography",
+        "Illustration"
+      ]
+    }
   ],
   "cover": "/uploads/HOT COMPOST #2-2.webp",
   "draft": false

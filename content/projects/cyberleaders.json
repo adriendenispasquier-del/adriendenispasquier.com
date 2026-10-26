@@ -1,9 +1,6 @@
 {
   "title": "Cyberleaders",
   "type": "Editorial Illustration",
-  "categories": [
-    "Illustration"
-  ],
   "order": 3,
   "services": [
     "Cover Visual",
@@ -23,20 +20,90 @@
     }
   ],
   "media": [
-    "v1771322557/Image_9_llc1h0.jpg",
-    "Image_1_xd7ib3",
-    "Image_2_geeh1b",
-    "Image_3_m6qeer",
-    "Image_4_hpfzpz",
-    "Image_5_jbrupv",
-    "Image_6_ntinbs",
-    "Image_7_xl6gct",
-    "Image_8_d1olas",
-    "Image_10_wav0k0",
-    "Image_11_cn1g5g",
-    "Image_12_xfhvwo",
-    "Image_13_kcwzxk",
-    "Image_14_gedhqe"
+    {
+      "src": "v1771322557/Image_9_llc1h0.jpg",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_1_xd7ib3",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_2_geeh1b",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_3_m6qeer",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_4_hpfzpz",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_5_jbrupv",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_6_ntinbs",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_7_xl6gct",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_8_d1olas",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_10_wav0k0",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_11_cn1g5g",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_12_xfhvwo",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_13_kcwzxk",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_14_gedhqe",
+      "tags": [
+        "Illustration"
+      ]
+    }
   ],
   "cover": "",
   "draft": false

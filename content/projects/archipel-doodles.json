@@ -1,9 +1,6 @@
 {
   "title": "Archipel Doodles",
   "type": "Illustration",
-  "categories": [
-    "Illustration"
-  ],
   "order": 4,
   "services": [
     "Illustration",
@@ -13,18 +10,78 @@
   "text": "Archipel’s visual identity gradually became inseparable from the doodles I created over the years.\n\nWhat began as carefully rendered drawings slowly evolved into something more instinctive and distilled. The lines became freer, more essential, sometimes drawn in a single gesture — frame after frame — embracing spontaneity over precision.\n\nThese animations were conceived as playful visual anchors, both on Instagram and online. They carry a deliberate sense of naivety and warmth, echoing something tender and familiar in all of us. Beyond decoration, they became a subtle emotional layer within the brand, bringing rhythm, personality and quiet cosiness to the experience.",
   "credits": [],
   "media": [
-    "v1771322314/Image_18_niuhvc.gif",
-    "Image_1_fcfqx2",
-    "Image_2_k5kx22",
-    "Image_3_e5c6lt",
-    "Image_4_qndfzp",
-    "Image_5_vza1ii",
-    "Image_6_fqgcgh",
-    "Image_7_oiopj6",
-    "Image_8_hnpa2j",
-    "Image_9_lhafcn",
-    "Image_15_grwxob",
-    "Image_16_hzyoi5"
+    {
+      "src": "v1771322314/Image_18_niuhvc.gif",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_1_fcfqx2",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_2_k5kx22",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_3_e5c6lt",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_4_qndfzp",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_5_vza1ii",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_6_fqgcgh",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_7_oiopj6",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_8_hnpa2j",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_9_lhafcn",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_15_grwxob",
+      "tags": [
+        "Illustration"
+      ]
+    },
+    {
+      "src": "Image_16_hzyoi5",
+      "tags": [
+        "Illustration"
+      ]
+    }
   ],
   "cover": "",
   "draft": true

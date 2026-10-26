@@ -33,7 +33,7 @@ export default defineConfig({
       async closeBundle() {
         const dir = root("content/projects"), names: string[] = [];
         const add = (m?: string) => { if (m && m.startsWith("/uploads/") && !m.slice(9).includes("/")) names.push(m.slice(9)); };
-        for (const f of readdirSync(dir).filter(f => f.endsWith(".json"))) { const p = json(resolve(dir, f)); (p.media || []).forEach(add); add(p.cover); }
+        for (const f of readdirSync(dir).filter(f => f.endsWith(".json"))) { const p = json(resolve(dir, f)); (p.media || []).forEach((m: any) => add(typeof m === "string" ? m : m?.src)); add(p.cover); }
         add(json(root("content/site.json")).about?.portrait);
         await writeSizes(__dirname, names);
       },

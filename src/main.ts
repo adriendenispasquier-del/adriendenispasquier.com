@@ -43,7 +43,7 @@ async function go(path: string) {
   // Home: the filter in the address (?filter=photography) chooses the list and the pictures.
   if (page.path === "/") {
     state.filter = filterFrom(location.search);
-    if (state.filter) { swapList(state.filter); page = { ...page, items: itemsOf(filtered(state.filter)) }; }
+    if (state.filter) { swapList(state.filter); page = { ...page, items: itemsOf(filtered(state.filter), state.filter) }; }
   }
   markMenu(page.path === "/" ? state.filter : null);
   M.classList.toggle("home", !!page.loop);
@@ -94,7 +94,7 @@ async function applyFilter(f: string) {
   M.classList.add("swap"); G.classList.add("out"); F.classList.add("out");
   await sleep(260); if (token !== filtering) return;
   swapList(f); centreList();
-  renderMedia(itemsOf(filtered(f)), true, false); resetScroll();
+  renderMedia(itemsOf(filtered(f), f), true, false); resetScroll();
   resample();
   await sleep(30);
   M.classList.remove("swap"); G.classList.remove("out"); F.classList.remove("out");

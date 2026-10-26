@@ -1,9 +1,6 @@
 {
   "title": "Archipel Still Life",
   "type": "Photography",
-  "categories": [
-    "Photography"
-  ],
   "order": 3,
   "services": [
     "Product photography",
@@ -23,17 +20,72 @@
     }
   ],
   "media": [
-    "v1774632202/Archipel_by_Adrien_Denis-Pasquier_5_vspwuw.jpg",
-    "Archipel_by_Adrien_Denis-Pasquier_10_yhnozg",
-    "Archipel_by_Adrien_Denis-Pasquier_7_klxtu2",
-    "Archipel_by_Adrien_Denis-Pasquier_6_gfwz8s",
-    "Archipel_by_Adrien_Denis-Pasquier_2_g8vy5l",
-    "Archipel_by_Adrien_Denis-Pasquier_8_hppvfr",
-    "Archipel_by_Adrien_Denis-Pasquier_9_iumu2t",
-    "Archipel_by_Adrien_Denis-Pasquier_3_ubijmx",
-    "Archipel_by_Adrien_Denis-Pasquier_4_czzka4",
-    "Archipel_by_Adrien_Denis-Pasquier_11_hd7wg7",
-    "Archipel_by_Adrien_Denis-Pasquier_12_hyb7td"
+    {
+      "src": "v1774632202/Archipel_by_Adrien_Denis-Pasquier_5_vspwuw.jpg",
+      "tags": [
+        "Photography"
+      ]
+    },
+    {
+      "src": "Archipel_by_Adrien_Denis-Pasquier_10_yhnozg",
+      "tags": [
+        "Photography"
+      ]
+    },
+    {
+      "src": "Archipel_by_Adrien_Denis-Pasquier_7_klxtu2",
+      "tags": [
+        "Photography"
+      ]
+    },
+    {
+      "src": "Archipel_by_Adrien_Denis-Pasquier_6_gfwz8s",
+      "tags": [
+        "Photography"
+      ]
+    },
+    {
+      "src": "Archipel_by_Adrien_Denis-Pasquier_2_g8vy5l",
+      "tags": [
+        "Photography"
+      ]
+    },
+    {
+      "src": "Archipel_by_Adrien_Denis-Pasquier_8_hppvfr",
+      "tags": [
+        "Photography"
+      ]
+    },
+    {
+      "src": "Archipel_by_Adrien_Denis-Pasquier_9_iumu2t",
+      "tags": [
+        "Photography"
+      ]
+    },
+    {
+      "src": "Archipel_by_Adrien_Denis-Pasquier_3_ubijmx",
+      "tags": [
+        "Photography"
+      ]
+    },
+    {
+      "src": "Archipel_by_Adrien_Denis-Pasquier_4_czzka4",
+      "tags": [
+        "Photography"
+      ]
+    },
+    {
+      "src": "Archipel_by_Adrien_Denis-Pasquier_11_hd7wg7",
+      "tags": [
+        "Photography"
+      ]
+    },
+    {
+      "src": "Archipel_by_Adrien_Denis-Pasquier_12_hyb7td",
+      "tags": [
+        "Photography"
+      ]
+    }
   ],
   "cover": "",
   "draft": true

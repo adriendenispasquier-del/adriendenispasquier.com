@@ -10,11 +10,11 @@ export interface Project {
   services: string[];
   text: string;                       // paragraphs separated by a blank line
   credits?: { label: string; value: string; url?: string }[];
-  media: Media[];
+  media: Media[];                     // in the file: { src, tags } (or just the address)
+  tags?: string[][];                  // each picture's filters (as slugs), in the same order as media
   cover?: Media;                      // picture used on Work and in link previews; defaults to the first one
   draft?: boolean;                    // hidden from the site
   personal?: boolean;                 // personal work: its own filter (shown when there is some), not in All
-  categories?: string[];              // the filters it appears under (names from the site's filter list)
   seo?: {                             // search engines (all optional)
     title?: string;                   //   title shown in results (default: "Title — Type — Name")
     description?: string;             //   text under the title (default: the start of the text)
@@ -26,7 +26,7 @@ export interface Site {
   description: string;
   about: { text: string; practice: string[]; contact: { label: string; url: string }[]; portrait: string };
   seo?: { title?: string; jobTitle?: string; location?: string };
-  filters?: string[];   // the menu: All, then these (each project picks its own in "categories")
+  filters?: string[];   // the menu: All, then these (each picture is tagged with the ones it belongs to)
 }
 export interface Item { m: Media | null; href?: string; cap?: string; alt?: string; ph?: string; alts?: Media[]; slug?: string }   // alts: pictures shown in turn on Work
 export interface Page {
@@ -68,9 +68,16 @@ const linkOf = (u: string) => /^[^\s@/:]+@[^\s@/]+\.[^\s@/]+$/.test(u.trim()) ? 
 export const canonical = (path: string) => (path.replace(/\/+$/, "") || "") + "/";
 
 /** Project files (slug = file name) → the published projects, in list order. */
+/** "Brand Identity" → "brand-identity" (filter addresses and tags). */
+export const slugOf = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
 export function prepare(files: [string, Omit<Project, "slug">][]): Project[] {
   return files
-    .map(([slug, p]) => ({ ...p, slug, media: (p.media || []).map(norm), cover: p.cover ? norm(p.cover) : undefined }))
+    .map(([slug, p]) => {
+      const raw = ((p.media || []) as unknown as (string | { src?: string; tags?: string[] })[]).filter(m => typeof m === "string" ? m : m?.src);
+      return { ...p, slug, media: raw.map(m => norm(typeof m === "string" ? m : m.src!)),
+        tags: raw.map(m => typeof m === "string" ? [] : (m.tags || []).map(slugOf)), cover: p.cover ? norm(p.cover) : undefined };
+    })
     .filter(p => !p.draft && p.media.length)
     .sort((a, b) => (a.order ?? 999) - (b.order ?? 999) || a.title.localeCompare(b.title));
 }
@@ -100,12 +107,14 @@ export function makePages(PROJECTS: Project[], SITE: Site) {
   const hidden = (t: string) => `<h1 class="sr">${esc(t)}</h1>`;
 
   // ── Filters: All, then the site's list (each project chooses its own), then Personal when there is personal work.
-  const slugOf = (name: string) => name.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   const FILTERS = [...(SITE.filters || ["Brand Identity", "Photography", "Illustration"]).map(n => ({ name: n, slug: slugOf(n) })),
     ...(PERSONAL.length ? [{ name: "Personal", slug: "personal" }] : [])];
-  const catsOf = (p: Project) => p.personal ? ["personal"] : (p.categories || []).map(slugOf);
+  // A project appears under a filter when one of its pictures has it (personal work: under Personal).
+  const catsOf = (p: Project) => p.personal ? ["personal"] : [...new Set((p.tags || []).flat())];
   /** The projects a filter shows ("" = All: everything but personal work). */
   const filtered = (f: string) => !f ? WORK : PROJECTS.filter(p => catsOf(p).includes(f));
+  /** A project's pictures under a filter: only the ones tagged with it (all of them for All and Personal). */
+  const mediaFor = (p: Project, f: string) => !f || f === "personal" ? p.media : p.media.filter((_, i) => p.tags?.[i]?.includes(f));
   const menu = (on: string | null) => `<nav class="menu" aria-label="Filter the work">${[{ name: "All", slug: "" }, ...FILTERS].map(f =>
     `<a href="${f.slug ? `/?filter=${f.slug}` : "/"}" class="fl${on === f.slug ? " on" : ""}" data-f="${f.slug}" data-p data-k="f-${f.slug || "all"}"${on === f.slug ? ' aria-current="true"' : ""}>${esc(f.name)}</a>`).join("")}</nav>
     <div class="mrule" data-p data-k="mrule"></div>`;
@@ -115,8 +124,11 @@ export function makePages(PROJECTS: Project[], SITE: Site) {
     ? `<ul class="plist" id="PL">${Array.from({ length: LIST_COPIES }, (_, c) => group.map((p, i) =>
         `<li data-c="${c}"><a href="${projectPath(p)}" data-p data-i="${i}"><span class="pn">${esc(p.title)}</span><span class="ps">${p.services.map(esc).join(", ")}</span></a></li>`).join("")).join("")}</ul>`
     : `<p class="soon" data-p>Soon.</p>`;
-  const itemsOf = (group: Project[]): Item[] => group.length
-    ? group.map(p => ({ m: coverOf(p), href: projectPath(p), cap: p.title, alt: altOf(p), alts: [...new Set([coverOf(p), ...p.media])], slug: p.slug }))
+  const itemsOf = (group: Project[], f = ""): Item[] => group.length
+    ? group.map(p => {
+        const ms = mediaFor(p, f), first = ms.includes(coverOf(p)) ? coverOf(p) : ms[0];   // the cover, if it belongs to the filter
+        return { m: first, href: projectPath(p), cap: p.title, alt: altOf(p), alts: [...new Set([first, ...ms])], slug: p.slug };
+      })
     : [{ m: null, ph: "Soon" }];
   const row = (label: string, body: string, cls = "") => `<div class="row${cls}"><span class="lab" data-p>${label}</span><div class="body">${body}</div></div>`;
 
