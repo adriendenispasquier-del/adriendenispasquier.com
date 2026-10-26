@@ -53,7 +53,7 @@
   },
   "grid": "closed",
   "line": 1.05,
-  "spacing": 0.85,
+  "spacing": 1.2,
   "font": "castoro",
   "type": {
     "name": 0.88,
