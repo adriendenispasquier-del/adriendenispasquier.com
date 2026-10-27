@@ -27,6 +27,8 @@ function clipOf(el: Element) {
  *  text while the cells roll (the cells take its place). */
 export function letters(root: ParentNode, mark = false): Letter[] {
   const out: Letter[] = [], range = document.createRange(), clips = new Map<Element | null, ReturnType<typeof clipOf>>();
+  // Read the colours the letters end on, not a moment of their fade-in (real type fades in over .45 s).
+  document.body.classList.add("fl-now"); void document.body.offsetWidth;
   for (const el of root.querySelectorAll<HTMLElement>("[data-p]")) {
     const er = el.getBoundingClientRect();
     if (!er.width || er.bottom < 0 || er.top > innerHeight || !el.textContent!.trim()) continue;
@@ -49,6 +51,7 @@ export function letters(root: ParentNode, mark = false): Letter[] {
     }
     if (mark && any) el.classList.add("fl-hide");
   }
+  document.body.classList.remove("fl-now");
   return out;
 }
 

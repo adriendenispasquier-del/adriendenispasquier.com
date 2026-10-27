@@ -103,6 +103,7 @@ body.reveal [data-p], body.reveal [data-p] * { color: rgba(220, 40, 40, .55) !im
 /* Flap (Dots animation): no dots; the letters roll in a layer of cells over the page, the real text waits under it */
 body.flapmode #c { display: none; }
 body [data-p].real.fl-hide, body [data-p].real.fl-hide * { color: transparent !important; transition: none !important; }
+body.fl-now [data-p], body.fl-now [data-p] * { transition: none !important; }
 .flap { position: fixed; inset: 0; z-index: 21; pointer-events: none; }
 .soon { margin-top: auto; padding: 1em 0; font-size: calc(var(--base) * var(--fs-lists)); }
 /* Filtering: the list fades out and back in with the pictures */
