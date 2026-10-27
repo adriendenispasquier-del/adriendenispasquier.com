@@ -2,7 +2,7 @@
 // One position drives the columns: whichever one you scroll is the "driver" and the others follow.
 // Desktop: text, pictures and film, in proportion. Phone: the main column (text, then pictures) and the film,
 // which mirrors the pictures exactly. Work is a carousel with no start and no end.
-import { dom, state } from "./state";
+import { dom, state, S } from "./state";
 import COLOURS, { RATIOS } from "virtual:colours";
 import { LIST_COPIES, big, huge, thumb, fallback, isVideo, type Item } from "./content";
 
@@ -100,6 +100,12 @@ addEventListener("touchcancel", () => { touching = false; settle(); }, { passive
 // Phone pages with a start and an end: the film follows picture by picture (the text between the cover and the
 // other pictures takes no room in the film). c = a position in one strip, measured from its top.
 const centres = (root: HTMLElement, base: number) => [...root.children].map(e => (e as HTMLElement).offsetTop + (e as HTMLElement).offsetHeight / 2 - base);
+/** The two strips' centres, one per row (two pictures side by side count once). */
+function rowsOf() {
+  const g = centres(GT, 0), f = centres(FT, 0), G2: number[] = [], F2: number[] = [];
+  g.forEach((v, i) => { if (!i || Math.abs(v - g[i - 1]) > .5) { G2.push(v); F2.push(f[i]); } });
+  return { g: G2, f: F2 };
+}
 function across(c: number, from: number[], to: number[], scale: number) {
   if (!from.length) return c * scale;
   if (c <= from[0]) return to[0] + (c - from[0]) * scale;
@@ -117,7 +123,7 @@ export function sync(src: HTMLElement) {
     const moved = extend();
     if (src !== F || moved) F.scrollTop = gpos() * s - framePad;
   } else if (state.phone) {
-    const s = fscale(), g = centres(GT, 0), f = centres(FT, 0);
+    const s = fscale(), { g, f } = rowsOf();
     if (src === F) setG(across(F.scrollTop + F.clientHeight / 2, f, g, 1 / s) - viewH() / 2);
     else F.scrollTop = across(gpos() + viewH() / 2, g, f, s) - F.clientHeight / 2;
   } else {
@@ -245,17 +251,19 @@ function itemAt(g: number): Item & { i: number } {
 function stripHtml(g: number) {
   const it = itemAt(g), rr = (it.m && RATIO.get(it.m)) || (it.ph ? "4 / 5" : ""), col = it.m && COLOURS[it.m];
   // While loading, the box shows the picture's dominant colour.
-  const st = rr || col ? ` style="${rr ? `aspect-ratio:${rr};` : ""}${col ? `--ph:${col}` : ""}"` : "";
+  const fr = !loop ? halves.get(g) : undefined;   // two columns: this picture's share of the row
+  const st = rr || col || fr ? ` style="${rr ? `aspect-ratio:${rr};` : ""}${col ? `--ph:${col};` : ""}${fr ? `--fr:${fr}` : ""}"` : "";
   const data = ` data-i="${it.i}" data-g="${g}"${it.m ? ` data-m="${it.m.replace(/"/g, "&quot;")}"` : ""}`;
   const inner = !it.m ? `<span class="ph">${it.ph || ""}</span>`
     : isVideo(it.m) ? `<video src="${big(it.m)}" muted loop playsinline disablepictureinpicture controlslist="nodownload" preload="metadata"></video>`
     : `<img src="${big(it.m)}" alt="${(it.alt || it.cap || "").replace(/"/g, "&quot;")}" decoding="async"${fallback(it.m)}>`;
   const cap = it.cap ? `<span class="cap">${it.cap}</span>` : "";
-  const gi = it.href ? `<a class="gi"${data} href="${it.href}"${st}>${inner}${cap}</a>` : `<div class="gi"${data}${st}>${inner}</div>`;
+  const cls = fr ? " half" : "";
+  const gi = it.href ? `<a class="gi${cls}"${data} href="${it.href}"${st}>${inner}${cap}</a>` : `<div class="gi${cls}"${data}${st}>${inner}</div>`;
   // Videos uploaded to the site itself have no ready-made still: the film shows their first frame.
   const still = !it.m ? "" : thumb(it.m) ? `<img src="${thumb(it.m)}" alt="" decoding="async"${fallback(it.m)}>`
     : isVideo(it.m) ? `<video src="${big(it.m)}#t=0.1" muted playsinline disablepictureinpicture preload="metadata"></video>` : "";
-  const fi = `<button class="fi"${data} type="button" aria-label="Go to picture"${st}>${still}</button>`;
+  const fi = `<button class="fi${cls}"${data} type="button" aria-label="Go to picture"${st}>${still}</button>`;
   return [gi, fi];
 }
 /** Insert pictures g0 … g0+count-1 at the start or end of both strips. */
@@ -305,8 +313,22 @@ function watch(m: HTMLImageElement | HTMLVideoElement | null) {
   else if ((m as HTMLImageElement).complete && (m as HTMLImageElement).naturalWidth) done(); else m.addEventListener("load", done, { once: true });
 }
 
+// Two columns (Layout setting): on a project, two portrait pictures in a row share a row, each as wide as its
+// proportion asks so both have the same height; landscape pictures (and a portrait on its own) keep a full row.
+let halves = new Map<number, number>();
+const twoOn = () => state.phone ? S.layoutPhone.two : S.layout.two;
+function pairUp(items: Item[]) {
+  halves = new Map();
+  const r = (it: Item) => { const v = it.m && RATIO.get(it.m); return v ? ratioOf(v) : 0; };
+  for (let i = state.phone ? 1 : 0; i + 1 < items.length; i++) {   // (phone: the cover stays on its own, above the description)
+    const a = r(items[i]), b = r(items[i + 1]);
+    if (a && b && a < .98 && b < .98) { halves.set(i, a / (a + b)); halves.set(i + 1, b / (a + b)); i++; }
+  }
+}
 export function renderMedia(items: Item[], isLoop: boolean, zoom: boolean) {
   loop = isLoop; nItems = items.length; pageItems = items;
+  if (!loop && twoOn()) pairUp(items); else halves = new Map();
+  GT.classList.toggle("two", halves.size > 0); FT.classList.toggle("two", halves.size > 0);
   playing.disconnect();
   GT.innerHTML = FT.innerHTML = "";
   G.classList.toggle("zoomable", zoom);

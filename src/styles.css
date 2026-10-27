@@ -115,6 +115,11 @@ body.one-font { --mono-stroke: 0px; }
 .gal { position: fixed; top: 0; bottom: 0; left: var(--gl); width: var(--gw); overflow-y: auto; scrollbar-width: none; z-index: 1;
        transition: opacity .25s ease; }
 .gtrack { display: flex; flex-direction: column; gap: var(--gap); }
+/* Two columns: rows instead of a column; a pair shares a row (--fr: its share), everything else takes a full row */
+.gtrack.two, .ftrack.two { flex-flow: row wrap; }
+.gtrack.two > .gi, .ftrack.two > .fi { flex: 0 0 100%; }
+.gtrack.two > .gi.half { flex: 0 0 calc((100% - var(--gap)) * var(--fr)); width: auto; }
+.ftrack.two > .fi.half { flex: 0 0 calc((100% - var(--fgap, 4px)) * var(--fr)); width: auto; }
 .gi { position: relative; display: block; width: 100%; aspect-ratio: 4 / 3; background: var(--ph, color-mix(in srgb, var(--ink) 5%, transparent)); overflow: hidden; }
 .gi img, .gi video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0; transition: opacity .7s ease; }
 .gi .in { opacity: 1; }
@@ -229,7 +234,9 @@ body.grid-closed .vrule { top: var(--hh); bottom: 0; }   /* runs from the header
   .row { grid-template-columns: 30% 1fr; }
   .frame { left: calc(var(--fl) - 1.6vw); width: calc(var(--fw) + 3.2vw); }
   /* Project: the menu and the title, then the cover, then the description, then the other pictures */
-  #M:not(.home) { display: flex; flex-direction: column; }
+  #M:not(.home) { display: flex; flex-flow: row wrap; column-gap: var(--gap); align-content: flex-start; }
+  #M:not(.home) :is(.lproj > *, .gi, .copy) { flex: 0 0 100%; min-width: 0; }
+  #M:not(.home) .gi.half { flex: 0 0 calc((100% - var(--gap)) * var(--fr)); width: auto; }
   #M:not(.home) :is(.gal, .gtrack, .lcol, .lscroll, .lproj) { display: contents; }
   #M:not(.home) :is(.lproj > *, .gi) { flex-shrink: 0; }
   #M:not(.home) .lproj > * { order: 2; }

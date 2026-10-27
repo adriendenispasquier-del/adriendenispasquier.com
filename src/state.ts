@@ -29,8 +29,8 @@ export const state = {
 type Pair = { bg: string; ink: string };
 export interface Settings {
   colors: { default: Pair; pages: Record<string, Pair> };   // pages: address → colours (a list in the file)
-  layout: { gap: number; t: number; p: number; f: number; hh: number; order: string };   // hh: header height in px; order: columns from left, e.g. "tpf"
-  layoutPhone: { gap: number; m: number; f: number; hh: number; rows: number };   // rows: project rows the pinned list shows
+  layout: { gap: number; t: number; p: number; f: number; hh: number; order: string; two: boolean };   // hh: header height in px; order: columns from left, e.g. "tpf"; two: portrait pictures in pairs
+  layoutPhone: { gap: number; m: number; f: number; hh: number; rows: number; two: boolean };   // rows: project rows the pinned list shows
   dots: {
     shape: string; dotSize: number; fill: number; buzz: number; real: boolean;
     anim: string;        // "particles" (dots travel to the text), lichen: "crust" | "leafy" | "rosette" (dots grow in place), or "flap" (no dots: letters roll like a departure board)
@@ -60,8 +60,8 @@ type PageColors = { page: string; bg: string; ink: string }[];
 const clone = <T>(o: T): T => JSON.parse(JSON.stringify(o));
 const fromFile = (f: typeof defaults): Settings => ({
   ...clone(f),
-  layout: { ...clone(f.layout), hh: (f.layout as any).hh ?? 66, order: (f.layout as any).order || "tpf" },
-  layoutPhone: { ...clone(f.layoutPhone), hh: (f.layoutPhone as any).hh ?? 46, rows: (f.layoutPhone as any).rows ?? 9 },
+  layout: { ...clone(f.layout), hh: (f.layout as any).hh ?? 66, order: (f.layout as any).order || "tpf", two: !!(f.layout as any).two },
+  layoutPhone: { ...clone(f.layoutPhone), hh: (f.layoutPhone as any).hh ?? 46, rows: (f.layoutPhone as any).rows ?? 9, two: !!(f.layoutPhone as any).two },
   dots: { ...{ anim: "particles", overflow: 12, branches: 8, realBelow: 12, lichenDot: 2, lichenDensity: 1, allReal: true, speed: 1, flip: 38, flips: 9, wave: .9, flapOrder: "alphabet", flapMotion: true }, ...clone(f.dots) as any },
   grid: (f as any).grid || "open",
   line: (f as any).line ?? 1,
