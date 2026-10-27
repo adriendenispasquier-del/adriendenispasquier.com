@@ -61,7 +61,7 @@ body.reveal [data-p], body.reveal [data-p] * { color: rgba(220, 40, 40, .55) !im
 .lcol { position: fixed; top: var(--hh); bottom: 0; left: var(--tl); width: var(--tw); z-index: 5; container-type: inline-size; }
 .lscroll { --pl: 0px; --pr: 2.4cqw; height: 100%; overflow-y: auto; scrollbar-width: none; padding: 0 var(--pr) 40px var(--pl); }
 /* Copyright: at the bottom of the text column (phone: after the last picture, and in the About sheet) */
-.copy { position: fixed; left: var(--tl); width: var(--tw); bottom: 0; height: 34px; margin: 0; z-index: 5; display: flex; align-items: center;
+.copy { position: fixed; left: var(--tl); width: var(--tw); bottom: 0; height: 34px; line-height: 34px; margin: 0; z-index: 5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         font-size: calc(var(--base) * var(--fs-lists) * .85); color: var(--ink); opacity: .75; transition: color .6s ease; }
 .acopy { display: none; }
 .lscroll::-webkit-scrollbar, .gal::-webkit-scrollbar, .film::-webkit-scrollbar { display: none; }
@@ -191,9 +191,11 @@ body.grid-closed .vrule { top: var(--hh); bottom: 0; }   /* runs from the header
       Everything scrolls vertically; the film follows the pictures, the frame stays in the middle. ── */
 @media (max-width: 760px) and (orientation: portrait) {
   .hd { font-size: calc(var(--base) * var(--fs-name)); }
-  #M { display: block; position: fixed; top: var(--hh); bottom: 0; left: var(--gx); width: var(--mw); z-index: 2;
-       overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
-  #M::-webkit-scrollbar { display: none; }
+  /* The page itself scrolls (so the browser tucks its address bar away); the header, film, menu and list are fixed */
+  html, body { height: auto; overflow: visible; }
+  #M { display: block; position: relative; margin: var(--hh) 0 0 var(--gx); width: var(--mw); z-index: 2; }
+  .hd { background: var(--bg); transition: background-color .6s ease; }
+  .hd::before { content: ""; position: absolute; inset: 0 calc(-1 * var(--gx)); background: inherit; z-index: -1; }
   .lcol { position: relative; inset: auto; left: auto; width: 100%; container-type: normal; }   /* not a container: the About sheet can cover the whole screen */
   .lscroll { --pl: 0px; --pr: 0px; height: auto; overflow: visible; padding: 26px 0 30px; }
 
@@ -237,7 +239,7 @@ body.grid-closed .vrule { top: var(--hh); bottom: 0; }   /* runs from the header
   #M:not(.home) .gi { order: 3; margin-top: var(--gap); transition: opacity .25s ease; }
   #M:not(.home) .gi:first-child { order: 1; margin-bottom: calc(.6em * var(--vgap, 1)); }
   #M:not(.home) .gal.out .gi { opacity: 0; }
-  .copy { position: static; width: auto; height: auto; padding: 28px 0 max(28px, env(safe-area-inset-bottom)); }
+  .copy { position: static; width: auto; height: auto; line-height: 1.4; white-space: normal; padding: 28px 0 max(28px, env(safe-area-inset-bottom)); }
   #M:not(.home) .copy { order: 4; flex-shrink: 0; }
   #M.home > .copy { display: none; }
   body.aopen .about .acopy { display: block; padding: 2.4em 0 0; }

@@ -47,6 +47,7 @@ async function go(path: string) {
   // The text column is drawn by dots, so it can swap at once: the old dots are already loose
   // and the new magnets start pulling straight away.
   L.innerHTML = page.left; L.scrollTop = 0; M.scrollTop = 0;
+  if (state.phone) scrollTo(0, 0);
   // Home: the filter in the address (?filter=photography) chooses the list and the pictures.
   if (page.path === "/") {
     state.filter = filterFrom(location.search);

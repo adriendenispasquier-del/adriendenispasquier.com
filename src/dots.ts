@@ -42,7 +42,7 @@ export const setOnStat = (f: (n: number) => void) => { onStat = f; };
 // (the Work project list, or the About text).
 const box = () => state.PL || state.SB;
 export const spaceOff = (sc: number) =>
-  sc === 1 ? (state.phone ? M.scrollTop : L.scrollTop)
+  sc === 1 ? (state.phone ? (document.scrollingElement || document.documentElement).scrollTop : L.scrollTop)
   : sc === 2 ? (state.phone ? 0 : L.scrollTop) + (box() ? box()!.scrollTop : 0)   // on phone the list is pinned at the bottom
   : 0;
 

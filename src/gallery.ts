@@ -9,24 +9,31 @@ import { LIST_COPIES, big, huge, thumb, fallback, isVideo, type Item } from "./c
 const { L, G, F, GT, FT, M, frame: frameEl, lb, lbm } = dom;
 const H = () => innerHeight;
 
-const cols = () => state.phone ? [M, F] : [L, G, F];
+// Phone: the page itself scrolls (only then does the browser tuck its address bar away), so the "main column"
+// is the document; the film and the pinned menu and list are fixed over it.
+const PG = (document.scrollingElement || document.documentElement) as HTMLElement;
+const cols = () => state.phone ? [PG, F] : [L, G, F];
 let driver: HTMLElement = G;
 let anim: { from: number; to: number; t0: number; dur: number } | null = null;
 const maxOf = (el: HTMLElement) => Math.max(0, el.scrollHeight - el.clientHeight);
 const progressOf = (el: HTMLElement) => { const m = maxOf(el); return m ? el.scrollTop / m : 0; };
-export const main = () => state.phone ? M : G;                           // the element whose scrolling shows the pictures
+export const main = () => state.phone ? PG : G;                          // the element whose scrolling shows the pictures
 // Phone project pages: the pictures column has no box of its own (the cover sits between the title and the
 // description), so the main column's width and top stand in for it.
 const boxless = () => state.phone && !M.classList.contains("home");
-const goff = () => state.phone && !boxless() ? G.offsetTop : 0;           // where the pictures start inside it
+// Where the pictures start in the scrolled content (phone: the page; the pictures' positions are measured from the
+// main column, or from the pictures column on Work).
+const goff = () => state.phone ? M.getBoundingClientRect().top + PG.scrollTop + (boxless() ? 0 : G.offsetTop) : 0;
+const headH = () => document.querySelector(".hd")!.getBoundingClientRect().bottom;
 // Phone Work: the menu is pinned at the top and the list at the bottom; the pictures are seen in between.
 const band = () => {
   if (!state.phone || !M.classList.contains("home")) return null;
-  const mr = M.getBoundingClientRect(), menu = document.querySelector(".menu")!.getBoundingClientRect(), pl = state.PL?.getBoundingClientRect();
-  return { top: menu.bottom - mr.top, bottom: (pl ? pl.top : mr.bottom) - mr.top };
+  const menu = document.querySelector(".menu")!.getBoundingClientRect(), pl = state.PL?.getBoundingClientRect();
+  return { top: menu.bottom, bottom: pl ? pl.top : innerHeight };
 };
-const viewTop = () => band()?.top ?? 0;                                  // where the visible picture area starts
-const viewH = () => { const b = band(); return b ? b.bottom - b.top : main().clientHeight; };   // its height
+// Where the visible picture area starts (from the top of the scrolling box: the screen on phone) and its height.
+const viewTop = () => state.phone ? band()?.top ?? headH() : 0;
+const viewH = () => { const b = band(); return b ? b.bottom - b.top : state.phone ? innerHeight - headH() : main().clientHeight; };
 const gpos = () => main().scrollTop - goff() + viewTop();               // picture-strip coordinate at the top of that area
 const setG = (v: number) => { main().scrollTop = v + goff() - viewTop(); };
 const fscale = () => F.clientWidth / ((boxless() ? M.clientWidth : G.clientWidth) || 1);
@@ -124,7 +131,7 @@ const dy = (e: WheelEvent) => e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode =
 for (const el of [L, G, F, M]) {
   el.addEventListener("wheel", e => {
     if (lbOpen) return;
-    if (state.phone) { if (cols().includes(el) && !(el === M && F.contains(e.target as Node))) { anim = null; driver = el; untouched = false; } return; }
+    if (state.phone) { anim = null; driver = F.contains(e.target as Node) ? F : PG; untouched = false; return; }
     if (el === M) return;
     if (el === L && state.SB?.contains(e.target as Node)) return;   // the About text scrolls on its own
     untouched = false; anim = null; driver = el;
@@ -132,20 +139,19 @@ for (const el of [L, G, F, M]) {
     // (the text is often only a little taller than the screen, so scrolling it natively would jump the pictures).
     if (el === L || maxOf(el) < 2) { e.preventDefault(); driver = G; G.scrollTop += dy(e); }
   }, { passive: false });
-  // (The film sits inside the main column in the page structure, so the main column ignores touches on it.)
-  const grab = (e: Event) => {
-    if (el === M && F.contains(e.target as Node)) return;
-    if (!state.phone || cols().includes(el)) { anim = null; driver = state.phone && el !== F ? M : el; untouched = false; }
-  };
+  const grab = (e: Event) => { anim = null; driver = state.phone && el !== F ? PG : el; untouched = false; };
   el.addEventListener("touchstart", grab, { passive: true });
   el.addEventListener("pointerdown", e => { if (state.phone) grab(e); }, { passive: true });
   el.addEventListener("scroll", () => { if (driver === el && cols().includes(el)) { sync(el); if (loop) settle(); } }, { passive: true });
 }
+// Phone: the page's own scrolling (touches anywhere outside the film move it, the pinned menu and list included).
+addEventListener("scroll", () => { if (state.phone && driver === PG) { sync(PG); if (loop) settle(); } }, { passive: true });
+addEventListener("touchstart", e => { if (state.phone && !F.contains(e.target as Node) && !lbOpen) { anim = null; driver = PG; untouched = false; } }, { passive: true });
 // Desktop: wheel over the header or the gaps between columns scrolls the pictures.
 document.addEventListener("wheel", e => {
   if (lbOpen) { e.preventDefault(); return; }
   const t = e.target as Element;
-  if (state.phone) { if (!F.contains(t)) driver = M; return; }
+  if (state.phone) { if (!F.contains(t)) driver = PG; return; }
   if ([L, G, F].some(el => el.contains(t)) || t.closest?.("#panel")) return;
   e.preventDefault(); anim = null; driver = G; untouched = false; G.scrollTop += dy(e);
 }, { passive: false });
@@ -314,6 +320,7 @@ export function resetScroll() {
   anim = null; driver = main(); untouched = true;
   layoutFilm();
   G.scrollTop = F.scrollTop = M.scrollTop = 0;
+  if (state.phone) PG.scrollTop = 0;
   if (loop) centreFirst();
   sync(main());
 }
