@@ -25,8 +25,20 @@
       "tags": [
         "Illustration"
       ]
+    },
+    {
+      "src": "https://res.cloudinary.com/df2kod03a/video/upload/v1793112566/Comp_3_xaxz30.mp4",
+      "tags": [
+        "Illustration"
+      ]
     }
   ],
   "cover": "/uploads/Luca by Adrien Denis-Pasquier1.webp",
-  "draft": false
+  "personal": false,
+  "draft": false,
+  "seo": {
+    "title": "",
+    "description": "",
+    "alt": ""
+  }
 }
