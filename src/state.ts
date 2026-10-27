@@ -33,7 +33,7 @@ export interface Settings {
   layoutPhone: { gap: number; m: number; f: number; hh: number; rows: number };   // rows: project rows the pinned list shows
   dots: {
     shape: string; dotSize: number; fill: number; buzz: number; real: boolean;
-    anim: string;        // "particles" (dots travel to the text) or lichen: "crust" | "leafy" | "rosette" (dots grow in place)
+    anim: string;        // "particles" (dots travel to the text), lichen: "crust" | "leafy" | "rosette" (dots grow in place), or "flap" (no dots: letters roll like a departure board)
     overflow: number;    // lichen: how far it spills past the letters, in % of the font size
     branches: number;    // lichen: space between the branches past the letters, in dot sizes
     realBelow: number;   // text smaller than this (px) turns into real type once formed, titles included (0 = never)
@@ -41,6 +41,11 @@ export interface Settings {
     speed: number;       // animation speed (1 = default, 2 = twice as fast)
     lichenDot: number;   // lichen: dot size in px, the same for all text
     lichenDensity: number;   // lichen: how close the dots sit for their size (1 = solid)
+    flip: number;        // flap: ms per letter change
+    flips: number;       // flap: at most this many letters on the way to the new one
+    wave: number;        // flap: seconds the wave takes across the page
+    flapOrder: string;   // flap: "alphabet" (a real drum's order) | "random"
+    flapMotion: boolean; // flap: each change squeezes through the middle of the cell, like a falling flap
   };
   grid: string;                                              // "open" | "closed" | "none"
   line: number;                                              // grid line thickness, px
@@ -57,7 +62,7 @@ const fromFile = (f: typeof defaults): Settings => ({
   ...clone(f),
   layout: { ...clone(f.layout), hh: (f.layout as any).hh ?? 66, order: (f.layout as any).order || "tpf" },
   layoutPhone: { ...clone(f.layoutPhone), hh: (f.layoutPhone as any).hh ?? 46, rows: (f.layoutPhone as any).rows ?? 9 },
-  dots: { ...{ anim: "particles", overflow: 12, branches: 8, realBelow: 12, lichenDot: 2, lichenDensity: 1, allReal: true, speed: 1 }, ...clone(f.dots) as any },
+  dots: { ...{ anim: "particles", overflow: 12, branches: 8, realBelow: 12, lichenDot: 2, lichenDensity: 1, allReal: true, speed: 1, flip: 38, flips: 9, wave: .9, flapOrder: "alphabet", flapMotion: true }, ...clone(f.dots) as any },
   grid: (f as any).grid || "open",
   line: (f as any).line ?? 1,
   spacing: (f as any).spacing ?? 1,

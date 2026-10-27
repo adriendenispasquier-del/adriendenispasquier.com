@@ -3,6 +3,7 @@ import { buildPage, legacyPath, canonical, filtered, listHTML, itemsOf, aboutHTM
 import { ORIGIN } from "./pages";
 import { dom, state, S, loadTuning, applyColors, applyLayout, resetVisitor } from "./state";
 import * as dots from "./dots";
+import * as flap from "./flap";
 import { renderMedia, resetScroll, layoutFilm, sync, main, closeLightbox, centreList } from "./gallery";
 
 const { L, G, F, M } = dom;
@@ -24,11 +25,17 @@ if (location.hash.startsWith("#/")) history.replaceState(null, "", legacyPath(lo
 else if (canonical(location.pathname) !== location.pathname) history.replaceState(null, "", canonical(location.pathname) + location.search);
 
 let busy = 0, reading = false;   // reading: a page change is reading the new page into dots
+const flapMode = () => S.dots.anim === "flap";   // no dots: the letters roll like a departure board (flap.ts)
 async function go(path: string) {
   let page = buildPage(path);
   const token = ++busy, first = state.current === null, prev = state.page;
   closeLightbox(); openAbout(false);
-  if (!first) {
+  document.body.classList.toggle("flapmode", flapMode());
+  let before: flap.Letter[] = [];
+  if (flapMode()) {
+    flap.finish();
+    if (!first) { before = flap.letters(L); G.classList.add("out"); F.classList.add("out"); }
+  } else if (!first) {
     const keep = new Set(KEEP_ALWAYS);
     for (const k of page.keys || []) if (prev?.keys?.includes(k)) keep.add(k);   // shared menu titles morph in place
     dots.release(keep);
@@ -57,6 +64,16 @@ async function go(path: string) {
   const early = state.phone && !page.loop;
   if (early) renderMedia(page.items, false, !!page.zoom);
   if (first) { await Promise.race([document.fonts.ready, sleep(300)]); await new Promise(r => { requestAnimationFrame(r); setTimeout(r, 60); }); }
+  if (flapMode()) {
+    // Everything is real type at once; the letters roll over it (the header too, on the first visit).
+    document.querySelectorAll<HTMLElement>("[data-p]").forEach(e => e.classList.add("real"));
+    flap.play(before, flap.letters(first ? document : L, true));
+    if (!first) { await sleep(220); if (token !== busy) return; }
+    if (!early) renderMedia(page.items, !!page.loop, !!page.zoom);
+    resetScroll();
+    G.classList.remove("out"); F.classList.remove("out");
+    return;
+  }
   reading = true;
   const targets = await dots.collectTargets(page.path);   // read over a few frames: the animation never stalls
   if (token === busy) reading = false;
@@ -93,10 +110,16 @@ let filtering = 0;
 async function applyFilter(f: string) {
   const token = ++filtering;
   state.filter = f; markMenu(f); openAbout(false);
-  // Fade the list and pictures out, swap them, fade back in.
-  M.classList.add("swap"); G.classList.add("out"); F.classList.add("out");
-  await sleep(260); if (token !== filtering) return;
+  // Fade the list and pictures out, swap them, fade back in (flap: the list's letters roll instead of fading).
+  const rolling = flapMode(), before = rolling ? (flap.finish(), flap.letters(L.querySelector(".plist, .soon")?.parentElement ?? L)) : [];
+  if (!rolling) M.classList.add("swap");
+  G.classList.add("out"); F.classList.add("out");
+  await sleep(rolling ? 120 : 260); if (token !== filtering) return;
   swapList(f); fitMenu(); centreList();
+  if (rolling) {
+    L.querySelectorAll<HTMLElement>("[data-p]").forEach(e => e.classList.add("real"));
+    flap.play(before, flap.letters(L, true));
+  }
   renderMedia(itemsOf(filtered(f), f), true, false); resetScroll();
   resample();
   await sleep(30);
@@ -176,6 +199,7 @@ document.querySelectorAll<HTMLElement>(".hd [data-k]").forEach(a => {
 export const resample = async () => {
   if (state.current === null || reading) return;   // the page change in progress reads the latest layout anyway
   fitMenu();
+  if (flapMode()) { document.querySelectorAll<HTMLElement>("[data-p]").forEach(e => e.classList.add("real")); return; }
   const t = await dots.collectTargets(state.current);
   if (t) dots.assign(t, true);
 };

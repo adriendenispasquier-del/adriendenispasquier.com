@@ -76,7 +76,15 @@ const HTML = `
       <option value="crust">Lichen — crust</option>
       <option value="leafy">Lichen — leafy</option>
       <option value="rosette">Lichen — rosette</option>
+      <option value="flap">Flap (departure board)</option>
     </select>
+    <div id="flapo" class="lay">
+      <div class="lrow"><span>Flip</span><input id="d-flip" type="range" min="12" max="140" step="1"><output></output></div>
+      <div class="lrow"><span>Flips</span><input id="d-flips" type="range" min="1" max="40" step="1"><output></output></div>
+      <div class="lrow"><span>Wave</span><input id="d-wave" type="range" min="0" max="3" step="0.05"><output></output></div>
+      <div class="seg" id="flapOrder"><button data-v="alphabet" type="button">Alphabet</button><button data-v="random" type="button">Random</button></div>
+      <label><input id="d-flapMotion" type="checkbox"> Flap motion on each change</label>
+    </div>
     <div id="lich" class="lay">
       <div class="lrow"><span>Dot size</span><input id="d-lichenDot" type="range" min="0.6" max="8" step="0.1"><output></output></div>
       <div class="lrow"><span>Density</span><input id="d-lichenDensity" type="range" min="0.3" max="1.8" step="0.05"><output></output></div>
@@ -240,7 +248,17 @@ export function mount() {
   // Animation, lichen options and the small-text rule
   const asel = $("anim") as HTMLSelectElement;
   const LK = ["lichenDot", "lichenDensity", "overflow", "branches", "realBelow"] as const;
-  const showAnim = () => { asel.value = D.anim; $("lich").hidden = D.anim === "particles";
+  const FK = ["flip", "flips", "wave"] as const;
+  const showFlap = () => {
+    for (const k of FK) { const i = inp("d-" + k); i.value = String(D[k]); i.nextElementSibling!.textContent = k === "flip" ? D[k] + "ms" : k === "wave" ? D[k] + "s" : String(D[k]); }
+    $("flapOrder").querySelectorAll<HTMLElement>("button").forEach(b => b.classList.toggle("on", b.dataset.v === D.flapOrder));
+    inp("d-flapMotion").checked = D.flapMotion;
+  };
+  showFlap();
+  for (const k of FK) inp("d-" + k).addEventListener("input", e => { D[k] = +(e.target as HTMLInputElement).value; save(); showFlap(); clearTimeout(st2); st2 = window.setTimeout(replay, 300); });
+  $("flapOrder").addEventListener("click", e => { const b = (e.target as Element).closest<HTMLElement>("button"); if (!b) return; D.flapOrder = b.dataset.v!; save(); showFlap(); replay(); });
+  inp("d-flapMotion").addEventListener("change", e => { D.flapMotion = (e.target as HTMLInputElement).checked; save(); replay(); });
+  const showAnim = () => { asel.value = D.anim; $("lich").hidden = D.anim === "particles" || D.anim === "flap"; $("flapo").hidden = D.anim !== "flap";
     for (const k of LK) { const i = inp("d-" + k); i.value = String(D[k]); i.nextElementSibling!.textContent = k === "overflow" ? D[k] + "%" : k === "realBelow" ? (D[k] ? D[k] + "px" : "off") : k === "lichenDot" ? D[k] + "px" : String(D[k]); }
     $("pdots").hidden = D.anim !== "particles"; };
   showAnim();
