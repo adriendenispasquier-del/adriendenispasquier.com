@@ -233,7 +233,8 @@ function itemAt(g: number): Item & { i: number } {
   if (!loop) return { ...pageItems[g], i: g };
   const n = nItems, p = ((g % n) + n) % n, r = Math.floor(g / n), it = pageItems[p];
   const alts = it.alts?.length ? it.alts : [it.m!];
-  return { ...it, m: alts[((r % alts.length) + alts.length) % alts.length], i: p };
+  const m = alts[((r % alts.length) + alts.length) % alts.length];
+  return { ...it, m, alt: (m && it.altOf?.[m]) || it.alt, i: p };
 }
 function stripHtml(g: number) {
   const it = itemAt(g), rr = (it.m && RATIO.get(it.m)) || (it.ph ? "4 / 5" : ""), col = it.m && COLOURS[it.m];
@@ -325,7 +326,7 @@ export function openLightbox(i: number) {
   const m = pageItems[lbIndex].m; if (!m) return;
   lbm.innerHTML = isVideo(m)
     ? `<video src="${big(m)}" autoplay muted loop playsinline disablepictureinpicture controlslist="nodownload"></video>`
-    : `<img src="${big(m)}" alt=""${fallback(m)}>`;
+    : `<img src="${big(m)}" alt="${(pageItems[lbIndex].alt || "").replace(/"/g, "&quot;")}"${fallback(m)}>`;
   // Show the copy already loaded for the gallery at once, then swap in a sharper one when it arrives.
   const im = lbm.querySelector("img");
   if (im && huge(m) !== big(m)) {

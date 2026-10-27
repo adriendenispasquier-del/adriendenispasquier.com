@@ -181,6 +181,9 @@ const openAbout = (on: boolean) => {
 abtn.addEventListener("click", () => openAbout(!document.body.classList.contains("aopen")));
 addEventListener("keydown", e => { if (e.key === "Escape") openAbout(false); });
 
+// The copyright's year is this year.
+document.querySelectorAll(".yr").forEach(e => { e.textContent = String(new Date().getFullYear()); });
+
 // The visitor settings are gone: forget any widths or dot sizes a visitor had set before.
 resetVisitor();
 

@@ -28,7 +28,7 @@ export interface Site {
   seo?: { title?: string; jobTitle?: string; location?: string };
   filters?: string[];   // the menu: All, then these (each picture is tagged with the ones it belongs to)
 }
-export interface Item { m: Media | null; href?: string; cap?: string; alt?: string; ph?: string; alts?: Media[]; slug?: string }   // alts: pictures shown in turn on Work
+export interface Item { m: Media | null; href?: string; cap?: string; alt?: string; ph?: string; alts?: Media[]; slug?: string; altOf?: Record<string, string> }   // alts: pictures shown in turn on Work; altOf: each one's description
 export interface Page {
   path: string;          // canonical address, with a trailing slash ("/", "/about/", "/work/fat-cat/")
   title: string;
@@ -115,6 +115,15 @@ export function makePages(PROJECTS: Project[], SITE: Site) {
   const filtered = (f: string) => !f ? WORK : PROJECTS.filter(p => catsOf(p).includes(f));
   /** A project's pictures under a filter: only the ones tagged with it (all of them for All and Personal). */
   const mediaFor = (p: Project, f: string) => !f || f === "personal" ? p.media : p.media.filter((_, i) => p.tags?.[i]?.includes(f));
+  /** A picture's description (alt text), made from the project, what the picture is (its own tags, or the
+   *  project's type) and your name: "Archipel Berlin — Photography by Adrien Denis-Pasquier (3/11)".
+   *  A description written in the admin (SEO → Picture description) is used instead, numbered the same way. */
+  const altFor = (p: Project, i: number) => {
+    const kind = (p.tags?.[i] || []).map(t => FILTERS.find(f => f.slug === t)?.name).filter(Boolean).join(", ") || p.type;
+    const base = p.seo?.alt?.trim() || `${p.title} — ${kind} by ${NAME}`;
+    return p.media.length > 1 ? `${base} (${i + 1}/${p.media.length})` : base;
+  };
+  const altsOf = (p: Project) => Object.fromEntries(p.media.map((m, i) => [m, altFor(p, i)]));
   const menu = (on: string | null) => `<nav class="menu" aria-label="Filter the work">${[{ name: "All", slug: "" }, ...FILTERS].map(f =>
     `<a href="${f.slug ? `/?filter=${f.slug}` : "/"}" class="fl${on === f.slug ? " on" : ""}" data-f="${f.slug}" data-p data-k="f-${f.slug || "all"}"${on === f.slug ? ' aria-current="true"' : ""}>${esc(f.name)}</a>`).join("")}</nav>
     <div class="mrule" data-p data-k="mrule"></div>`;
@@ -129,7 +138,7 @@ export function makePages(PROJECTS: Project[], SITE: Site) {
   const itemsOf = (group: Project[], f = ""): Item[] => group.length
     ? group.map(p => {
         const ms = mediaFor(p, f), first = ms.includes(coverOf(p)) ? coverOf(p) : ms[0];   // the cover, if it belongs to the filter
-        return { m: first, href: projectPath(p), cap: p.title, alt: altOf(p), alts: [...new Set([first, ...ms])], slug: p.slug };
+        return { m: first, href: projectPath(p), cap: p.title, alt: altOf(p), alts: [...new Set([first, ...ms])], slug: p.slug, altOf: altsOf(p) };
       })
     : [{ m: null, ph: "Soon" }];
   // A ruled row starts with a grid line (drawn by the dots like the other lines, and following the grid setting).
@@ -144,6 +153,7 @@ export function makePages(PROJECTS: Project[], SITE: Site) {
           ${row("About", a.text.split(/\n\s*\n/).map(t => t.trim()).filter(Boolean).map(t => `<p class="txt" data-p>${inline(t)}</p>`).join(""))}
           ${row("Practices", `<p class="txt" data-p>${a.practice.map(inline).join(", ")}.</p>`, " ruled it")}
           ${a.contact.length ? row("Contact", `<p class="txt" data-p>${contact}</p>`, " it") : ""}
+          <p class="copy acopy">© ${new Date().getFullYear()} ${esc(NAME)}. All rights reserved.</p>
         </div>`;
   };
 
@@ -186,7 +196,7 @@ export function makePages(PROJECTS: Project[], SITE: Site) {
         ${credits ? `${rule}<div class="credits">${credits}</div>` : ""}
         ${nx !== p ? `<a class="next" href="${projectPath(nx)}" data-p><span>Next — <i>${esc(nx.title)}</i></span><span>→</span></a>` : ""}
       </div>`,
-      items: p.media.map((m, i) => ({ m, cap: p.title, alt: p.media.length > 1 ? `${altOf(p)} (${i + 1}/${p.media.length})` : altOf(p) })), zoom: true,
+      items: p.media.map((m, i) => ({ m, cap: p.title, alt: altFor(p, i) })), zoom: true,
     };
   }
 
