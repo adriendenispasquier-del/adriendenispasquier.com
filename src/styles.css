@@ -145,7 +145,7 @@ body.one-font { --mono-stroke: 0px; }
 .lbx { position: absolute; top: 20px; right: 24px; width: 32px; height: 32px; cursor: pointer; }
 .lbx::before, .lbx::after { content: ""; position: absolute; left: 4px; right: 4px; top: 50%; height: 1.5px; background: var(--ink); }
 .lbx::before { transform: rotate(45deg); } .lbx::after { transform: rotate(-45deg); }
-.gi .cap { position: absolute; left: 14px; bottom: 12px; font: 12px/1 var(--mono); text-transform: uppercase; letter-spacing: .04em;
+.gi .cap { position: absolute; left: 14px; bottom: 12px; font: 12px/1 var(--mono);
            color: #fff; mix-blend-mode: difference; opacity: 0; transition: opacity .25s; }
 a.gi:hover .cap { opacity: 1; }
 
