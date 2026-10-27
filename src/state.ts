@@ -23,6 +23,7 @@ export const state = {
   inkTo: [17, 17, 17],                  // dot colour the canvas eases towards
   tuning: false,                        // the tuning panel is open: settings come from this browser
   invert: false,                        // the visitor swapped background and text colours (click on "Denis")
+  twoV: null as boolean | null,         // the visitor chose one or two columns (𓃦 in the header); null: the Layout setting
 };
 
 // ───────── Settings ─────────
@@ -187,3 +188,6 @@ export function applyLayout() {
     rs.setProperty("--gap", g * PIC_GAP + "vw");
   }
 }
+
+/** Two columns of pictures now: the visitor's choice (𓃦), or else the Layout setting for this kind of screen. */
+export const twoNow = () => state.twoV ?? (state.phone ? S.layoutPhone.two : S.layout.two);

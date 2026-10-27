@@ -1,10 +1,10 @@
 import "./styles.css";
 import { buildPage, legacyPath, canonical, filtered, listHTML, itemsOf, aboutHTML, FILTERS, type Page } from "./content";
 import { ORIGIN } from "./pages";
-import { dom, state, S, loadTuning, applyColors, applyLayout, resetVisitor } from "./state";
+import { dom, state, S, loadTuning, applyColors, applyLayout, resetVisitor, twoNow } from "./state";
 import * as dots from "./dots";
 import * as flap from "./flap";
-import { renderMedia, resetScroll, layoutFilm, sync, main, closeLightbox, centreList } from "./gallery";
+import { renderMedia, resetScroll, layoutFilm, sync, main, closeLightbox, centreList, relayPictures } from "./gallery";
 
 const { L, G, F, M } = dom;
 const KEEP_ALWAYS = ["h1", "h2", "h3", "h4", "hline", "vrule"];   // header and rules never leave
@@ -158,6 +158,18 @@ const setInvert = (on: boolean) => {
 try { state.invert = localStorage.getItem("adp-invert") === "1"; invertBtn.setAttribute("aria-pressed", String(state.invert)); } catch { /* ignore */ }
 invertBtn.addEventListener("click", () => setInvert(!state.invert));
 
+// 𓃦 in the header: one or two columns of pictures, for this visitor (remembered in their browser).
+const colsBtn = document.getElementById("cols")!;
+try { const v = localStorage.getItem("adp-two"); if (v !== null) state.twoV = v === "1"; } catch { /* ignore */ }
+const showCols = () => colsBtn.setAttribute("aria-pressed", String(twoNow()));
+showCols();
+colsBtn.addEventListener("click", () => {
+  state.twoV = !twoNow(); showCols();
+  try { localStorage.setItem("adp-two", state.twoV ? "1" : "0"); } catch { /* ignore */ }
+  relayPictures();
+});
+state.mq.addEventListener("change", showCols);
+
 // Phone: About opens as a sheet over the pictures (its text shows as real type there).
 // The sheet sits at the end of the page while open: Safari clips it to the scrolling main column otherwise.
 // On the home page it is the page's own About (moved there and back); on other pages it is made for the sheet.
@@ -233,7 +245,7 @@ dots.start();
 // Wait for the fonts, but not forever: on a slow connection the page starts after 1.8 s anyway (the dots redraw when they arrive).
 Promise.race([
   Promise.all(["400 20px redaction", "700 20px redaction", "italic 400 20px redaction", "400 12px degular-mono", "700 12px degular-mono", "20px 'Noto Sans Egyptian Hieroglyphs'"]
-    .map(f => document.fonts.load(f, f.includes("Hieroglyphs") ? "𓇗𓆣" : undefined).catch(() => {}))),
+    .map(f => document.fonts.load(f, f.includes("Hieroglyphs") ? "𓇗𓃦" : undefined).catch(() => {}))),
   sleep(1800),
 ]).then(() => go(location.pathname));
 document.fonts.addEventListener("loadingdone", resample);

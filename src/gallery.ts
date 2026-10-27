@@ -2,7 +2,7 @@
 // One position drives the columns: whichever one you scroll is the "driver" and the others follow.
 // Desktop: text, pictures and film, in proportion. Phone: the main column (text, then pictures) and the film,
 // which mirrors the pictures exactly. Work is a carousel with no start and no end.
-import { dom, state, S } from "./state";
+import { dom, state, twoNow } from "./state";
 import COLOURS, { RATIOS } from "virtual:colours";
 import { LIST_COPIES, big, huge, thumb, fallback, isVideo, type Item } from "./content";
 
@@ -338,7 +338,7 @@ function watch(m: HTMLImageElement | HTMLVideoElement | null) {
 // Two columns (Layout setting): on a project, two portrait pictures in a row share a row, each as wide as its
 // proportion asks so both have the same height; landscape pictures (and a portrait on its own) keep a full row.
 let halves = new Map<number, number>();
-const twoOn = () => state.phone ? S.layoutPhone.two : S.layout.two;
+const twoOn = twoNow;
 function pairUp(items: Item[]) {
   halves = new Map();
   const r = (it: Item) => { const v = it.m && RATIO.get(it.m); return v ? ratioOf(v) : 0; };
@@ -357,6 +357,25 @@ export function renderMedia(items: Item[], isLoop: boolean, zoom: boolean) {
   // Work starts with two rounds before and two after the first round; other pages show their pictures once.
   if (loop) { gFirst = 0; gLast = -1; insert(-2 * nItems, 5 * nItems, false); gFirst = -2 * nItems; }
   else { gFirst = 0; gLast = -1; insert(0, items.length, false); }
+}
+
+/** Lay the same pictures out again (one or two columns changed), keeping the picture in view where it is. */
+export function relayPictures() {
+  if (!pageItems.length) return;
+  const c = gpos() + viewH() / 2, ks = kids();
+  let at: HTMLElement | null = null; for (const k of ks) if (mid(k) <= c) at = k;
+  const g = at ? posOf(at) : 0, off = at ? c - mid(at) : 0, keepLoop = loop, n = nItems;
+  G.classList.add("out"); F.classList.add("out");
+  setTimeout(() => {
+    renderMedia(pageItems, keepLoop, !!state.page?.zoom);
+    // Work starts with two rounds before the first one; the same position must exist to come back to it.
+    if (keepLoop && n) { while (gFirst > g) addRound(gFirst - nItems, true); while (gLast < g) addRound(gLast + 1, false); }
+    layoutFilm();
+    const it = [...kids()].find(k => posOf(k) === g);
+    if (it) setG(mid(it) + off - viewH() / 2);
+    driver = main(); sync(main());
+    G.classList.remove("out"); F.classList.remove("out");
+  }, 250);
 }
 
 /** After a new page's pictures are in: reset positions and link everything. */
