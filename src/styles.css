@@ -120,6 +120,11 @@ body.one-font { --mono-stroke: 0px; }
 .gtrack.two > .gi, .ftrack.two > .fi { flex: 0 0 100%; }
 .gtrack.two > .gi.half { flex: 0 0 calc((100% - var(--gap)) * var(--fr)); width: auto; }
 .ftrack.two > .fi.half { flex: 0 0 calc((100% - var(--fgap, 4px)) * var(--fr)); width: auto; }
+/* Work, two columns: a row holding two portrait pictures of one project (each half grows with its proportion) */
+.gi.duo, .fi.duo { display: flex; align-items: flex-start; gap: var(--gap); aspect-ratio: auto; background: none; }
+.fi.duo { gap: var(--fgap, 4px); }
+.dh { position: relative; display: block; flex: 0 1 0; min-width: 0; overflow: hidden; background: var(--ph, color-mix(in srgb, var(--ink) 5%, transparent)); }
+.dh.ld { background: none; }
 .gi { position: relative; display: block; width: 100%; aspect-ratio: 4 / 3; background: var(--ph, color-mix(in srgb, var(--ink) 5%, transparent)); overflow: hidden; }
 .gi img, .gi video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0; transition: opacity .7s ease; }
 .gi .in { opacity: 1; }

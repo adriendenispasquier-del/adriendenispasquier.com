@@ -241,28 +241,50 @@ const RATIO = new Map<string, string>(Object.entries(RATIOS));   // known from t
 let pageItems: Item[] = [];
 
 /** The picture at position g: on Work, project g mod n, its (g div n)-th picture; elsewhere item g. */
-function itemAt(g: number): Item & { i: number } {
+function itemAt(g: number): Item & { i: number; m2?: string } {
   if (!loop) return { ...pageItems[g], i: g };
   const n = nItems, p = ((g % n) + n) % n, r = Math.floor(g / n), it = pageItems[p];
-  const alts = it.alts?.length ? it.alts : [it.m!];
-  const m = alts[((r % alts.length) + alts.length) % alts.length];
-  return { ...it, m, alt: (m && it.altOf?.[m]) || it.alt, i: p };
+  const alts = it.alts?.length ? it.alts : [it.m!], L = alts.length, at = (k: number) => alts[((k % L) + L) % L];
+  // Two columns: each round shows the project's next two pictures, side by side when both are portrait.
+  const two = twoOn() && L > 1, m = at(two ? 2 * r : r), next = two ? at(2 * r + 1) : undefined;
+  const m2 = next && next !== m && portrait(m) && portrait(next) ? next : undefined;
+  return { ...it, m, m2, alt: (m && it.altOf?.[m]) || it.alt, i: p };
+}
+const portrait = (m: string | null | undefined) => { const v = m && RATIO.get(m); return !!v && ratioOf(v) < .98; };
+const q = (t: string) => t.replace(/"/g, "&quot;");
+const bigInner = (m: string, alt: string) => isVideo(m)
+  ? `<video src="${big(m)}" muted loop playsinline disablepictureinpicture controlslist="nodownload" preload="metadata"></video>`
+  : `<img src="${big(m)}" alt="${q(alt)}" decoding="async"${fallback(m)}>`;
+// Videos uploaded to the site itself have no ready-made still: the film shows their first frame.
+const stillInner = (m: string) => thumb(m) ? `<img src="${thumb(m)}" alt="" decoding="async"${fallback(m)}>`
+  : isVideo(m) ? `<video src="${big(m)}#t=0.1" muted playsinline disablepictureinpicture preload="metadata"></video>` : "";
+/** Work, two columns: one row holding two portrait pictures of the same project, as wide as their proportions ask
+ *  so both have the same height. */
+function duoHtml(g: number, it: Item & { i: number; m2?: string }) {
+  const half = (m: string, inner: string) => {
+    const rr = RATIO.get(m)!, col = COLOURS[m];
+    return `<span class="dh" data-m="${q(m)}" style="aspect-ratio:${rr};flex-grow:${ratioOf(rr)}${col ? `;--ph:${col}` : ""}">${inner}</span>`;
+  };
+  const a = it.m!, b = it.m2!, alt = (m: string) => it.altOf?.[m] || it.alt || it.cap || "";
+  const data = ` data-i="${it.i}" data-g="${g}"`, cap = it.cap ? `<span class="cap">${it.cap}</span>` : "";
+  const inner = half(a, bigInner(a, alt(a))) + half(b, bigInner(b, alt(b)));
+  const gi = it.href ? `<a class="gi duo"${data} href="${it.href}">${inner}${cap}</a>` : `<div class="gi duo"${data}>${inner}</div>`;
+  const fi = `<button class="fi duo"${data} type="button" aria-label="Go to picture">${half(a, stillInner(a))}${half(b, stillInner(b))}</button>`;
+  return [gi, fi];
 }
 function stripHtml(g: number) {
-  const it = itemAt(g), rr = (it.m && RATIO.get(it.m)) || (it.ph ? "4 / 5" : ""), col = it.m && COLOURS[it.m];
+  const it = itemAt(g);
+  if (it.m2) return duoHtml(g, it);
+  const rr = (it.m && RATIO.get(it.m)) || (it.ph ? "4 / 5" : ""), col = it.m && COLOURS[it.m];
   // While loading, the box shows the picture's dominant colour.
   const fr = !loop ? halves.get(g) : undefined;   // two columns: this picture's share of the row
   const st = rr || col || fr ? ` style="${rr ? `aspect-ratio:${rr};` : ""}${col ? `--ph:${col};` : ""}${fr ? `--fr:${fr}` : ""}"` : "";
   const data = ` data-i="${it.i}" data-g="${g}"${it.m ? ` data-m="${it.m.replace(/"/g, "&quot;")}"` : ""}`;
-  const inner = !it.m ? `<span class="ph">${it.ph || ""}</span>`
-    : isVideo(it.m) ? `<video src="${big(it.m)}" muted loop playsinline disablepictureinpicture controlslist="nodownload" preload="metadata"></video>`
-    : `<img src="${big(it.m)}" alt="${(it.alt || it.cap || "").replace(/"/g, "&quot;")}" decoding="async"${fallback(it.m)}>`;
+  const inner = !it.m ? `<span class="ph">${it.ph || ""}</span>` : bigInner(it.m, it.alt || it.cap || "");
   const cap = it.cap ? `<span class="cap">${it.cap}</span>` : "";
   const cls = fr ? " half" : "";
   const gi = it.href ? `<a class="gi${cls}"${data} href="${it.href}"${st}>${inner}${cap}</a>` : `<div class="gi${cls}"${data}${st}>${inner}</div>`;
-  // Videos uploaded to the site itself have no ready-made still: the film shows their first frame.
-  const still = !it.m ? "" : thumb(it.m) ? `<img src="${thumb(it.m)}" alt="" decoding="async"${fallback(it.m)}>`
-    : isVideo(it.m) ? `<video src="${big(it.m)}#t=0.1" muted playsinline disablepictureinpicture preload="metadata"></video>` : "";
+  const still = !it.m ? "" : stillInner(it.m);
   const fi = `<button class="fi${cls}"${data} type="button" aria-label="Go to picture"${st}>${still}</button>`;
   return [gi, fi];
 }
@@ -273,15 +295,15 @@ function insert(g0: number, count: number, atStart: boolean) {
   GT.insertAdjacentHTML(pos, parts.map(p => p[0]).join(""));
   FT.insertAdjacentHTML(pos, parts.map(p => p[1]).join(""));
   const sel = (root: HTMLElement) => [...root.children].filter(e => { const g = posOf(e); return g >= g0 && g < g0 + count; });
-  for (const e of [...sel(GT), ...sel(FT)]) watch(e.querySelector("img, video"));
-  for (const e of sel(GT)) { const v = e.querySelector("video"); if (v) playing.observe(v); }
+  for (const e of [...sel(GT), ...sel(FT)]) e.querySelectorAll<HTMLImageElement | HTMLVideoElement>("img, video").forEach(watch);
+  for (const e of sel(GT)) e.querySelectorAll("video").forEach(v => playing.observe(v));
   if (atStart) gFirst = g0; else gLast = g0 + count - 1;
 }
 const addRound = (g0: number, atStart: boolean) => insert(g0, nItems, atStart);
 function dropRound(atStart: boolean) {
   for (const root of [GT, FT]) for (let k = 0; k < nItems; k++) {
-    const e = atStart ? root.firstElementChild : root.lastElementChild, v = e?.querySelector("video");
-    if (v) playing.unobserve(v);
+    const e = atStart ? root.firstElementChild : root.lastElementChild;
+    e?.querySelectorAll("video").forEach(v => playing.unobserve(v));
     e?.remove();
   }
   if (atStart) gFirst += nItems; else gLast -= nItems;
@@ -298,7 +320,7 @@ function setRatio(m: string | undefined, w: number, h: number) {
   if (!w || !h || !m || RATIO.get(m) === `${w} / ${h}`) return;
   const was = RATIO.get(m); if (was && Math.abs(ratioOf(was) / (w / h) - 1) < .02) return;   // the build's value is close enough: nothing moves
   RATIO.set(m, `${w} / ${h}`);
-  for (const e of [...GT.children, ...FT.children] as HTMLElement[]) if (e.dataset.m === m) e.style.aspectRatio = `${w} / ${h}`;
+  for (const e of [...GT.querySelectorAll<HTMLElement>("[data-m]"), ...FT.querySelectorAll<HTMLElement>("[data-m]")]) if (e.dataset.m === m) e.style.aspectRatio = `${w} / ${h}`;
   layoutFilm();
   if (loop && untouched) centreFirst();
   sync(driver === F ? F : main());
