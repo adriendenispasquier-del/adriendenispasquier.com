@@ -186,6 +186,7 @@ collections:
               - { name: m, label: Main column, widget: number, value_type: float, step: 0.1 }
               - { name: f, label: Film, widget: number, value_type: float, step: 0.1 }
               - { name: hh, label: Header height (px), widget: number, value_type: int, default: 46 }
+              - { name: rows, label: Project list rows, widget: number, value_type: int, default: 9, hint: "How many projects the list at the bottom shows on the home page" }
           - name: grid
             label: Grid
             widget: select
