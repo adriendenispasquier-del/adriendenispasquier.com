@@ -15,7 +15,10 @@ let anim: { from: number; to: number; t0: number; dur: number } | null = null;
 const maxOf = (el: HTMLElement) => Math.max(0, el.scrollHeight - el.clientHeight);
 const progressOf = (el: HTMLElement) => { const m = maxOf(el); return m ? el.scrollTop / m : 0; };
 export const main = () => state.phone ? M : G;                           // the element whose scrolling shows the pictures
-const goff = () => state.phone ? G.offsetTop : 0;                        // where the pictures start inside it
+// Phone project pages: the pictures column has no box of its own (the cover sits between the title and the
+// description), so the main column's width and top stand in for it.
+const boxless = () => state.phone && !M.classList.contains("home");
+const goff = () => state.phone && !boxless() ? G.offsetTop : 0;           // where the pictures start inside it
 // Phone Work: the menu is pinned at the top and the list at the bottom; the pictures are seen in between.
 const band = () => {
   if (!state.phone || !M.classList.contains("home")) return null;
@@ -26,7 +29,7 @@ const viewTop = () => band()?.top ?? 0;                                  // wher
 const viewH = () => { const b = band(); return b ? b.bottom - b.top : main().clientHeight; };   // its height
 const gpos = () => main().scrollTop - goff() + viewTop();               // picture-strip coordinate at the top of that area
 const setG = (v: number) => { main().scrollTop = v + goff() - viewTop(); };
-const fscale = () => F.clientWidth / G.clientWidth;
+const fscale = () => F.clientWidth / ((boxless() ? M.clientWidth : G.clientWidth) || 1);
 const mid = (e: HTMLElement) => e.offsetTop + e.offsetHeight / 2;
 const inout = (u: number) => u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
 const kids = () => GT.children as HTMLCollectionOf<HTMLElement>;
