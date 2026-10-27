@@ -104,7 +104,6 @@ body.reveal [data-p], body.reveal [data-p] * { color: rgba(220, 40, 40, .55) !im
 body.flapmode #c { display: none; }
 body [data-p].real.fl-hide, body [data-p].real.fl-hide * { color: transparent !important; transition: none !important; }
 .flap { position: fixed; inset: 0; z-index: 21; pointer-events: none; }
-.flap span { position: absolute; text-align: center; white-space: pre; }
 .soon { margin-top: auto; padding: 1em 0; font-size: calc(var(--base) * var(--fs-lists)); }
 /* Filtering: the list fades out and back in with the pictures */
 .plist, .soon { transition: opacity .26s ease; }
