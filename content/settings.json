@@ -29,7 +29,7 @@
     "f": 4.55,
     "hh": 40,
     "order": "tpf",
-    "two": true
+    "two": false
   },
   "layoutPhone": {
     "gap": 2.7,
@@ -40,7 +40,7 @@
     "two": false
   },
   "dots": {
-    "anim": "particles",
+    "anim": "flap",
     "overflow": 5,
     "branches": 6,
     "realBelow": 16.5,
@@ -48,9 +48,9 @@
     "lichenDensity": 0.7,
     "allReal": true,
     "speed": 1,
-    "flip": 38,
-    "flips": 9,
-    "wave": 0.9,
+    "flip": 41,
+    "flips": 10,
+    "wave": 0.65,
     "flapOrder": "alphabet",
     "flapMotion": true,
     "shape": "round",
