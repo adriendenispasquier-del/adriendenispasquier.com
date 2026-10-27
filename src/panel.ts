@@ -41,6 +41,7 @@ const HTML = `
       <div class="lrow"><span>Main</span><input id="p-m" type="range" min="60" max="94" step="0.1"><output></output></div>
       <div class="lrow"><span>Film</span><input id="p-f" type="range" min="6" max="40" step="0.1"><output></output></div>
       <div class="lrow"><span>Header</span><input id="p-hh" type="range" min="30" max="100" step="1"><output></output></div>
+      <div class="lrow"><span>List rows</span><input id="p-rows" type="range" min="2" max="16" step="1"><output></output></div>
       <div class="stat" id="pnote"></div>
     </div>
     <button class="btn" id="lreset" type="button">Reset layout</button>
@@ -137,7 +138,7 @@ export function mount() {
   // Layout: changing one share rescales the others (keeping their proportion) so they always fill the width.
   const showLayout = () => {
     for (const k in S.layout) { if (k === "order") { ($("l-order") as HTMLSelectElement).value = S.layout.order; continue; } const i = inp("l-" + k); i.value = String((S.layout as any)[k]); i.nextElementSibling!.textContent = k === "hh" ? (S.layout as any)[k] + "px" : (+(S.layout as any)[k]).toFixed(1); }
-    for (const k in S.layoutPhone) { const i = inp("p-" + k); i.value = String((S.layoutPhone as any)[k]); i.nextElementSibling!.textContent = k === "hh" ? (S.layoutPhone as any)[k] + "px" : (+(S.layoutPhone as any)[k]).toFixed(1); }
+    for (const k in S.layoutPhone) { const i = inp("p-" + k); i.value = String((S.layoutPhone as any)[k]); i.nextElementSibling!.textContent = k === "hh" ? (S.layoutPhone as any)[k] + "px" : k === "rows" ? String((S.layoutPhone as any)[k]) : (+(S.layoutPhone as any)[k]).toFixed(1); }
     $("pnote").textContent = state.phone ? "" : "Applies below 760 px wide: narrow the window to see it.";
   };
   let lt: number | undefined;
@@ -151,6 +152,7 @@ export function mount() {
   osel.addEventListener("change", () => { S.layout.order = osel.value; changed(); });
   inp("l-hh").addEventListener("input", e => { S.layout.hh = +(e.target as HTMLInputElement).value; changed(); });
   inp("p-hh").addEventListener("input", e => { S.layoutPhone.hh = +(e.target as HTMLInputElement).value; changed(); });
+  inp("p-rows").addEventListener("input", e => { S.layoutPhone.rows = +(e.target as HTMLInputElement).value; changed(); });
   const shares = (obj: () => Record<string, number>, keys: string[], prefix: string) => {
     for (const k of keys) inp(prefix + k).addEventListener("input", e => {
       const v = +(e.target as HTMLInputElement).value, others = keys.filter(x => x !== k), l = obj();

@@ -53,6 +53,9 @@ async function go(path: string) {
   state.SB = state.phone ? null : document.getElementById("AB");   // on phone the About text flows with the page
   fitMenu();
   centreList();
+  // Phone project: the cover sits above the description, so the pictures go in (still faded out) before the text is read.
+  const early = state.phone && !page.loop;
+  if (early) renderMedia(page.items, false, !!page.zoom);
   if (first) { await Promise.race([document.fonts.ready, sleep(300)]); await new Promise(r => { requestAnimationFrame(r); setTimeout(r, 60); }); }
   reading = true;
   const targets = await dots.collectTargets(page.path);   // read over a few frames: the animation never stalls
@@ -60,7 +63,7 @@ async function go(path: string) {
   if (!targets || token !== busy) return;
   dots.assign(targets);
   if (!first) { await sleep(220); if (token !== busy) return; }
-  renderMedia(page.items, !!page.loop, !!page.zoom);
+  if (!early) renderMedia(page.items, !!page.loop, !!page.zoom);
   resetScroll();
   G.classList.remove("out"); F.classList.remove("out");
 }
@@ -93,7 +96,7 @@ async function applyFilter(f: string) {
   // Fade the list and pictures out, swap them, fade back in.
   M.classList.add("swap"); G.classList.add("out"); F.classList.add("out");
   await sleep(260); if (token !== filtering) return;
-  swapList(f); centreList();
+  swapList(f); fitMenu(); centreList();
   renderMedia(itemsOf(filtered(f), f), true, false); resetScroll();
   resample();
   await sleep(30);
@@ -180,6 +183,9 @@ export const relayout = () => { applyLayout(); fitMenu(); layoutFilm(); sync(mai
 
 /** The menu (Work · Personal, About · Work) shrinks to fit the text column: it never runs over the pictures. */
 export function fitMenu() {
+  // Phone: the pinned project list is as tall as the number of rows set in the panel.
+  const row = document.querySelector<HTMLElement>("#PL li");
+  if (row) state.PL?.style.setProperty("--rowh", row.getBoundingClientRect().height + "px");
   const m = document.querySelector<HTMLElement>(".menu"); if (!m) return;
   m.style.setProperty("--fit", "1");
   const kids = [...m.children] as HTMLElement[], gap = parseFloat(getComputedStyle(m).columnGap) || 0;

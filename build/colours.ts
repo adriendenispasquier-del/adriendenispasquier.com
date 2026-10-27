@@ -9,8 +9,10 @@ import { norm } from "../src/media";
 const CLOUD = "https://res.cloudinary.com/df2kod03a/";
 const json = (f: string) => JSON.parse(readFileSync(f, "utf8"));
 
-/** The colour covering most of the picture (transparent parts ignored). */
-async function dominant(buf: Buffer): Promise<string | null> {
+/** The colour covering most of the picture (transparent parts ignored), and its proportions ("w / h"). */
+async function dominant(buf: Buffer): Promise<{ c: string; r?: string } | null> {
+  const meta = await sharp(buf, { pages: 1 }).metadata();
+  const w = meta.autoOrient?.width ?? meta.width, h = meta.autoOrient?.height ?? meta.height;
   const { data, info } = await sharp(buf, { pages: 1 }).resize(24, 24, { fit: "fill" }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   const bins = new Map<number, [number, number, number, number]>();
   for (let i = 0; i < info.width * info.height * 4; i += 4) {
@@ -21,7 +23,8 @@ async function dominant(buf: Buffer): Promise<string | null> {
   let best: [number, number, number, number] | null = null;
   for (const s of bins.values()) if (!best || s[0] > best[0]) best = s;
   if (!best) return null;
-  return "#" + [best[1], best[2], best[3]].map(v => Math.round(v / best![0]).toString(16).padStart(2, "0")).join("");
+  const c = "#" + [best[1], best[2], best[3]].map(v => Math.round(v / best![0]).toString(16).padStart(2, "0")).join("");
+  return { c, ...(w && h ? { r: `${w} / ${h}` } : {}) };
 }
 
 async function read(m: string, root: string): Promise<Buffer | null> {
@@ -32,13 +35,14 @@ async function read(m: string, root: string): Promise<Buffer | null> {
   return res.ok ? Buffer.from(await res.arrayBuffer()) : null;
 }
 
-export async function dominantColours(root: string): Promise<Record<string, string>> {
+/** Each picture's dominant colour and proportions (known before it loads, so the strip never shifts while you scroll). */
+export async function dominantColours(root: string): Promise<{ colours: Record<string, string>; ratios: Record<string, string> }> {
   const dir = resolve(root, "content/projects");
   const projects: Project[] = prepare(readdirSync(dir).filter(f => f.endsWith(".json")).map(f => [f.replace(/\.json$/, ""), json(resolve(dir, f))]));
   const portrait = json(resolve(root, "content/site.json")).about?.portrait;
   const media = [...new Set([...projects.flatMap(p => [p.cover, ...p.media]), portrait ? norm(portrait) : null].filter(Boolean) as string[])];
-  const cacheFile = resolve(root, "node_modules/.cache/adp-colours.json");
-  const cache: Record<string, string> = existsSync(cacheFile) ? json(cacheFile) : {};
+  const cacheFile = resolve(root, "node_modules/.cache/adp-media.json");
+  const cache: Record<string, { c: string; r?: string }> = existsSync(cacheFile) ? json(cacheFile) : {};
   const todo = media.filter(m => !(m in cache));
   for (let i = 0; i < todo.length; i += 8) {
     await Promise.all(todo.slice(i, i + 8).map(async m => {
@@ -47,5 +51,6 @@ export async function dominantColours(root: string): Promise<Record<string, stri
   }
   mkdirSync(resolve(root, "node_modules/.cache"), { recursive: true });
   writeFileSync(cacheFile, JSON.stringify(cache));
-  return Object.fromEntries(media.filter(m => cache[m]).map(m => [m, cache[m]]));
+  const known = media.filter(m => cache[m]);
+  return { colours: Object.fromEntries(known.map(m => [m, cache[m].c])), ratios: Object.fromEntries(known.filter(m => cache[m].r).map(m => [m, cache[m].r!])) };
 }

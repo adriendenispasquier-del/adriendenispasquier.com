@@ -13,10 +13,10 @@ export default defineConfig({
   build: { target: "es2022" },
   plugins: [
     {
-      // import COLOURS from "virtual:colours" → { picture: "#rrggbb" } (dominant colour of each picture)
+      // import COLOURS, { RATIOS } from "virtual:colours" → { picture: "#rrggbb" } and { picture: "w / h" }
       name: "colours",
       resolveId: id => id === "virtual:colours" ? "\0virtual:colours" : undefined,
-      async load(id) { if (id === "\0virtual:colours") return `export default ${JSON.stringify(await dominantColours(__dirname))};`; },
+      async load(id) { if (id === "\0virtual:colours") { const { colours, ratios } = await dominantColours(__dirname); return `export default ${JSON.stringify(colours)};\nexport const RATIOS = ${JSON.stringify(ratios)};`; } },
     },
     {
       // Resized uploads: made on request while developing, written into dist after the build.

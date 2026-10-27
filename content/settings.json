@@ -34,7 +34,8 @@
     "gap": 2.7,
     "m": 93.7,
     "f": 6.3,
-    "hh": 30
+    "hh": 30,
+    "rows": 9
   },
   "dots": {
     "anim": "particles",

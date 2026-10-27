@@ -30,7 +30,7 @@ type Pair = { bg: string; ink: string };
 export interface Settings {
   colors: { default: Pair; pages: Record<string, Pair> };   // pages: address → colours (a list in the file)
   layout: { gap: number; t: number; p: number; f: number; hh: number; order: string };   // hh: header height in px; order: columns from left, e.g. "tpf"
-  layoutPhone: { gap: number; m: number; f: number; hh: number };
+  layoutPhone: { gap: number; m: number; f: number; hh: number; rows: number };   // rows: project rows the pinned list shows
   dots: {
     shape: string; dotSize: number; fill: number; buzz: number; real: boolean;
     anim: string;        // "particles" (dots travel to the text) or lichen: "crust" | "leafy" | "rosette" (dots grow in place)
@@ -56,7 +56,7 @@ const clone = <T>(o: T): T => JSON.parse(JSON.stringify(o));
 const fromFile = (f: typeof defaults): Settings => ({
   ...clone(f),
   layout: { ...clone(f.layout), hh: (f.layout as any).hh ?? 66, order: (f.layout as any).order || "tpf" },
-  layoutPhone: { ...clone(f.layoutPhone), hh: (f.layoutPhone as any).hh ?? 46 },
+  layoutPhone: { ...clone(f.layoutPhone), hh: (f.layoutPhone as any).hh ?? 46, rows: (f.layoutPhone as any).rows ?? 9 },
   dots: { ...{ anim: "particles", overflow: 12, branches: 8, realBelow: 12, lichenDot: 2, lichenDensity: 1, allReal: true, speed: 1 }, ...clone(f.dots) as any },
   grid: (f as any).grid || "open",
   line: (f as any).line ?? 1,
@@ -164,6 +164,7 @@ export function applyLayout() {
     rs.setProperty("--fl", (g + mw + g) + "vw"); rs.setProperty("--fw", fw + "vw");
     rs.setProperty("--gap", g * PIC_GAP + "vw");
     rs.setProperty("--mwa", (mw + g + fw) + "vw");   // About (no film): the main column takes the film's place too
+    rs.setProperty("--rows", String(l.rows));
   } else {
     const l = layoutNow(), g = l.gap;
     const avail = 100 - 4 * g, T = l.t / 100 * avail, Pw = l.p / 100 * avail, Fw = l.f / 100 * avail;

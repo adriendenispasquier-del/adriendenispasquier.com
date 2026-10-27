@@ -194,7 +194,9 @@ body.grid-closed .vrule { top: var(--hh); bottom: 0; }   /* runs from the header
   .hicons { position: static; transform: none; margin-left: auto; height: auto; }
   body.about #M { width: var(--mwa); }
   body.about .gal { left: auto; width: 100%; }
-  .hd { right: auto; width: var(--mw); }   /* the header stops at the main column (the film runs beside it) */
+  .hd { left: var(--gx); right: var(--gx); }   /* the header runs the full width; the film starts under it */
+  .film { top: var(--hh); }
+  .frame { top: calc(50% + var(--hh) / 2); }   /* the middle of the film */
   .abtn { display: inline; margin-right: 1em; }
   body.aopen .abtn { font-style: italic; text-decoration: underline; text-underline-offset: .2em; }
   /* About opens as a sheet from the header's About (the pictures scroll endlessly, so it can't sit above them) */
@@ -210,8 +212,20 @@ body.grid-closed .vrule { top: var(--hh); bottom: 0; }   /* runs from the header
   #M.home .mrule { display: none; }
   .about { overflow: visible; padding-bottom: 1.2em; }
   #M.home .plist { position: fixed; bottom: max(10px, env(safe-area-inset-bottom)); left: var(--gx); width: var(--mw); z-index: 4; margin: 0;
-                   height: calc(var(--rows, 5) * (2.1em + var(--line))); background: var(--bg); box-shadow: 0 60px 0 var(--bg); }
+                   height: calc(var(--rows, 9) * var(--rowh, 2.4em)); min-height: 0;   /* --rowh: one row, measured (main.ts) */
+                   background: var(--bg); box-shadow: 0 60px 0 var(--bg); }
   .plist a { padding-right: 0; }
   .row { grid-template-columns: 30% 1fr; }
   .frame { left: calc(var(--fl) - 1.6vw); width: calc(var(--fw) + 3.2vw); }
+  /* Project: the menu and the title, then the cover, then the description, then the other pictures */
+  #M:not(.home) { display: flex; flex-direction: column; }
+  #M:not(.home) :is(.gal, .gtrack, .lcol, .lscroll, .lproj) { display: contents; }
+  #M:not(.home) :is(.lproj > *, .gi) { flex-shrink: 0; }
+  #M:not(.home) .lproj > * { order: 2; }
+  #M:not(.home) .lproj > :is(.menu, .mrule, .head) { order: 0; }
+  #M:not(.home) .lproj > :first-child { margin-top: 26px; }
+  #M:not(.home) .lproj > :last-child { margin-bottom: 30px; }
+  #M:not(.home) .gi { order: 3; margin-top: var(--gap); transition: opacity .25s ease; }
+  #M:not(.home) .gi:first-child { order: 1; margin-bottom: calc(.6em * var(--vgap, 1)); }
+  #M:not(.home) .gal.out .gi { opacity: 0; }
 }
