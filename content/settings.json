@@ -6,24 +6,29 @@
     },
     "pages": [
       {
-        "page": "/work/luca-baking-around/",
-        "bg": "#fbfcf8",
-        "ink": "#1c1c1c"
-      },
-      {
         "page": "/work/oddkin/",
         "bg": "#e0e6b7",
         "ink": "#354821"
       },
       {
         "page": "/work/archipel-berlin/",
-        "bg": "#f4f0e7",
+        "bg": "#f9f3dd",
         "ink": "#000000"
       },
       {
         "page": "/work/rocket-wine/",
         "bg": "#3499b2",
         "ink": "#f5e999"
+      },
+      {
+        "page": "/work/luca-baking-around/",
+        "bg": "#ffffff",
+        "ink": "#000000"
+      },
+      {
+        "page": "/work/cyberleaders/",
+        "bg": "#000000",
+        "ink": "#c7ee72"
       }
     ]
   },
