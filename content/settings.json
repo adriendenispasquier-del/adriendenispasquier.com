@@ -19,6 +19,11 @@
         "page": "/work/archipel-berlin/",
         "bg": "#f4f0e7",
         "ink": "#000000"
+      },
+      {
+        "page": "/work/rocket-wine/",
+        "bg": "#3499b2",
+        "ink": "#f5e999"
       }
     ]
   },
