@@ -16,12 +16,6 @@
       ]
     },
     {
-      "src": "Image_1_gksi77",
-      "tags": [
-        "Illustration"
-      ]
-    },
-    {
       "src": "Image_2_e5pm1e",
       "tags": [
         "Illustration"
@@ -39,5 +33,13 @@
         "Illustration"
       ]
     }
-  ]
+  ],
+  "cover": "",
+  "personal": false,
+  "draft": false,
+  "seo": {
+    "title": "",
+    "description": "",
+    "alt": ""
+  }
 }
