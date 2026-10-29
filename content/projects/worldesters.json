@@ -1,0 +1,45 @@
+{
+  "title": "Worldesters",
+  "type": "Brand Identity, Packaging",
+  "order": 99,
+  "services": [
+    "Brand Identity",
+    "Packaging"
+  ],
+  "text": "World Esters set out to bring high-quality spirits to bars at a fair price, by spending on what is inside the bottle rather than on the bottle itself.\n\nThe range included a rum blended from three origins, with a rich and balanced profile, and an organic vodka made from organic grain, with more product to come. Both deserved a place behind the best bars, without the cost and the clichés of premium packaging.\n\nThe core of the idea was the bag-in-box. Instead of bars going through bottle after bottle, many of them never recycled, World Esters supplied spirits in 3 to 5 litres bag-in-box formats. The bar keeps one bottle on the shelf and refills it from the box. Less packaging, less waste, and more of the budget going to the product itself.\n\nThat minimalism had to be visible.\n\nRum labels often lean on old-fashioned, colonial-era imagery. Spirits in general rely on heavy ornament to signal “premium”. World Esters went the other way.\n\nEvery product shares the same packaging system. Only the name and the color change. Each bag-in-box carries a single bold color, the brand name and the spirit, nothing more. The mandatory information is there, but kept out of the way. The box becomes a simple, striking object, almost a piece of design on the back bar.\n\nThe bottles follow the same rule: a monochrome label, the product name in very small type, and the World Esters logo set large at the base. Among shelves of busy, ornate labels, a plain colorful bottle stands out immediately.\n\nFor the typography, I reworked a serif typeface I had designed earlier into a bold, grotesque yet elegant display font, built to take up as much space as possible. Set in black on bright monochrome backgrounds, it carries the whole identity on its own.",
+  "credits": [
+    {
+      "label": "Founders",
+      "value": "Quentin Pierre-Antoine, Benjamin Galais",
+      "url": ""
+    }
+  ],
+  "media": [
+    {
+      "src": "/uploads/WER.webp",
+      "tags": [
+        "Brand Identity"
+      ]
+    },
+    {
+      "src": "/uploads/WEG.webp",
+      "tags": [
+        "Brand Identity"
+      ]
+    },
+    {
+      "src": "/uploads/WEV.webp",
+      "tags": [
+        "Brand Identity"
+      ]
+    }
+  ],
+  "cover": "",
+  "personal": false,
+  "draft": false,
+  "seo": {
+    "title": "",
+    "description": "",
+    "alt": ""
+  }
+}
