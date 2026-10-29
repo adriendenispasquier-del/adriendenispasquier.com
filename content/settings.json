@@ -29,6 +29,11 @@
         "page": "/work/cyberleaders/",
         "bg": "#000000",
         "ink": "#c7ee72"
+      },
+      {
+        "page": "/work/worldesters/",
+        "bg": "#000000",
+        "ink": "#ffffff"
       }
     ]
   },
