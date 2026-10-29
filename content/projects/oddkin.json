@@ -27,6 +27,12 @@
   ],
   "media": [
     {
+      "src": "https://res.cloudinary.com/df2kod03a/video/upload/v1793270410/Oddkin_website_na_xziokq.mp4",
+      "tags": [
+        "Brand Identity"
+      ]
+    },
+    {
       "src": "/uploads/HOT COMPOST #2-2.webp",
       "tags": [
         "Photography"
@@ -60,12 +66,6 @@
       "src": "/uploads/Across Borders Burgenland post-1.jpg",
       "tags": [
         "Illustration"
-      ]
-    },
-    {
-      "src": "https://res.cloudinary.com/df2kod03a/video/upload/v1793270410/Oddkin_website_na_xziokq.mp4",
-      "tags": [
-        "Brand Identity"
       ]
     }
   ],
