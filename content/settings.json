@@ -55,7 +55,7 @@
     "two": false
   },
   "dots": {
-    "anim": "flap",
+    "anim": "particles",
     "overflow": 5,
     "branches": 6,
     "realBelow": 16.5,
