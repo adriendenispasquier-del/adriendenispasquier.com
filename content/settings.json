@@ -44,7 +44,7 @@
     "f": 4.55,
     "hh": 40,
     "order": "tpf",
-    "two": false
+    "two": true
   },
   "layoutPhone": {
     "gap": 2.7,
