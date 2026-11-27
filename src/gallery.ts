@@ -244,11 +244,20 @@ let pageItems: Item[] = [];
 function itemAt(g: number): Item & { i: number; m2?: string } {
   if (!loop) return { ...pageItems[g], i: g };
   const n = nItems, p = ((g % n) + n) % n, r = Math.floor(g / n), it = pageItems[p];
-  const alts = it.alts?.length ? it.alts : [it.m!], L = alts.length, at = (k: number) => alts[((k % L) + L) % L];
-  // Two columns: each round shows the project's next two pictures, side by side when both are portrait.
-  const two = twoOn() && L > 1, m = at(two ? 2 * r : r), next = two ? at(2 * r + 1) : undefined;
-  const m2 = next && next !== m && portrait(m) && portrait(next) ? next : undefined;
+  const alts = it.alts?.length ? it.alts : [it.m!];
+  // Each round shows the project's next row: one picture, or (two columns) two portrait ones side by side.
+  const rows = rowsFor(alts), [m, m2] = rows[((r % rows.length) + rows.length) % rows.length];
   return { ...it, m, m2, alt: (m && it.altOf?.[m]) || it.alt, i: p };
+}
+/** A project's pictures grouped into rows, in order: two portraits in a row share one (two columns), anything else
+ *  has its own. Every picture is in exactly one row, so each comes up in turn. */
+function rowsFor(alts: (string | null)[]): [string, string | undefined][] {
+  const rows: [string, string | undefined][] = [];
+  for (let i = 0; i < alts.length; i++) {
+    const a = alts[i]!, b = alts[i + 1];
+    if (twoOn() && b && portrait(a) && portrait(b)) { rows.push([a, b]); i++; } else rows.push([a, undefined]);
+  }
+  return rows;
 }
 const portrait = (m: string | null | undefined) => { const v = m && RATIO.get(m); return !!v && ratioOf(v) < .98; };
 const q = (t: string) => t.replace(/"/g, "&quot;");
